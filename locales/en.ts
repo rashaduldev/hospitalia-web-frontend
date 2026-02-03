@@ -21,5 +21,15 @@ export default {
     monthlyUsers: "Monthly Active Users",
     doctors: "Professional Doctors",
   },
+  whyChooseUs: {
+    title: "Why Choose Us?",
+    subtitle: "Trusted by thousands for quality, expertise, and results.",
+    stats: {
+      stat0: { count: "200+", des: "Clinics Across Senegal" },
+      stat1: { count: "20+", des: "Years of Experience" },
+      stat2: { count: "5k", des: "Professional Doctors" },
+      stat3: { count: "24/7", des: "Support Availability" },
+    },
+  },
 };
 

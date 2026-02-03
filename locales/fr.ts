@@ -21,5 +21,15 @@ export default {
     monthlyUsers: "Utilisateurs actifs mensuels",
     doctors: "Médecins professionnels",
   },
+    whyChooseUs: {
+  title: "Pourquoi nous choisir ?",
+  subtitle: "Fiable pour des milliers de personnes pour la qualité, l’expertise et les résultats.",
+  stats: {
+    stat0: { count: "200+", des: "Cliniques à travers le Sénégal" },
+    stat1: { count: "20+", des: "Années d’expérience" },
+    stat2: { count: "5k", des: "Médecins professionnels" },
+    stat3: { count: "24/7", des: "Support disponible" },
+  },
+},
 };
 
