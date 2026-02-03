@@ -5,7 +5,7 @@ export default {
     patient: "Connexion Patient",
     doctor: "Médecin / Secrétaire",
   },
-    banner: {
+  banner: {
     titleMain: "Simplifiez l’expérience des patients",
     titleSub: "Optimisez le travail des professionnels de santé.",
     cardTitle: "Prendre un rendez-vous",
@@ -15,6 +15,11 @@ export default {
     selectCity: "Sélectionner une ville",
     searchHere: "Rechercher ici",
     searchBtn: "Rechercher",
+  },
+  stats: {
+    patients: "Patients Servis",
+    monthlyUsers: "Utilisateurs actifs mensuels",
+    doctors: "Médecins professionnels",
   },
 };
 

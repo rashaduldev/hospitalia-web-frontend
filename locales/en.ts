@@ -15,6 +15,11 @@ export default {
     selectCity: "Select City",
     searchHere: "Search Here",
     searchBtn: "Search",
-  },  
+  },
+    stats: {
+    patients: "Patient Served",
+    monthlyUsers: "Monthly Active Users",
+    doctors: "Professional Doctors",
+  },
 };
 
