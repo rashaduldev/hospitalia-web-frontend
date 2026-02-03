@@ -146,8 +146,4 @@
   .p,p{
     @apply text-muted-foreground text-sm sm:text-base
   }
-  li{
-    @apply text-sm font-medium text-center text-ghost-foreground hover:text-primary;
-  }
-
 }
