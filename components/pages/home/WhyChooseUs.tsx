@@ -7,7 +7,7 @@ const WhyChooseUs = () => {
   const t = useI18n();
 
   return (
-    <section className="container mx-auto px-4 py-10 sm:px-6 md:px-12 md:py-20 flex flex-col md:flex-row gap-10 justify-center">
+    <section className="section-container py-10 md:py-20 flex flex-col md:flex-row gap-10 justify-center">
       {/* Left content */}
       <div className="md:flex-1 text-center md:text-left">
         <h2 className="text-3xl font-semibold mb-3">

@@ -31,5 +31,44 @@ export default {
       stat3: { count: "24/7", des: "Support Availability" },
     },
   },
+ ourPackages: {
+  title: "Our Health Packages",
+  packages: [
+    {
+      image: "/",
+      title: "Early Pregnancy Pack",
+      list: [
+        "Antenatal Checkup",
+        "Ultrasound Scan",
+        "Blood & Urine Tests",
+      ],
+      price: "300",
+      checkBtn: "Check Details",
+    },
+    {
+      image: "/",
+      title: "General Health Checkup",
+      list: [
+        "Doctor Consultation",
+        "Blood Pressure Check",
+        "Basic Lab Tests",
+      ],
+      price: "200",
+      checkBtn: "Check Details",
+    },
+    {
+      image: "/",
+      title: "Cardiac Care Package",
+      list: [
+        "ECG Test",
+        "Heart Specialist Consultation",
+        "Cholesterol Test",
+      ],
+      price: "450",
+      checkBtn: "Check Details",
+    },
+  ],
+},
+
 };
 
