@@ -3,12 +3,11 @@ import Link from "next/link";
 import { useI18n } from "@/locales/client";
 import { useParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
-import { RadioGroup } from "@base-ui/react";
-import { RadioGroupItem } from "@/components/ui/radio-group";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Field, FieldContent, FieldDescription, FieldLabel, FieldTitle } from "@/components/ui/field";
+import { Field, FieldContent, FieldLabel, FieldTitle } from "@/components/ui/field";
 
 const Banner = () => {
   const t = useI18n();
@@ -38,56 +37,24 @@ const Banner = () => {
         <p className="mt-1 text-sm mb-4">
           {t("banner.cardSubtitle")}
         </p>
-
-        {/* Radio group */}
-        <RadioGroup
-          defaultValue="doctor"
-          className="flex flex-col sm:flex-row gap-3 mb-4"
-        >
-          <div className="flex items-center gap-3 border w-full rounded-[10px] py-2 px-3">
-            {/* <RadioGroupItem value="doctor" id="r1" /> */}
-            <Label htmlFor="r1">{t("banner.doctor")}</Label>
-          </div>
-          <div className="flex items-center gap-3 border w-full rounded-[10px] py-2 px-3">
-            {/* <RadioGroupItem value="hospital" id="r2" /> */}
-            <Label htmlFor="r2">{t("banner.hospital")}</Label>
-          </div>
-        </RadioGroup>
-
         {/* Implement letter this radio group */}
-         {/* <RadioGroup defaultValue="plus" className="max-w-sm">
+         <RadioGroup defaultValue="plus" className="flex mb-4">
       <FieldLabel htmlFor="plus-plan">
         <Field orientation="horizontal">
           <FieldContent>
-            <FieldTitle>Plus</FieldTitle>
-            <FieldDescription>
-              For individuals and small teams.
-            </FieldDescription>
-          </FieldContent>
+            <FieldTitle>{t("banner.doctor")}</FieldTitle>          </FieldContent>
           <RadioGroupItem value="plus" id="plus-plan" />
         </Field>
       </FieldLabel>
       <FieldLabel htmlFor="pro-plan">
         <Field orientation="horizontal">
           <FieldContent>
-            <FieldTitle>Pro</FieldTitle>
-            <FieldDescription>For growing businesses.</FieldDescription>
+            <FieldTitle>{t("banner.hospital")}</FieldTitle>
           </FieldContent>
           <RadioGroupItem value="pro" id="pro-plan" />
         </Field>
       </FieldLabel>
-      <FieldLabel htmlFor="enterprise-plan">
-        <Field orientation="horizontal">
-          <FieldContent>
-            <FieldTitle>Enterprise</FieldTitle>
-            <FieldDescription>
-              For large teams and enterprises.
-            </FieldDescription>
-          </FieldContent>
-          <RadioGroupItem value="enterprise" id="enterprise-plan" />
-        </Field>
-      </FieldLabel>
-          </RadioGroup> */}
+          </RadioGroup>
 
         {/* Select */}
         <div className="mb-4 w-full">
@@ -121,11 +88,13 @@ const Banner = () => {
 
         <hr className="my-4" />
 
+        <div className="flex justify-center">
         <Link href={`/${locale}`}>
-          <Button variant="secondary" className="w-full flex justify-center">
+          <Button variant="secondary" className="w-fit">
             {t("banner.searchBtn")}
           </Button>
         </Link>
+      </div>
       </div>
     </section>
   );

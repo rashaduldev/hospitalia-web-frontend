@@ -1,4 +1,3 @@
-/* eslint-disable import/no-anonymous-default-export */
 export default {
   nav: {
     home: "Accueil",
@@ -30,6 +29,27 @@ export default {
     stat2: { count: "5k", des: "Médecins professionnels" },
     stat3: { count: "24/7", des: "Support disponible" },
   },
+},
+ourPackages: {
+  title: "Nos Forfaits Santé",
+
+  earlyPregnancy: "Forfait Début de Grossesse",
+  generalHealth: "Bilan de Santé Général",
+  cardiacCare: "Forfait Soins Cardiaques",
+
+  antenatal: "Consultation Prénatale",
+  ultrasound: "Échographie",
+  bloodUrine: "Analyses de Sang et d’Urine",
+
+  doctorConsult: "Consultation Médicale",
+  bpCheck: "Contrôle de la Tension Artérielle",
+  basicLab: "Analyses de Laboratoire de Base",
+
+  ecg: "Test ECG",
+  heartConsult: "Consultation Cardiologique",
+  cholesterol: "Test de Cholestérol",
+
+  checkBtn: "Voir les Détails",
 },
 };
 

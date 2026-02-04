@@ -1,4 +1,3 @@
-/* eslint-disable import/no-anonymous-default-export */
 export default {
   nav: {
     home: "Home",
@@ -31,43 +30,25 @@ export default {
       stat3: { count: "24/7", des: "Support Availability" },
     },
   },
- ourPackages: {
+ourPackages: {
   title: "Our Health Packages",
-  packages: [
-    {
-      image: "/",
-      title: "Early Pregnancy Pack",
-      list: [
-        "Antenatal Checkup",
-        "Ultrasound Scan",
-        "Blood & Urine Tests",
-      ],
-      price: "300",
-      checkBtn: "Check Details",
-    },
-    {
-      image: "/",
-      title: "General Health Checkup",
-      list: [
-        "Doctor Consultation",
-        "Blood Pressure Check",
-        "Basic Lab Tests",
-      ],
-      price: "200",
-      checkBtn: "Check Details",
-    },
-    {
-      image: "/",
-      title: "Cardiac Care Package",
-      list: [
-        "ECG Test",
-        "Heart Specialist Consultation",
-        "Cholesterol Test",
-      ],
-      price: "450",
-      checkBtn: "Check Details",
-    },
-  ],
+  earlyPregnancy: "Early Pregnancy Pack",
+  generalHealth: "General Health Checkup",
+  cardiacCare: "Cardiac Care Package",
+
+  antenatal: "Antenatal Checkup",
+  ultrasound: "Ultrasound Scan",
+  bloodUrine: "Blood & Urine Tests",
+
+  doctorConsult: "Doctor Consultation",
+  bpCheck: "Blood Pressure Check",
+  basicLab: "Basic Lab Tests",
+
+  ecg: "ECG Test",
+  heartConsult: "Heart Specialist Consultation",
+  cholesterol: "Cholesterol Test",
+
+  checkBtn: "Check Details",
 },
 
 };
