@@ -1,5 +1,19 @@
 import { z } from "zod";
 
+
+// User Login schema
+export const LoginformSchema = z
+  .object({
+    phone: z
+      .string()
+      .min(10, "Phone number is too short")
+      .max(15, "Phone number is too long"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+  })
+
+export type LoginFormValues = z.infer<typeof LoginformSchema>
+
+// Doctor Registration schema
 export const formSchema = z
   .object({
     name: z.string().min(2, "Name is required"),
