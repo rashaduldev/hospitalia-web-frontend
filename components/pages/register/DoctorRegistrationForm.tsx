@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { Eye, EyeOff } from "lucide-react";
+import { CountryAndPhoneInput } from "@/components/common/Country&PhoneInput";
 
 export default function DoctorRegistrationForm() {
   const [open, setOpen] = React.useState(false);
@@ -38,6 +39,10 @@ export default function DoctorRegistrationForm() {
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+    countryCode: "", 
+    mobileNumber: "",
+  },
     mode: "onChange",
   });
 
@@ -185,35 +190,14 @@ export default function DoctorRegistrationForm() {
             )}
           />
 
-          {/* CountryCode */}
-          <div className="space-y-1">
-            <Label>Country Code</Label>
-            <Input
-              type="text"
-              {...register("countryCode")}
-              placeholder="+880"
-            />
-            {errors.countryCode?.message && (
-              <p className="text-xs text-destructive">
-                {errors.countryCode?.message}
-              </p>
-            )}
-          </div>
-
-          {/* MobileNumber */}
-          <div className="space-y-1">
-            <Label>Mobile Number</Label>
-            <Input
-              type="text"
-              {...register("mobileNumber")}
-              placeholder="08012345678"
-            />
-            {errors.mobileNumber?.message && (
-              <p className="text-xs text-destructive">
-                {errors.mobileNumber?.message}
-              </p>
-            )}
-          </div>
+          {/* CountryCode with phone */}
+        <CountryAndPhoneInput
+          control={control}
+          nameCode="countryCode"
+          mobileNumber="mobileNumber"
+          label="Phone"
+          error={errors.mobileNumber?.message}
+        />
 
           {/* Password */}
           <div className="space-y-1 relative">

@@ -10,10 +10,10 @@ export const formSchema = z
     email: z.email("Invalid email").optional().or(z.literal("")),
     dateOfBirth: z.string().optional().or(z.literal("")),
     userType: z.string().optional().or(z.literal("")),
-    countryCode: z.string().min(3, "CountryCode is required"),
+    countryCode: z.string().min(1, "CountryCode is required").optional(),
     mobileNumber: z
       .string()
-      .min(10, "MobileNumber number is too short")
+      .min(4, "MobileNumber number is too short")
       .max(15, "MobileNumber number is too long"),
     password: z.string().min(6, "Password must be at least 6 characters"),
     confirmPassword: z.string().min(1, "Confirm password is required"),
