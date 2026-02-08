@@ -26,6 +26,8 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { Eye, EyeOff } from "lucide-react";
 import { CountryAndPhoneInput } from "@/components/common/Country&PhoneInput";
+import { registerAction } from "@/actions/auth.actions";
+import { useRouter } from "next/navigation";
 
 export default function DoctorRegistrationForm() {
   const [open, setOpen] = React.useState(false);
@@ -36,6 +38,7 @@ export default function DoctorRegistrationForm() {
     register,
     handleSubmit,
     control,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -45,6 +48,7 @@ export default function DoctorRegistrationForm() {
   },
     mode: "onChange",
   });
+   const router = useRouter();
 
   const onSubmit = async (data: FormValues) => {
     const payload = {
@@ -66,6 +70,18 @@ export default function DoctorRegistrationForm() {
       },
     };
     console.log("payload", payload);
+    try {
+      console.log("payload", payload);
+      await registerAction(payload);
+      setTimeout(() => {
+        router.push("/doctor/login");
+      }, 2000);
+    } catch (err: any) {
+      setError("root.serverError", {
+        type: "manual",
+        message: err.message || "Registration failed. Please check your data.",
+      });
+    }
   };
 
   return (
