@@ -9,7 +9,9 @@ export const formSchema = z
     }),
     email: z.email("Invalid email").optional().or(z.literal("")),
     dateOfBirth: z.string().optional().or(z.literal("")),
-    userType: z.string().optional().or(z.literal("")),
+    userType: z.enum(["doctor", "hospital", "secretary"], {
+      message: "UserType is required",
+    }),
     countryCode: z.string().min(1, "CountryCode is required").optional(),
     mobileNumber: z
       .string()

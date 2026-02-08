@@ -53,7 +53,7 @@ export default function DoctorRegistrationForm() {
       gender: data.gender.toUpperCase(),
       email: data.email,
       dateOfBirth: data.dateOfBirth,
-      userType: "DOCTOR",
+      userType: data.userType.toUpperCase(),
       countryCode: data.countryCode,
       mobileNumber: data.mobileNumber,
       password: data.password,
@@ -130,6 +130,34 @@ export default function DoctorRegistrationForm() {
             {errors.gender?.message && (
               <p className="text-xs text-destructive">
                 {errors.gender?.message}
+              </p>
+            )}
+          </div>
+             {/* User Type */}
+          <div className="space-y-1">
+            <Label>User Type</Label>
+            <Controller
+              name="userType"
+              control={control}
+              render={({ field }) => (
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select user type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>usertype</SelectLabel>
+                      <SelectItem value="doctor">Doctor</SelectItem>
+                      <SelectItem value="hospital">Hospital</SelectItem>
+                      <SelectItem value="secretary">Secretary</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.userType?.message && (
+              <p className="text-xs text-destructive">
+                {errors.userType?.message}
               </p>
             )}
           </div>
