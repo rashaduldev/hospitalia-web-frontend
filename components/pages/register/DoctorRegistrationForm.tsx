@@ -1,15 +1,36 @@
 "use client";
+import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formSchema, FormValues } from "@/schema/ueser.schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue} from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
+import { Field, FieldLabel } from "@/components/ui/field";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function DoctorRegistrationForm() {
+  const [open, setOpen] = React.useState(false);
+  const [date, setDate] = React.useState<Date | undefined>(undefined);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const {
     register,
     handleSubmit,
@@ -17,10 +38,29 @@ export default function DoctorRegistrationForm() {
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
+    mode: "onChange",
   });
 
   const onSubmit = async (data: FormValues) => {
-    console.log("FORM DATA", data);
+    const payload = {
+      firstName: data.firstName,
+      lastName: data.lastName || "",
+      gender: data.gender.toUpperCase(),
+      email: data.email,
+      dateOfBirth: data.dateOfBirth,
+      userType: "DOCTOR",
+      countryCode: data.countryCode,
+      mobileNumber: data.mobileNumber,
+      password: data.password,
+      professionalInfoRequest: {
+        designation: data.designation,
+        // specialityId: [data.specialityId],
+        specialityId: 1,
+        onmsRegistrationNumber: data.onmsRegistrationNumber,
+        professionalStatement: data.professionalStatement || "",
+      },
+    };
+    console.log("payload", payload);
   };
 
   return (
@@ -30,48 +70,36 @@ export default function DoctorRegistrationForm() {
         <h3 className="text-2xl">Personal Information</h3>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {/* Name */}
+          {/* FirstName */}
           <div className="space-y-1">
-            <Label>Name</Label>
+            <Label>First Name</Label>
             <Input
               type="text"
-              {...register("name")}
+              {...register("firstName")}
               placeholder="Enter your name"
             />
-            {errors.name?.message && (
-              <p className="text-xs text-destructive">{errors.name?.message}</p>
-            )}
-          </div>
-
-          {/* Phone */}
-          <div className="space-y-1">
-            <Label>Phone</Label>
-            <Input
-              type="number"
-              {...register("phone")}
-              placeholder="08012345678"
-            />
-            {errors.phone?.message && (
+            {errors.firstName?.message && (
               <p className="text-xs text-destructive">
-                {errors.phone?.message}
+                {errors.firstName?.message}
               </p>
             )}
           </div>
 
-          {/* Email */}
+          {/* Last Name */}
           <div className="space-y-1">
-            <Label>Email (Optional)</Label>
+            <Label>Last Name</Label>
             <Input
-              type="email"
-              {...register("email")}
-              placeholder="Enter your email"
+              type="text"
+              {...register("lastName")}
+              placeholder="Enter your name"
             />
-            {errors.email?.message && (
+            {errors.lastName?.message && (
               <p className="text-xs text-destructive">
-                {errors.email?.message}
+                {errors.lastName?.message}
               </p>
             )}
           </div>
+
           {/* Gender */}
           <div className="space-y-1">
             <Label>Gender</Label>
@@ -101,32 +129,144 @@ export default function DoctorRegistrationForm() {
             )}
           </div>
 
-          {/* Password */}
+          {/* Email */}
           <div className="space-y-1">
-            <Label>Password</Label>
+            <Label>Email (Optional)</Label>
             <Input
-              type="password"
+              type="email"
+              {...register("email")}
+              placeholder="Enter your email"
+            />
+            {errors.email?.message && (
+              <p className="text-xs text-destructive">
+                {errors.email?.message}
+              </p>
+            )}
+          </div>
+
+          {/* dateOfBirth */}
+          <Controller
+            name="dateOfBirth"
+            control={control}
+            render={({ field }) => (
+              <Field className="w-full">
+                <FieldLabel>Date of birth</FieldLabel>
+                <Popover open={open} onOpenChange={setOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="justify-start font-normal"
+                    >
+                      {field.value
+                        ? new Date(field.value).toLocaleDateString()
+                        : "Select date"}
+                    </Button>
+                  </PopoverTrigger>
+
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value ? new Date(field.value) : undefined}
+                      captionLayout="dropdown"
+                      onSelect={(date) => {
+                        if (!date) return;
+                        const yyyy = date.getFullYear();
+                        const mm = String(date.getMonth() + 1).padStart(2, "0");
+                        const dd = String(date.getDate()).padStart(2, "0");
+                        field.onChange(`${yyyy}-${mm}-${dd}`);
+                        setOpen(false);
+
+                        console.log("Selected date:", `${yyyy}-${mm}-${dd}`);
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </Field>
+            )}
+          />
+
+          {/* CountryCode */}
+          <div className="space-y-1">
+            <Label>Country Code</Label>
+            <Input
+              type="text"
+              {...register("countryCode")}
+              placeholder="+880"
+            />
+            {errors.countryCode?.message && (
+              <p className="text-xs text-destructive">
+                {errors.countryCode?.message}
+              </p>
+            )}
+          </div>
+
+          {/* MobileNumber */}
+          <div className="space-y-1">
+            <Label>Mobile Number</Label>
+            <Input
+              type="text"
+              {...register("mobileNumber")}
+              placeholder="08012345678"
+            />
+            {errors.mobileNumber?.message && (
+              <p className="text-xs text-destructive">
+                {errors.mobileNumber?.message}
+              </p>
+            )}
+          </div>
+
+          {/* Password */}
+          <div className="space-y-1 relative">
+            <Label>Password</Label>
+
+            <Input
+              type={showPassword ? "text" : "password"}
               {...register("password")}
               placeholder="••••••••"
             />
+
+            <div
+              onClick={() => setShowPassword((p) => !p)}
+              className="absolute cursor-pointer top-9 right-2 -translate-y-1/2"
+            >
+              {showPassword ? (
+                <EyeOff className="w-4 h-4" />
+              ) : (
+                <Eye className="w-4 h-4" />
+              )}
+            </div>
+
             {errors.password?.message && (
               <p className="text-xs text-destructive">
-                {errors.password?.message}
+                {errors.password.message}
               </p>
             )}
           </div>
 
           {/* Confirm Password */}
-          <div className="space-y-1">
+          <div className="space-y-1 relative">
             <Label>Confirm Password</Label>
+
             <Input
-              type="password"
+              type={showConfirmPassword ? "text" : "password"}
               {...register("confirmPassword")}
               placeholder="••••••••"
             />
+
+            <div
+              onClick={() => setShowConfirmPassword((p) => !p)}
+              className="absolute cursor-pointer top-9 right-2 -translate-y-1/2"
+            >
+              {showConfirmPassword ? (
+                <EyeOff className="w-4 h-4" />
+              ) : (
+                <Eye className="w-4 h-4" />
+              )}
+            </div>
+
             {errors.confirmPassword?.message && (
               <p className="text-xs text-destructive">
-                {errors.confirmPassword?.message}
+                {errors.confirmPassword.message}
               </p>
             )}
           </div>
@@ -151,40 +291,21 @@ export default function DoctorRegistrationForm() {
               </p>
             )}
           </div>
-          {/* Speciality */}
+          {/* speciality */}
           <div className="space-y-1">
-            <Label>Speciality</Label>
-            <Controller
-              name="speciality"
-              control={control}
-              render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Enter your speciality" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="gaini">Gynaecology</SelectItem>
-                      <SelectItem value="teeth">Dentistry</SelectItem>
-                      <SelectItem value="others">Others</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              )}
+            <Label>speciality</Label>
+            <Input
+              type="text"
+              {...register("speciality")}
+              placeholder="speciality"
             />
-            {errors.speciality?.message && (
-              <p className="text-xs text-destructive">
-                {errors.speciality?.message}
-              </p>
-            )}
           </div>
-
           {/* ONMS */}
           <div className="space-y-1">
             <Label>ONMS Registration Number (Optional)</Label>
             <Input
-              type="number"
-              {...register("onms")}
+              type="text"
+              {...register("onmsRegistrationNumber")}
               placeholder="Enter your ONMS Registration Number"
             />
           </div>
@@ -193,10 +314,13 @@ export default function DoctorRegistrationForm() {
         {/* Statement */}
         <div className="space-y-1">
           <Label>Professional Statement</Label>
-          <Textarea {...register("statement")} placeholder="Enter statement" />
-          {errors.statement?.message && (
+          <Textarea
+            {...register("professionalStatement")}
+            placeholder="Enter statement"
+          />
+          {errors.professionalStatement?.message && (
             <p className="text-xs text-destructive">
-              {errors.statement?.message}
+              {errors.professionalStatement?.message}
             </p>
           )}
         </div>
