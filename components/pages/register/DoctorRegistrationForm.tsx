@@ -28,6 +28,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { CountryAndPhoneInput } from "@/components/common/Country&PhoneInput";
 import { registerAction } from "@/actions/auth.actions";
 import { useRouter } from "next/navigation";
+import { FormError, FormSuccess } from "@/components/common/Feedback";
 
 export default function DoctorRegistrationForm() {
   const [open, setOpen] = React.useState(false);
@@ -39,7 +40,7 @@ export default function DoctorRegistrationForm() {
     handleSubmit,
     control,
     setError,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting,isSubmitSuccessful },
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -71,7 +72,6 @@ export default function DoctorRegistrationForm() {
     };
     console.log("payload", payload);
     try {
-      console.log("payload", payload);
       await registerAction(payload);
       setTimeout(() => {
         router.push("/doctor/login");
@@ -352,6 +352,13 @@ export default function DoctorRegistrationForm() {
             </p>
           )}
         </div>
+        {/* success or error message show */}
+        <div className="space-y-2">
+        <FormError message={errors.root?.serverError?.message} />
+        {isSubmitSuccessful && (
+          <FormSuccess message="Account created successfully! Redirecting to login..." />
+        )}
+      </div>
 
         {/* Submit */}
         <div className="flex justify-center mt-6">
