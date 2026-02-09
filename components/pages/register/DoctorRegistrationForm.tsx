@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formSchema, FormValues } from "@/schema/ueser.schema";
@@ -29,27 +29,45 @@ import { CountryAndPhoneInput } from "@/components/common/Country&PhoneInput";
 import { registerAction } from "@/actions/auth.actions";
 import { useRouter } from "next/navigation";
 import { FormError, FormSuccess } from "@/components/common/Feedback";
+import { getSpecialitiesCustomer } from "@/actions/speciality.customer";
 
 export default function DoctorRegistrationForm() {
   const [open, setOpen] = React.useState(false);
   const [date, setDate] = React.useState<Date | undefined>(undefined);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [specialities, setSpecialities] = useState<any[]>([]);
   const {
     register,
     handleSubmit,
     control,
     setError,
-    formState: { errors, isSubmitting,isSubmitSuccessful },
+    formState: { errors, isSubmitting, isSubmitSuccessful },
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-    countryCode: "", 
-    mobileNumber: "",
-  },
+      countryCode: "",
+      mobileNumber: "",
+      specialityId: undefined,
+    },
     mode: "onChange",
   });
-   const router = useRouter();
+  const router = useRouter();
+  useEffect(() => {
+    const loadSpecialities = async () => {
+      try {
+        const res = await getSpecialitiesCustomer();
+        setSpecialities(res?.payload?.content || []);
+      } catch (error: any) {
+        setError("root.serverError", {
+          type: "manual",
+          message: error.message || "Speciality fetch failed",
+        });
+      }
+    };
+
+    loadSpecialities();
+  }, []);
 
   const onSubmit = async (data: FormValues) => {
     const payload = {
@@ -62,25 +80,39 @@ export default function DoctorRegistrationForm() {
       countryCode: data.countryCode,
       mobileNumber: data.mobileNumber,
       password: data.password,
+
       professionalInfoRequest: {
         designation: data.designation,
-        // specialityId: [data.specialityId],
-        specialityId: 1,
+
+        specialityId: [Number(data.specialityId)],
+        departmentId: [0],
+
+        fileObjectId: 0,
+        workPhoneNumber: "",
         onmsRegistrationNumber: data.onmsRegistrationNumber,
         professionalStatement: data.professionalStatement || "",
       },
     };
-    console.log("payload", payload);
     try {
       await registerAction(payload);
-      setTimeout(() => {
-        router.push("/doctor/login");
-      }, 2000);
+      router.push("/doctor/login");
     } catch (err: any) {
+      console.log("Backend Error:", err);
+
+      // show global error
       setError("root.serverError", {
         type: "manual",
-        message: err.message || "Registration failed. Please check your data.",
+        message: err.message,
       });
+
+      if (err.errors) {
+        Object.entries(err.errors).forEach(([field, message]) => {
+          setError(field as any, {
+            type: "manual",
+            message: message as string,
+          });
+        });
+      }
     }
   };
 
@@ -149,7 +181,7 @@ export default function DoctorRegistrationForm() {
               </p>
             )}
           </div>
-             {/* User Type */}
+          {/* User Type */}
           <div className="space-y-1">
             <Label>User Type</Label>
             <Controller
@@ -224,8 +256,6 @@ export default function DoctorRegistrationForm() {
                         const dd = String(date.getDate()).padStart(2, "0");
                         field.onChange(`${yyyy}-${mm}-${dd}`);
                         setOpen(false);
-
-                        console.log("Selected date:", `${yyyy}-${mm}-${dd}`);
                       }}
                     />
                   </PopoverContent>
@@ -235,13 +265,13 @@ export default function DoctorRegistrationForm() {
           />
 
           {/* CountryCode with phone */}
-        <CountryAndPhoneInput
-          control={control}
-          nameCode="countryCode"
-          mobileNumber="mobileNumber"
-          label="Phone"
-          error={errors.mobileNumber?.message}
-        />
+          <CountryAndPhoneInput
+            control={control}
+            nameCode="countryCode"
+            mobileNumber="mobileNumber"
+            label="Phone"
+            error={errors.mobileNumber?.message}
+          />
 
           {/* Password */}
           <div className="space-y-1 relative">
@@ -321,13 +351,41 @@ export default function DoctorRegistrationForm() {
           </div>
           {/* speciality */}
           <div className="space-y-1">
-            <Label>speciality</Label>
-            <Input
-              type="text"
-              {...register("speciality")}
-              placeholder="speciality"
+            <Label>Speciality</Label>
+            <Controller
+              name="specialityId"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  onValueChange={(value) => field.onChange(Number(value))}
+                  defaultValue={field.value?.toString()}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select speciality" />
+                  </SelectTrigger>
+
+                  <SelectContent position="popper" sideOffset={4}>
+                    <SelectGroup>
+                      <SelectLabel>Speciality</SelectLabel>
+
+                      {specialities.map((item) => (
+                        <SelectItem key={item.id} value={item.id.toString()}>
+                          {item.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              )}
             />
+
+            {errors.specialityId?.message && (
+              <p className="text-xs text-destructive">
+                {errors.specialityId.message}
+              </p>
+            )}
           </div>
+
           {/* ONMS */}
           <div className="space-y-1">
             <Label>ONMS Registration Number (Optional)</Label>
@@ -354,11 +412,11 @@ export default function DoctorRegistrationForm() {
         </div>
         {/* success or error message show */}
         <div className="space-y-2">
-        <FormError message={errors.root?.serverError?.message} />
-        {isSubmitSuccessful && (
-          <FormSuccess message="Account created successfully! Redirecting to login..." />
-        )}
-      </div>
+          <FormError message={errors.root?.serverError?.message} />
+          {isSubmitSuccessful && (
+            <FormSuccess message="Account created successfully! Redirecting to login..." />
+          )}
+        </div>
 
         {/* Submit */}
         <div className="flex justify-center mt-6">

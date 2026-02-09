@@ -2,13 +2,11 @@
 
 import { siteConfig } from "@/config/siteConfig";
 import { apiFetch } from "@/lib/api";
-
-const BASE = siteConfig.url;
-
+const BASEAPI=siteConfig.url;
 // Registration
-export async function registerAction(data: any) {
-  return apiFetch(`${BASE}/api/auth/sign-up`, {
+export async function registerAction(payload: any) {
+  return apiFetch(`${BASEAPI}/api/auth/sign-up`, {
     method: "POST",
-    body: JSON.stringify(data),
+    body: JSON.stringify(payload),
   });
 }
