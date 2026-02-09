@@ -18,12 +18,12 @@ export const formSchema = z
       .min(4, "MobileNumber number is too short")
       .max(15, "MobileNumber number is too long"),
     password: z
-  .string()
-  .min(8, "Password must be at least 8 characters")
-  .regex(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-    "Password must have a digit, a special character and a capital letter and a small letter"
-  ),
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+        "Password must have a digit, a special character and a capital letter and a small letter",
+      ),
     confirmPassword: z.string().min(1, "Confirm password is required"),
     designation: z.string().min(2, "Designation is required"),
     specialityId: z.number({

@@ -28,7 +28,7 @@ export function CountryAndPhoneInput({ control, nameCode, mobileNumber, label = 
   const { data: countries = [], isLoading } = useQuery({ queryKey: ["countries"], queryFn: fetchCountries });
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-1">
       <Label>{label}</Label>
       <div className="flex gap-2 relative">
         {/* Country Code */}

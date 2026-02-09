@@ -1,21 +1,9 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formSchema, FormValues } from "@/schema/ueser.schema";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
 import { Field, FieldLabel } from "@/components/ui/field";
 import {
@@ -32,35 +20,41 @@ import { FormError, FormSuccess } from "@/components/common/Feedback";
 import { getSpecialitiesCustomer } from "@/actions/speciality.customer";
 import { useServerFormError } from "@/hooks/useServerFormError";
 import { useQuery } from "@tanstack/react-query";
+import { ControlledInput } from "@/components/common/FormUIControllers/ControlledInput";
+import { ControlledSelect } from "@/components/common/FormUIControllers/ControlledSelect";
+import { ControlledTextarea } from "@/components/common/FormUIControllers/ControlledTextarea";
 
 export default function DoctorRegistrationForm() {
   const [open, setOpen] = React.useState(false);
-  const [date, setDate] = React.useState<Date | undefined>(undefined);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [success, setSuccess] = useState(false);
+
   const {
-    register,
     handleSubmit,
     control,
     setError,
-    formState: { errors, isSubmitting, isSubmitSuccessful },
+    formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      designation: "",
       countryCode: "",
       mobileNumber: "",
       specialityId: undefined,
     },
     mode: "onChange",
   });
+
   const router = useRouter();
   const serverErrorHandler = useServerFormError<FormValues>(setError);
-  const {
-    data: specialities = [],
-    isLoading: loadingSpecialities,
-    error: specialityError,
-  } = useQuery({
+
+  const { data: specialities = [] } = useQuery({
     queryKey: ["specialities"],
     queryFn: async () => {
       try {
@@ -102,116 +96,66 @@ export default function DoctorRegistrationForm() {
       serverErrorHandler(err);
     }
   };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       {/* PERSONAL INFO */}
       <div className="rounded-lg border bg-card p-6 space-y-5">
-        <h3 className="text-2xl">Personal Information</h3>
+        <h3 className="text-2xl font-semibold">Personal Information</h3>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {/* FirstName */}
-          <div className="space-y-1">
-            <Label>First Name</Label>
-            <Input
-              type="text"
-              {...register("firstName")}
-              placeholder="Enter your name"
-            />
-            {errors.firstName?.message && (
-              <p className="text-xs text-destructive">
-                {errors.firstName?.message}
-              </p>
-            )}
-          </div>
+          {/* First Name */}
+          <ControlledInput
+            name="firstName"
+            label="First Name"
+            control={control}
+            placeholder="Enter your first name"
+          />
 
           {/* Last Name */}
-          <div className="space-y-1">
-            <Label>Last Name</Label>
-            <Input
-              type="text"
-              {...register("lastName")}
-              placeholder="Enter your name"
-            />
-            {errors.lastName?.message && (
-              <p className="text-xs text-destructive">
-                {errors.lastName?.message}
-              </p>
-            )}
-          </div>
+          <ControlledInput
+            name="lastName"
+            label="Last Name"
+            control={control}
+            placeholder="Enter your last name"
+          />
 
           {/* Gender */}
-          <div className="space-y-1">
-            <Label>Gender</Label>
-            <Controller
-              name="gender"
-              control={control}
-              render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Choose your gender" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Gender</SelectLabel>
-                      <SelectItem value="male">Male</SelectItem>
-                      <SelectItem value="female">Female</SelectItem>
-                      <SelectItem value="others">Others</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              )}
-            />
-            {errors.gender?.message && (
-              <p className="text-xs text-destructive">
-                {errors.gender?.message}
-              </p>
-            )}
-          </div>
+          <ControlledSelect
+            name="gender"
+            label="Gender"
+            control={control}
+            placeholder="Choose your gender"
+            options={[
+              { label: "Male", value: "male" },
+              { label: "Female", value: "female" },
+              { label: "Others", value: "others" },
+            ]}
+          />
+
           {/* User Type */}
-          <div className="space-y-1">
-            <Label>User Type</Label>
-            <Controller
-              name="userType"
-              control={control}
-              render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select user type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>usertype</SelectLabel>
-                      <SelectItem value="doctor">Doctor</SelectItem>
-                      <SelectItem value="hospital">Hospital</SelectItem>
-                      <SelectItem value="secretary">Secretary</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              )}
-            />
-            {errors.userType?.message && (
-              <p className="text-xs text-destructive">
-                {errors.userType?.message}
-              </p>
-            )}
-          </div>
+          <ControlledSelect
+            name="userType"
+            label="User Type"
+            control={control}
+            placeholder="Select user type"
+            options={[
+              { label: "Doctor", value: "doctor" },
+              { label: "Hospital", value: "hospital" },
+              { label: "Secretary", value: "secretary" },
+            ]}
+          />
 
           {/* Email */}
-          <div className="space-y-1">
-            <Label>Email (Optional)</Label>
-            <Input
-              type="email"
-              {...register("email")}
-              placeholder="Enter your email"
-            />
-            {errors.email?.message && (
-              <p className="text-xs text-destructive">
-                {errors.email?.message}
-              </p>
-            )}
-          </div>
+          <ControlledInput
+            name="email"
+            label="Email (Optional)"
+            type="email"
+            control={control}
+            placeholder="Enter your email"
+          />
 
-          {/* dateOfBirth */}
+          {/* Date of Birth */}
           <Controller
             name="dateOfBirth"
             control={control}
@@ -222,14 +166,13 @@ export default function DoctorRegistrationForm() {
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
-                      className="justify-start font-normal"
+                      className="justify-start font-normal w-full"
                     >
                       {field.value
                         ? new Date(field.value).toLocaleDateString()
                         : "Select date"}
                     </Button>
                   </PopoverTrigger>
-
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
                       mode="single"
@@ -246,6 +189,11 @@ export default function DoctorRegistrationForm() {
                     />
                   </PopoverContent>
                 </Popover>
+                {errors.dateOfBirth?.message && (
+                  <p className="text-xs text-destructive mt-1">
+                    {errors.dateOfBirth.message}
+                  </p>
+                )}
               </Field>
             )}
           />
@@ -260,143 +208,92 @@ export default function DoctorRegistrationForm() {
           />
 
           {/* Password */}
-          <div className="space-y-1 relative">
-            <Label>Password</Label>
-
-            <Input
+          <div className="relative">
+            <ControlledInput
+              name="password"
+              label="Password"
               type={showPassword ? "text" : "password"}
-              {...register("password")}
+              control={control}
               placeholder="••••••••"
             />
-
             <div
               onClick={() => setShowPassword((p) => !p)}
-              className="absolute cursor-pointer top-9 right-2 -translate-y-1/2"
+              className="absolute cursor-pointer top-7 right-3"
             >
               {showPassword ? (
-                <EyeOff className="w-4 h-4" />
+                <EyeOff className="w-4 h-4 text-muted-foreground" />
               ) : (
-                <Eye className="w-4 h-4" />
+                <Eye className="w-4 h-4 text-muted-foreground" />
               )}
             </div>
-
-            {errors.password?.message && (
-              <p className="text-xs text-destructive">
-                {errors.password.message}
-              </p>
-            )}
           </div>
 
           {/* Confirm Password */}
-          <div className="space-y-1 relative">
-            <Label>Confirm Password</Label>
-
-            <Input
+          <div className="relative">
+            <ControlledInput
+              name="confirmPassword"
+              label="Confirm Password"
               type={showConfirmPassword ? "text" : "password"}
-              {...register("confirmPassword")}
+              control={control}
               placeholder="••••••••"
             />
-
             <div
               onClick={() => setShowConfirmPassword((p) => !p)}
-              className="absolute cursor-pointer top-9 right-2 -translate-y-1/2"
+              className="absolute cursor-pointer top-7 right-3"
             >
               {showConfirmPassword ? (
-                <EyeOff className="w-4 h-4" />
+                <EyeOff className="w-4 h-4 text-muted-foreground" />
               ) : (
-                <Eye className="w-4 h-4" />
+                <Eye className="w-4 h-4 text-muted-foreground" />
               )}
             </div>
-
-            {errors.confirmPassword?.message && (
-              <p className="text-xs text-destructive">
-                {errors.confirmPassword.message}
-              </p>
-            )}
           </div>
         </div>
       </div>
 
       {/* PROFESSIONAL INFO */}
       <div className="rounded-lg border bg-card p-6 space-y-5 my-12">
-        <h3 className="text-2xl">Professional Information</h3>
+        <h3 className="text-2xl font-semibold">Professional Information</h3>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {/* Designation */}
-          <div className="space-y-1">
-            <Label>Title / Designation</Label>
-            <Input
-              {...register("designation")}
-              placeholder="Enter your title/designation"
-            />
-            {errors.designation?.message && (
-              <p className="text-xs text-destructive">
-                {errors.designation?.message}
-              </p>
-            )}
-          </div>
-          {/* speciality */}
-          <div className="space-y-1">
-            <Label>Speciality</Label>
-            <Controller
-              name="specialityId"
-              control={control}
-              render={({ field }) => (
-                <Select
-                  onValueChange={(value) => field.onChange(Number(value))}
-                  defaultValue={field.value?.toString()}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select speciality" />
-                  </SelectTrigger>
-
-                  <SelectContent position="popper" sideOffset={4}>
-                    <SelectGroup>
-                      <SelectLabel>Speciality</SelectLabel>
-
-                      {specialities.map((item: any) => (
-                        <SelectItem key={item.id} value={item.id.toString()}>
-                          {item.name}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              )}
-            />
-
-            {errors.specialityId?.message && (
-              <p className="text-xs text-destructive">
-                {errors.specialityId.message}
-              </p>
-            )}
-          </div>
-
-          {/* ONMS */}
-          <div className="space-y-1">
-            <Label>ONMS Registration Number (Optional)</Label>
-            <Input
-              type="text"
-              {...register("onmsRegistrationNumber")}
-              placeholder="Enter your ONMS Registration Number"
-            />
-          </div>
-        </div>
-
-        {/* Statement */}
-        <div className="space-y-1">
-          <Label>Professional Statement</Label>
-          <Textarea
-            {...register("professionalStatement")}
-            placeholder="Enter statement"
+          <ControlledInput
+            name="designation"
+            label="Title / Designation"
+            control={control}
+            placeholder="Enter your title/designation"
           />
-          {errors.professionalStatement?.message && (
-            <p className="text-xs text-destructive">
-              {errors.professionalStatement?.message}
-            </p>
-          )}
+
+          {/* Speciality */}
+          <ControlledSelect
+            name="specialityId"
+            label="Speciality"
+            control={control}
+            placeholder="Select speciality"
+            options={specialities.map((item: any) => ({
+              label: item.name,
+              value: item.id,
+            }))}
+          />
+
+          {/* ONMS Registration Number */}
+          <ControlledInput
+            name="onmsRegistrationNumber"
+            label="ONMS Registration Number (Optional)"
+            control={control}
+            placeholder="Enter your registration number"
+          />
         </div>
-        {/* success or error message show */}
+
+        {/* Professional Statement */}
+        <ControlledTextarea
+          name="professionalStatement"
+          label="Professional Statement"
+          control={control}
+          placeholder="Write your professional statement"
+        />
+
+        {/* Feedback Messages */}
         <div className="space-y-2">
           {errors.root?.serverError?.message && (
             <FormError message={errors.root.serverError.message} />
@@ -406,10 +303,10 @@ export default function DoctorRegistrationForm() {
           )}
         </div>
 
-        {/* Submit */}
-        <div className="flex justify-center mt-6">
+        {/* Submit Button */}
+        <div className="flex flex-col items-center gap-4 mt-6">
           <Button
-            className="max-w-113 sm:px-20"
+            className="w-full max-w-md"
             type="submit"
             disabled={isSubmitting || success}
           >
@@ -417,13 +314,14 @@ export default function DoctorRegistrationForm() {
               ? "Creating account..."
               : "Register as a Healthcare Provider"}
           </Button>
+
+          <Link
+            href="/doctor/login"
+            className="text-sm font-medium text-primary hover:underline"
+          >
+            Already Have an Account?
+          </Link>
         </div>
-        <Link
-          href="/doctor/login"
-          className="text-sm font-medium text-primary text-center flex justify-center hover:underline"
-        >
-          Already Have an Account?
-        </Link>
       </div>
     </form>
   );
