@@ -16,23 +16,35 @@ export type LoginFormValues = z.infer<typeof LoginformSchema>
 // Doctor Registration schema
 export const formSchema = z
   .object({
-    name: z.string().min(2, "Name is required"),
-    phone: z
-      .string()
-      .min(10, "Phone number is too short")
-      .max(15, "Phone number is too long"),
-    email: z.string().email("Invalid email").optional().or(z.literal("")),
+    firstName: z.string().min(2, "First name must be at least 2 characters"),
+    lastName: z.string().optional(),
     gender: z.enum(["male", "female", "others"], {
       message: "Gender is required",
     }),
-    password: z.string().min(6, "Password must be at least 6 characters"),
-    confirmPassword: z.string(),
+    email: z.email("Invalid email").optional().or(z.literal("")),
+    dateOfBirth: z.string().optional().or(z.literal("")),
+    userType: z.enum(["doctor", "hospital", "secretary"], {
+      message: "UserType is required",
+    }),
+    countryCode: z.string().min(1, "CountryCode is required").optional(),
+    mobileNumber: z
+      .string()
+      .min(4, "MobileNumber number is too short")
+      .max(15, "MobileNumber number is too long"),
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+        "Password must have a digit, a special character and a capital letter and a small letter",
+      ),
+    confirmPassword: z.string().min(1, "Confirm password is required"),
     designation: z.string().min(2, "Designation is required"),
-    speciality: z.enum(["gaini", "teeth", "others"], {
+    specialityId: z.number({
       message: "Speciality is required",
     }),
-    onms: z.string().optional(),
-    statement: z.string().min(10, "Professional statement is required"),
+    onmsRegistrationNumber: z.string().optional(),
+    professionalStatement: z.string().optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",

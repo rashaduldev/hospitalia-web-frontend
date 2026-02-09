@@ -7,7 +7,7 @@ export const siteConfig = {
         ".",
     ogTitle: "",
     ogImage: "/brand/og-image.jpg",
-    url: process.env.NEXT_PUBLIC_BASE_URL || "",
+    url: process.env.NEXT_PUBLIC_API_URL || "",
     supportEmail: process.env.NEXT_PUBLIC_SUPPORT_URL || "",
     appStoreUrl: " ",
     playStoreUrl:'',
