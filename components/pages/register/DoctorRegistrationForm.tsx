@@ -31,13 +31,13 @@ import { useRouter } from "next/navigation";
 import { FormError, FormSuccess } from "@/components/common/Feedback";
 import { getSpecialitiesCustomer } from "@/actions/speciality.customer";
 import { useServerFormError } from "@/hooks/useServerFormError";
+import { useQuery } from "@tanstack/react-query";
 
 export default function DoctorRegistrationForm() {
   const [open, setOpen] = React.useState(false);
   const [date, setDate] = React.useState<Date | undefined>(undefined);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [specialities, setSpecialities] = useState<any[]>([]);
   const [success, setSuccess] = useState(false);
   const {
     register,
@@ -56,21 +56,21 @@ export default function DoctorRegistrationForm() {
   });
   const router = useRouter();
   const serverErrorHandler = useServerFormError<FormValues>(setError);
-  useEffect(() => {
-    const loadSpecialities = async () => {
+  const {
+    data: specialities = [],
+    isLoading: loadingSpecialities,
+    error: specialityError,
+  } = useQuery({
+    queryKey: ["specialities"],
+    queryFn: async () => {
       try {
         const res = await getSpecialitiesCustomer();
-        setSpecialities(res?.payload?.content || []);
+        return res?.payload?.content || [];
       } catch (error: any) {
-        setError("root.serverError", {
-          type: "manual",
-          message: error.message || "Speciality fetch failed",
-        });
+        serverErrorHandler(error);
       }
-    };
-
-    loadSpecialities();
-  }, []);
+    },
+  });
 
   const onSubmit = async (data: FormValues) => {
     const payload = {
@@ -354,7 +354,7 @@ export default function DoctorRegistrationForm() {
                     <SelectGroup>
                       <SelectLabel>Speciality</SelectLabel>
 
-                      {specialities.map((item) => (
+                      {specialities.map((item: any) => (
                         <SelectItem key={item.id} value={item.id.toString()}>
                           {item.name}
                         </SelectItem>
@@ -399,7 +399,7 @@ export default function DoctorRegistrationForm() {
         {/* success or error message show */}
         <div className="space-y-2">
           {errors.root?.serverError?.message && (
-            <FormError message={errors.root.serverError.message}/>
+            <FormError message={errors.root.serverError.message} />
           )}
           {success && (
             <FormSuccess message="Account created successfully! Redirecting to login..." />
