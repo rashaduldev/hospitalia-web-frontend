@@ -30,6 +30,7 @@ import { registerAction } from "@/actions/auth.actions";
 import { useRouter } from "next/navigation";
 import { FormError, FormSuccess } from "@/components/common/Feedback";
 import { getSpecialitiesCustomer } from "@/actions/speciality.customer";
+import { useServerFormError } from "@/hooks/useServerFormError";
 
 export default function DoctorRegistrationForm() {
   const [open, setOpen] = React.useState(false);
@@ -37,6 +38,7 @@ export default function DoctorRegistrationForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [specialities, setSpecialities] = useState<any[]>([]);
+  const [success, setSuccess] = useState(false);
   const {
     register,
     handleSubmit,
@@ -53,6 +55,7 @@ export default function DoctorRegistrationForm() {
     mode: "onChange",
   });
   const router = useRouter();
+  const serverErrorHandler = useServerFormError<FormValues>(setError);
   useEffect(() => {
     const loadSpecialities = async () => {
       try {
@@ -86,7 +89,6 @@ export default function DoctorRegistrationForm() {
 
         specialityId: [Number(data.specialityId)],
         departmentId: [0],
-
         fileObjectId: 0,
         workPhoneNumber: "",
         onmsRegistrationNumber: data.onmsRegistrationNumber,
@@ -95,24 +97,12 @@ export default function DoctorRegistrationForm() {
     };
     try {
       await registerAction(payload);
-      router.push("/doctor/login");
+      setSuccess(true);
+      setTimeout(() => {
+        router.push("/doctor/login");
+      }, 5000);
     } catch (err: any) {
-      console.log("Backend Error:", err);
-
-      // show global error
-      setError("root.serverError", {
-        type: "manual",
-        message: err.message,
-      });
-
-      if (err.errors) {
-        Object.entries(err.errors).forEach(([field, message]) => {
-          setError(field as any, {
-            type: "manual",
-            message: message as string,
-          });
-        });
-      }
+      serverErrorHandler(err);
     }
   };
 
@@ -413,7 +403,7 @@ export default function DoctorRegistrationForm() {
         {/* success or error message show */}
         <div className="space-y-2">
           <FormError message={errors.root?.serverError?.message} />
-          {isSubmitSuccessful && (
+          {success && (
             <FormSuccess message="Account created successfully! Redirecting to login..." />
           )}
         </div>
