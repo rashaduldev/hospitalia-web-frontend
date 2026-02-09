@@ -83,10 +83,8 @@ export default function DoctorRegistrationForm() {
       countryCode: data.countryCode,
       mobileNumber: data.mobileNumber,
       password: data.password,
-
       professionalInfoRequest: {
         designation: data.designation,
-
         specialityId: [Number(data.specialityId)],
         departmentId: [0],
         fileObjectId: 0,
@@ -98,14 +96,12 @@ export default function DoctorRegistrationForm() {
     try {
       await registerAction(payload);
       setSuccess(true);
-      setTimeout(() => {
-        router.push("/doctor/login");
-      }, 5000);
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+      router.push("/doctor/login");
     } catch (err: any) {
       serverErrorHandler(err);
     }
   };
-
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       {/* PERSONAL INFO */}
@@ -402,7 +398,9 @@ export default function DoctorRegistrationForm() {
         </div>
         {/* success or error message show */}
         <div className="space-y-2">
-          <FormError message={errors.root?.serverError?.message} />
+          {errors.root?.serverError?.message && (
+            <FormError message={errors.root.serverError.message}/>
+          )}
           {success && (
             <FormSuccess message="Account created successfully! Redirecting to login..." />
           )}
@@ -413,7 +411,7 @@ export default function DoctorRegistrationForm() {
           <Button
             className="max-w-113 sm:px-20"
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || success}
           >
             {isSubmitting
               ? "Creating account..."

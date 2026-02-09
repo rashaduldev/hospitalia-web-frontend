@@ -7,11 +7,10 @@ export async function apiFetch(url: string, options?: RequestInit) {
   const data = await res.json();
 
   if (!res.ok) {
-    throw {
-      status: res.status,
-      message: data.message || "Something went wrong",
-      errors: data.payload || null,
-    };
+    const error: any = new Error(data.message || "Something went wrong");
+    error.status = res.status;
+    error.errors = data.payload || null;
+    throw error;
   }
 
   return data;
