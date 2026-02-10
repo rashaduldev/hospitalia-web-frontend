@@ -27,6 +27,11 @@ const DoctorLoginForm = () => {
     formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(LoginformSchema),
+    defaultValues: {
+      password: "",
+      countryCode: "",
+      phoneNumber: "",
+    },
   });
   const router = useRouter();
   const serverErrorHandler = useServerFormError<LoginFormValues>(setError);
