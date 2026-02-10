@@ -59,13 +59,13 @@ export function CountryAndPhoneInput({ control, nameCode, mobileNumber, label = 
         {/* Mobile Number */}
         <div className="absolute w-full z-10">
           <Controller
-            name={mobileNumber}
+            name={mobileNumber ?? ""}
             control={control}
             render={({ field }) => <Input {...field} placeholder="Number" className="flex-1 pl-32" />}
           />
         </div>
       </div>
-      {error && <p className="text-destructive text-sm mt-1">{error}</p>}
+      {error && <p className="text-destructive text-xs mt-1">{error}</p>}
     </div>
   );
 }

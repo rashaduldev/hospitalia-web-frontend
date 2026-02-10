@@ -3,7 +3,8 @@ import { Control } from "react-hook-form";
 export interface PhoneInputProps {
   control: Control<any>;
   nameCode: string;
-  mobileNumber: string;
+  mobileNumber?: string;
+  phoneNumber?:string;
   label?: string;
   error?: string;
 }
