@@ -1,13 +1,17 @@
-import { I18nProviderClient } from '@/locales/client'
-import { ReactElement } from 'react'
- 
+"use client";
 
-export default async function AppClientProvider({ params, children }: { params: Promise<{ locale: string }>, children: ReactElement }) {
-  const { locale } = await params
- 
+import { ReactNode } from "react";
+import { I18nProviderClient } from "@/locales/client";
+
+interface AppClientProviderProps {
+  locale: string;
+  children: ReactNode;
+}
+
+export default function AppClientProvider({ locale, children }: AppClientProviderProps) {
   return (
     <I18nProviderClient locale={locale}>
       {children}
     </I18nProviderClient>
-  )
+  );
 }

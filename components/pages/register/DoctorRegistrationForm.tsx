@@ -4,28 +4,20 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formSchema, FormValues } from "@/schema/ueser.schema";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { Field, FieldLabel } from "@/components/ui/field";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
+import Link from "next/link";;
 import { Eye, EyeOff } from "lucide-react";
 import { CountryAndPhoneInput } from "@/components/common/Country&PhoneInput";
 import { registerAction } from "@/actions/auth.actions";
 import { useRouter } from "next/navigation";
-import { FormError, FormSuccess } from "@/components/common/Feedback";
 import { getSpecialitiesCustomer } from "@/actions/speciality.customer";
-import { useServerFormError } from "@/hooks/useServerFormError";
 import { useQuery } from "@tanstack/react-query";
 import { ControlledInput } from "@/components/common/FormUIControllers/ControlledInput";
 import { ControlledSelect } from "@/components/common/FormUIControllers/ControlledSelect";
 import { ControlledTextarea } from "@/components/common/FormUIControllers/ControlledTextarea";
+import { RegisterRequestPayload } from "@/types/user.type";
+import { ControlledDateInput } from "@/components/common/FormUIControllers/ControlledDateInput";
 
 export default function DoctorRegistrationForm() {
-  const [open, setOpen] = React.useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -52,28 +44,29 @@ export default function DoctorRegistrationForm() {
   });
 
   const router = useRouter();
-  const serverErrorHandler = useServerFormError<FormValues>(setError);
-
-  const { data: specialities = [] } = useQuery({
+  const { data: specialities = [], isLoading } = useQuery({
     queryKey: ["specialities"],
     queryFn: async () => {
-      try {
-        const res = await getSpecialitiesCustomer();
-        return res?.payload?.content || [];
-      } catch (error: any) {
-        serverErrorHandler(error);
+      const res = await getSpecialitiesCustomer();
+
+      if (!res.success) {
+        throw new Error(res.message);
       }
+      return res.payload || [];
     },
   });
 
   const onSubmit = async (data: FormValues) => {
-    const payload = {
+    const payload: RegisterRequestPayload = {
       firstName: data.firstName,
       lastName: data.lastName || "",
-      gender: data.gender.toUpperCase(),
+      gender: data.gender.toUpperCase() as "MALE" | "FEMALE",
       email: data.email,
       dateOfBirth: data.dateOfBirth,
-      userType: data.userType.toUpperCase(),
+      userType: data.userType.toUpperCase() as
+        | "DOCTOR"
+        | "HOSPITAL"
+        | "SECRETARY",
       countryCode: data.countryCode,
       mobileNumber: data.mobileNumber,
       password: data.password,
@@ -88,12 +81,21 @@ export default function DoctorRegistrationForm() {
       },
     };
     try {
-      await registerAction(payload);
+      const res = await registerAction(payload);
+      if (!res.success) {
+        setError("root", {
+          type: "manual",
+          message: res.message,
+        });
+        return;
+      }
       setSuccess(true);
-      await new Promise((resolve) => setTimeout(resolve, 3000));
       router.push("/doctor/login");
-    } catch (err: any) {
-      serverErrorHandler(err);
+    } catch (error: any) {
+      setError("root", {
+        type: "manual",
+        message: error.message || "Something went wrong",
+      });
     }
   };
 
@@ -156,46 +158,11 @@ export default function DoctorRegistrationForm() {
           />
 
           {/* Date of Birth */}
-          <Controller
+          <ControlledDateInput
             name="dateOfBirth"
+            label="Date of Birth"
             control={control}
-            render={({ field }) => (
-              <Field className="w-full">
-                <FieldLabel>Date of birth</FieldLabel>
-                <Popover open={open} onOpenChange={setOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="justify-start font-normal w-full"
-                    >
-                      {field.value
-                        ? new Date(field.value).toLocaleDateString()
-                        : "Select date"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value ? new Date(field.value) : undefined}
-                      captionLayout="dropdown"
-                      onSelect={(date) => {
-                        if (!date) return;
-                        const yyyy = date.getFullYear();
-                        const mm = String(date.getMonth() + 1).padStart(2, "0");
-                        const dd = String(date.getDate()).padStart(2, "0");
-                        field.onChange(`${yyyy}-${mm}-${dd}`);
-                        setOpen(false);
-                      }}
-                    />
-                  </PopoverContent>
-                </Popover>
-                {errors.dateOfBirth?.message && (
-                  <p className="text-xs text-destructive mt-1">
-                    {errors.dateOfBirth.message}
-                  </p>
-                )}
-              </Field>
-            )}
+            error={errors.dateOfBirth?.message}
           />
 
           {/* CountryCode with phone */}
@@ -294,14 +261,11 @@ export default function DoctorRegistrationForm() {
         />
 
         {/* Feedback Messages */}
-        <div className="space-y-2">
-          {errors.root?.serverError?.message && (
-            <FormError message={errors.root.serverError.message} />
-          )}
-          {success && (
-            <FormSuccess message="Account created successfully! Redirecting to login..." />
-          )}
-        </div>
+        {errors.root && (
+          <p className="text-destructive text-xs font-semibold">
+            {errors.root.message}
+          </p>
+        )}
 
         {/* Submit Button */}
         <div className="flex flex-col items-center gap-4 mt-6">

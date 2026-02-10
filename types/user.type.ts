@@ -15,3 +15,32 @@ export type Country = {
   dialCode: string; 
   flag: string;
 };
+
+export interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  payload: T | null;
+  status: number;
+}
+
+export interface RegisterRequestPayload {
+  firstName: string;
+  lastName?: string;
+  gender: "MALE" | "FEMALE";
+  userType: "DOCTOR" | "HOSPITAL" | "SECRETARY";
+  email?: string;
+  dateOfBirth?: string;
+  countryCode?: string;
+  mobileNumber: string;
+  password: string;
+
+  professionalInfoRequest: {
+    designation: string;
+    specialityId: number[];
+    departmentId: number[];
+    fileObjectId: number;
+    workPhoneNumber: string;
+    onmsRegistrationNumber?: string;
+    professionalStatement?: string;
+  };
+}

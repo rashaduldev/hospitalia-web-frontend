@@ -19,7 +19,7 @@ export const formSchema = z
   .object({
     firstName: z.string().min(2, "First name must be at least 2 characters"),
     lastName: z.string().optional(),
-    gender: z.enum(["male", "female", "others"], {
+    gender: z.enum(["male", "female"], {
       message: "Gender is required",
     }),
     email: z.email("Invalid email").optional().or(z.literal("")),
