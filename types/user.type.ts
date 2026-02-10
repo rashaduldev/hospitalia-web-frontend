@@ -44,3 +44,14 @@ export interface RegisterRequestPayload {
     professionalStatement?: string;
   };
 }
+export interface LoginRequestPayload {
+  countryCode?: string;
+  phoneNumber: string;
+  password: string;
+}
+
+export interface LoginResponsePayload {
+  token?: string;
+  refreshToken?: string;
+  userId?: number;
+}

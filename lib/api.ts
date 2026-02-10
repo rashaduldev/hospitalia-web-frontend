@@ -1,28 +1,29 @@
-"use server";
-
 import { ApiResponse } from "@/types/user.type";
 
-interface ApiClientConfig {
+export interface ApiClientOptions<Request = any> {
+  endpoint: string;
   method?: "GET" | "POST" | "PUT" | "DELETE";
-  headers?: Record<string, string>;
-  body?: unknown;
+  body?: Request;
   params?: Record<string, string | number | boolean>;
+  headers?: Record<string, string>;
 }
 
-export async function apiClient<T>(
-  endpoint: string,
-  options: ApiClientConfig = {},
-): Promise<ApiResponse<T>> {
-  const { method = "GET", headers, body, params } = options;
-
+export async function apiClient<Response = any, Request = any>({
+  endpoint,
+  method = "GET",
+  body,
+  params,
+  headers,
+}: ApiClientOptions<Request>): Promise<ApiResponse<Response>> {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || "";
 
-  // Build query string
   const queryString = params
-    ? `?${new URLSearchParams(params as Record<string, string>).toString()}`
+    ? `?${Object.entries(params)
+        .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`)
+        .join("&")}`
     : "";
 
-  const url = `${baseUrl}${endpoint}${queryString}`;
+  const url = `${baseUrl.replace(/\/$/, "")}${endpoint}${queryString}`;
 
   const res = await fetch(url, {
     method,
@@ -30,10 +31,14 @@ export async function apiClient<T>(
       "Content-Type": "application/json",
       ...headers,
     },
-    body: body ? JSON.stringify(body) : undefined,
+    body: body && method !== "GET" && method !== "DELETE" ? JSON.stringify(body) : undefined,
   });
 
-  const data = await res.json().catch(() => ({}));
+  let data: any = {};
+  try {
+    data = await res.json();
+  } catch {}
+
   if (!res.ok) {
     return {
       success: false,
@@ -42,6 +47,7 @@ export async function apiClient<T>(
       status: res.status,
     };
   }
+
   return {
     success: true,
     message: data?.message || "Request successful",

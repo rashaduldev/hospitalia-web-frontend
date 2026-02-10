@@ -17,7 +17,7 @@ type Size =
 export type TextProps = {
   as?: ElementType;
   size?: Size;
-  color?: "primary" | "secondary" | "black" | "white" | "gray" | "green" | "red" | "brand";
+  color?: "primary" | "secondary" | "black" | "white" | "gray" | "green" | "red" | "brand" | "destructive";
   weight?: "thin" | "normal" | "medium" | "semiBold" | "bold" | "black";
   align?: "center" | "left" | "right" | "justify" | "custom";
   fontFamily?: "body" | "heading"; 
@@ -53,6 +53,7 @@ export const Typography: FC<TextProps> = ({
   const colorClasses = {
     primary: "text-primary dark:text-muted",
     secondary: "text-secondary dark:text-muted",
+    destructive: "text-destructive",
     black: "text-card-foreground",
     white: "text-muted",
     gray: "text-muted-foreground",

@@ -11,13 +11,12 @@ import { Eye, EyeOff } from "lucide-react";
 import { loginAction } from "@/actions/auth.actions";
 import { useRouter } from "next/navigation";
 import { useServerFormError } from "@/hooks/useServerFormError";
-import { FormError, FormSuccess } from "@/components/common/Feedback";
 import { DynamicHeading } from "@/components/common/DynamicHeading";
 import { Typography } from "@/components/ui/Typography";
+import { LoginRequestPayload } from "@/types/user.type";
 
 const DoctorLoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [success, setSuccess] = useState(false);
   const {
     handleSubmit,
     control,
@@ -36,8 +35,19 @@ const DoctorLoginForm = () => {
 
   const onSubmit = async (data: LoginFormValues) => {
     try {
-      await loginAction(data);
-      setSuccess(true);
+      const payload: LoginRequestPayload = {
+        countryCode: data.countryCode,
+        phoneNumber: data.phoneNumber,
+        password: data.password,
+      };
+      const res = await loginAction(payload);
+      if (!res.success) {
+        setError("root", {
+          type: "manual",
+          message: res.message,
+        });
+        return;
+      }
       router.push("/dashboard");
     } catch (error: any) {
       serverErrorHandler(error);
@@ -87,14 +97,11 @@ const DoctorLoginForm = () => {
           </div>
 
           {/* Feedback Messages */}
-          <div className="space-y-2">
-            {errors.root?.serverError?.message && (
-              <FormError message={errors.root.serverError.message} />
-            )}
-            {success && (
-              <FormSuccess message="Account created successfully! Redirecting to dashboard..." />
-            )}
-          </div>
+          {errors.root && (
+            <Typography size="xs" color="destructive" weight="semiBold">
+                {errors.root.message}
+            </Typography>
+          )}
 
           {/* Submit Button */}
           <div className="w-full text-left">
