@@ -4,357 +4,288 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formSchema, FormValues } from "@/schema/ueser.schema";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import Link from "next/link";
-import { Field, FieldLabel } from "@/components/ui/field";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
+import Link from "next/link";;
 import { Eye, EyeOff } from "lucide-react";
 import { CountryAndPhoneInput } from "@/components/common/Country&PhoneInput";
+import { registerAction } from "@/actions/auth.actions";
+import { useRouter } from "next/navigation";
+import { getSpecialitiesCustomer } from "@/actions/speciality.customer";
+import { useQuery } from "@tanstack/react-query";
+import { ControlledInput } from "@/components/common/FormUIControllers/ControlledInput";
+import { ControlledSelect } from "@/components/common/FormUIControllers/ControlledSelect";
+import { ControlledTextarea } from "@/components/common/FormUIControllers/ControlledTextarea";
+import { RegisterRequestPayload } from "@/types/user.type";
+import { ControlledDateInput } from "@/components/common/FormUIControllers/ControlledDateInput";
 
 export default function DoctorRegistrationForm() {
-  const [open, setOpen] = React.useState(false);
-  const [date, setDate] = React.useState<Date | undefined>(undefined);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [success, setSuccess] = useState(false);
+
   const {
-    register,
     handleSubmit,
     control,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-    countryCode: "", 
-    mobileNumber: "",
-  },
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      designation: "",
+      countryCode: "",
+      mobileNumber: "",
+      specialityId: undefined,
+    },
     mode: "onChange",
   });
 
+  const router = useRouter();
+  const { data: specialities = [], isLoading } = useQuery({
+    queryKey: ["specialities"],
+    queryFn: async () => {
+      const res = await getSpecialitiesCustomer();
+
+      if (!res.success) {
+        throw new Error(res.message);
+      }
+      return res.payload || [];
+    },
+  });
+
   const onSubmit = async (data: FormValues) => {
-    const payload = {
+    const payload: RegisterRequestPayload = {
       firstName: data.firstName,
       lastName: data.lastName || "",
-      gender: data.gender.toUpperCase(),
+      gender: data.gender.toUpperCase() as "MALE" | "FEMALE",
       email: data.email,
       dateOfBirth: data.dateOfBirth,
-      userType: data.userType.toUpperCase(),
+      userType: data.userType.toUpperCase() as
+        | "DOCTOR"
+        | "HOSPITAL"
+        | "SECRETARY",
       countryCode: data.countryCode,
       mobileNumber: data.mobileNumber,
       password: data.password,
       professionalInfoRequest: {
         designation: data.designation,
-        // specialityId: [data.specialityId],
-        specialityId: 1,
+        specialityId: [Number(data.specialityId)],
+        departmentId: [0],
+        fileObjectId: 0,
+        workPhoneNumber: "",
         onmsRegistrationNumber: data.onmsRegistrationNumber,
         professionalStatement: data.professionalStatement || "",
       },
     };
-    console.log("payload", payload);
+    try {
+      const res = await registerAction(payload);
+      if (!res.success) {
+        setError("root", {
+          type: "manual",
+          message: res.message,
+        });
+        return;
+      }
+      setSuccess(true);
+      router.push("/doctor/login");
+    } catch (error: any) {
+      setError("root", {
+        type: "manual",
+        message: error.message || "Something went wrong",
+      });
+    }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       {/* PERSONAL INFO */}
       <div className="rounded-lg border bg-card p-6 space-y-5">
-        <h3 className="text-2xl">Personal Information</h3>
+        <h3 className="text-2xl font-semibold">Personal Information</h3>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {/* FirstName */}
-          <div className="space-y-1">
-            <Label>First Name</Label>
-            <Input
-              type="text"
-              {...register("firstName")}
-              placeholder="Enter your name"
-            />
-            {errors.firstName?.message && (
-              <p className="text-xs text-destructive">
-                {errors.firstName?.message}
-              </p>
-            )}
-          </div>
+          {/* First Name */}
+          <ControlledInput
+            name="firstName"
+            label="First Name"
+            control={control}
+            placeholder="Enter your first name"
+          />
 
           {/* Last Name */}
-          <div className="space-y-1">
-            <Label>Last Name</Label>
-            <Input
-              type="text"
-              {...register("lastName")}
-              placeholder="Enter your name"
-            />
-            {errors.lastName?.message && (
-              <p className="text-xs text-destructive">
-                {errors.lastName?.message}
-              </p>
-            )}
-          </div>
+          <ControlledInput
+            name="lastName"
+            label="Last Name"
+            control={control}
+            placeholder="Enter your last name"
+          />
 
           {/* Gender */}
-          <div className="space-y-1">
-            <Label>Gender</Label>
-            <Controller
-              name="gender"
-              control={control}
-              render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Choose your gender" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Gender</SelectLabel>
-                      <SelectItem value="male">Male</SelectItem>
-                      <SelectItem value="female">Female</SelectItem>
-                      <SelectItem value="others">Others</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              )}
-            />
-            {errors.gender?.message && (
-              <p className="text-xs text-destructive">
-                {errors.gender?.message}
-              </p>
-            )}
-          </div>
-             {/* User Type */}
-          <div className="space-y-1">
-            <Label>User Type</Label>
-            <Controller
-              name="userType"
-              control={control}
-              render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select user type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>usertype</SelectLabel>
-                      <SelectItem value="doctor">Doctor</SelectItem>
-                      <SelectItem value="hospital">Hospital</SelectItem>
-                      <SelectItem value="secretary">Secretary</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              )}
-            />
-            {errors.userType?.message && (
-              <p className="text-xs text-destructive">
-                {errors.userType?.message}
-              </p>
-            )}
-          </div>
+          <ControlledSelect
+            name="gender"
+            label="Gender"
+            control={control}
+            placeholder="Choose your gender"
+            options={[
+              { label: "Male", value: "male" },
+              { label: "Female", value: "female" },
+              { label: "Others", value: "others" },
+            ]}
+          />
+
+          {/* User Type */}
+          <ControlledSelect
+            name="userType"
+            label="User Type"
+            control={control}
+            placeholder="Select user type"
+            options={[
+              { label: "Doctor", value: "doctor" },
+              { label: "Hospital", value: "hospital" },
+              { label: "Secretary", value: "secretary" },
+            ]}
+          />
 
           {/* Email */}
-          <div className="space-y-1">
-            <Label>Email (Optional)</Label>
-            <Input
-              type="email"
-              {...register("email")}
-              placeholder="Enter your email"
-            />
-            {errors.email?.message && (
-              <p className="text-xs text-destructive">
-                {errors.email?.message}
-              </p>
-            )}
-          </div>
-
-          {/* dateOfBirth */}
-          <Controller
-            name="dateOfBirth"
+          <ControlledInput
+            name="email"
+            label="Email (Optional)"
+            type="email"
             control={control}
-            render={({ field }) => (
-              <Field className="w-full">
-                <FieldLabel>Date of birth</FieldLabel>
-                <Popover open={open} onOpenChange={setOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="justify-start font-normal"
-                    >
-                      {field.value
-                        ? new Date(field.value).toLocaleDateString()
-                        : "Select date"}
-                    </Button>
-                  </PopoverTrigger>
+            placeholder="Enter your email"
+          />
 
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value ? new Date(field.value) : undefined}
-                      captionLayout="dropdown"
-                      onSelect={(date) => {
-                        if (!date) return;
-                        const yyyy = date.getFullYear();
-                        const mm = String(date.getMonth() + 1).padStart(2, "0");
-                        const dd = String(date.getDate()).padStart(2, "0");
-                        field.onChange(`${yyyy}-${mm}-${dd}`);
-                        setOpen(false);
-
-                        console.log("Selected date:", `${yyyy}-${mm}-${dd}`);
-                      }}
-                    />
-                  </PopoverContent>
-                </Popover>
-              </Field>
-            )}
+          {/* Date of Birth */}
+          <ControlledDateInput
+            name="dateOfBirth"
+            label="Date of Birth"
+            control={control}
+            error={errors.dateOfBirth?.message}
           />
 
           {/* CountryCode with phone */}
-        <CountryAndPhoneInput
-          control={control}
-          nameCode="countryCode"
-          mobileNumber="mobileNumber"
-          label="Phone"
-          error={errors.mobileNumber?.message}
-        />
+          <CountryAndPhoneInput
+            control={control}
+            nameCode="countryCode"
+            mobileNumber="mobileNumber"
+            label="Phone"
+            error={errors.mobileNumber?.message}
+          />
 
           {/* Password */}
-          <div className="space-y-1 relative">
-            <Label>Password</Label>
-
-            <Input
+          <div className="relative">
+            <ControlledInput
+              name="password"
+              label="Password"
               type={showPassword ? "text" : "password"}
-              {...register("password")}
+              control={control}
               placeholder="••••••••"
             />
-
             <div
               onClick={() => setShowPassword((p) => !p)}
-              className="absolute cursor-pointer top-9 right-2 -translate-y-1/2"
+              className="absolute cursor-pointer top-7 right-3"
             >
               {showPassword ? (
-                <EyeOff className="w-4 h-4" />
+                <EyeOff className="w-4 h-4 text-muted-foreground" />
               ) : (
-                <Eye className="w-4 h-4" />
+                <Eye className="w-4 h-4 text-muted-foreground" />
               )}
             </div>
-
-            {errors.password?.message && (
-              <p className="text-xs text-destructive">
-                {errors.password.message}
-              </p>
-            )}
           </div>
 
           {/* Confirm Password */}
-          <div className="space-y-1 relative">
-            <Label>Confirm Password</Label>
-
-            <Input
+          <div className="relative">
+            <ControlledInput
+              name="confirmPassword"
+              label="Confirm Password"
               type={showConfirmPassword ? "text" : "password"}
-              {...register("confirmPassword")}
+              control={control}
               placeholder="••••••••"
             />
-
             <div
               onClick={() => setShowConfirmPassword((p) => !p)}
-              className="absolute cursor-pointer top-9 right-2 -translate-y-1/2"
+              className="absolute cursor-pointer top-7 right-3"
             >
               {showConfirmPassword ? (
-                <EyeOff className="w-4 h-4" />
+                <EyeOff className="w-4 h-4 text-muted-foreground" />
               ) : (
-                <Eye className="w-4 h-4" />
+                <Eye className="w-4 h-4 text-muted-foreground" />
               )}
             </div>
-
-            {errors.confirmPassword?.message && (
-              <p className="text-xs text-destructive">
-                {errors.confirmPassword.message}
-              </p>
-            )}
           </div>
         </div>
       </div>
 
       {/* PROFESSIONAL INFO */}
       <div className="rounded-lg border bg-card p-6 space-y-5 my-12">
-        <h3 className="text-2xl">Professional Information</h3>
+        <h3 className="text-2xl font-semibold">Professional Information</h3>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {/* Designation */}
-          <div className="space-y-1">
-            <Label>Title / Designation</Label>
-            <Input
-              {...register("designation")}
-              placeholder="Enter your title/designation"
-            />
-            {errors.designation?.message && (
-              <p className="text-xs text-destructive">
-                {errors.designation?.message}
-              </p>
-            )}
-          </div>
-          {/* speciality */}
-          <div className="space-y-1">
-            <Label>speciality</Label>
-            <Input
-              type="text"
-              {...register("speciality")}
-              placeholder="speciality"
-            />
-          </div>
-          {/* ONMS */}
-          <div className="space-y-1">
-            <Label>ONMS Registration Number (Optional)</Label>
-            <Input
-              type="text"
-              {...register("onmsRegistrationNumber")}
-              placeholder="Enter your ONMS Registration Number"
-            />
-          </div>
-        </div>
-
-        {/* Statement */}
-        <div className="space-y-1">
-          <Label>Professional Statement</Label>
-          <Textarea
-            {...register("professionalStatement")}
-            placeholder="Enter statement"
+          <ControlledInput
+            name="designation"
+            label="Title / Designation"
+            control={control}
+            placeholder="Enter your title/designation"
           />
-          {errors.professionalStatement?.message && (
-            <p className="text-xs text-destructive">
-              {errors.professionalStatement?.message}
-            </p>
-          )}
+
+          {/* Speciality */}
+          <ControlledSelect
+            name="specialityId"
+            label="Speciality"
+            control={control}
+            placeholder="Select speciality"
+            options={specialities.map((item: any) => ({
+              label: item.name,
+              value: item.id,
+            }))}
+          />
+
+          {/* ONMS Registration Number */}
+          <ControlledInput
+            name="onmsRegistrationNumber"
+            label="ONMS Registration Number (Optional)"
+            control={control}
+            placeholder="Enter your registration number"
+          />
         </div>
 
-        {/* Submit */}
-        <div className="flex justify-center mt-6">
+        {/* Professional Statement */}
+        <ControlledTextarea
+          name="professionalStatement"
+          label="Professional Statement"
+          control={control}
+          placeholder="Write your professional statement"
+        />
+
+        {/* Feedback Messages */}
+        {errors.root && (
+          <p className="text-destructive text-xs font-semibold">
+            {errors.root.message}
+          </p>
+        )}
+
+        {/* Submit Button */}
+        <div className="flex flex-col items-center gap-4 mt-6">
           <Button
-            className="max-w-113 sm:px-20"
+            className="w-full max-w-md"
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || success}
           >
             {isSubmitting
               ? "Creating account..."
               : "Register as a Healthcare Provider"}
           </Button>
+
+          <Link
+            href="/doctor/login"
+            className="text-sm font-medium text-primary hover:underline"
+          >
+            Already Have an Account?
+          </Link>
         </div>
-        <Link
-          href="/doctor/login"
-          className="text-sm font-medium text-primary text-center flex justify-center hover:underline"
-        >
-          Already Have an Account?
-        </Link>
       </div>
     </form>
   );
