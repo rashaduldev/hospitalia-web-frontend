@@ -1,4 +1,5 @@
 "use server";
+
 import { apiClient } from "@/lib/api";
 import { RegisterRequestPayload } from "@/types/user.type";
 
@@ -9,4 +10,4 @@ export async function registerAction(
     method: "POST",
     body: payload,
   });
-}
+  }

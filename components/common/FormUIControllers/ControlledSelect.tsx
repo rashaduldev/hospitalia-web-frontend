@@ -1,15 +1,15 @@
 import { FC } from "react";
 import { Controller, Control } from "react-hook-form";
 import { Label } from "@/components/ui/label"; // Ba FieldLabel
-import { 
-  Select, 
-  SelectContent, 
-  SelectGroup, 
-  SelectItem, 
-  SelectLabel, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 interface ControlledSelectProps {
   name: string;
@@ -19,12 +19,12 @@ interface ControlledSelectProps {
   options: { label: string; value: string | number }[];
 }
 
-export const ControlledSelect: FC<ControlledSelectProps> = ({ 
-  name, 
-  label, 
-  control, 
-  placeholder, 
-  options 
+export const ControlledSelect: FC<ControlledSelectProps> = ({
+  name,
+  label,
+  control,
+  placeholder,
+  options,
 }) => {
   return (
     <Controller
@@ -37,10 +37,15 @@ export const ControlledSelect: FC<ControlledSelectProps> = ({
             onValueChange={(value) => {
               const numValue = Number(value);
               field.onChange(isNaN(numValue) ? value : numValue);
-            }} 
+            }}
             value={field.value?.toString()}
           >
-            <SelectTrigger className={`w-full ${fieldState.error ? "border-destructive" : ""}`}>
+            <SelectTrigger
+              className={cn(
+                "w-full border rounded",
+                fieldState.error && "border-destructive",
+              )}
+            >
               <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent>
@@ -54,7 +59,9 @@ export const ControlledSelect: FC<ControlledSelectProps> = ({
             </SelectContent>
           </Select>
           {fieldState.error && (
-            <p className="text-xs text-destructive">{fieldState.error.message}</p>
+            <p className="text-xs text-destructive">
+              {fieldState.error.message}
+            </p>
           )}
         </div>
       )}

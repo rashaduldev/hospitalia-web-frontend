@@ -18,7 +18,6 @@ import { RegisterRequestPayload } from "@/types/user.type";
 import { ControlledDateInput } from "@/components/common/FormUIControllers/ControlledDateInput";
 
 export default function DoctorRegistrationForm() {
-  const [open, setOpen] = React.useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [success, setSuccess] = useState(false);
