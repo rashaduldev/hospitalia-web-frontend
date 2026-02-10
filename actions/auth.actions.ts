@@ -1,12 +1,12 @@
 "use server";
+import { apiClient } from "@/lib/api";
+import { RegisterRequestPayload } from "@/types/user.type";
 
-import { siteConfig } from "@/config/siteConfig";
-import { apiFetch } from "@/lib/api";
-const BASEAPI=siteConfig.url;
-// Registration
-export async function registerAction(payload: any) {
-  return apiFetch(`${BASEAPI}/api/auth/sign-up`, {
+export async function registerAction(
+  payload: RegisterRequestPayload
+) {
+  return apiClient("/api/auth/sign-up", {
     method: "POST",
-    body: JSON.stringify(payload),
+    body: payload,
   });
 }

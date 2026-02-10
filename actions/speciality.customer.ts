@@ -1,12 +1,16 @@
 "use server";
 
-import { siteConfig } from "@/config/siteConfig";
-import { apiFetch } from "@/lib/api";
-const BASEAPI=siteConfig.url;
+import { ApiResponse } from "@/types/user.type";
+import { Speciality } from "@/types/speciality.type";
+import { apiClient } from "@/lib/api";
 
-export async function getSpecialitiesCustomer() {
-  return await apiFetch(`${BASEAPI}/api/speciality/all`, {
+export async function getSpecialitiesCustomer(): Promise<ApiResponse<Speciality[]>> {
+  const res = await apiClient<any>("/api/speciality/all", {
     method: "GET",
-    cache: "no-store",
   });
+
+  return {
+    ...res,
+    payload: res.payload?.content || [],
+  };
 }

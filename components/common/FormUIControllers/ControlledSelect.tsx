@@ -40,7 +40,7 @@ export const ControlledSelect: FC<ControlledSelectProps> = ({
             }} 
             value={field.value?.toString()}
           >
-            <SelectTrigger className={fieldState.error ? "border-destructive" : "w-full"}>
+            <SelectTrigger className={`w-full ${fieldState.error ? "border-destructive" : ""}`}>
               <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent>
