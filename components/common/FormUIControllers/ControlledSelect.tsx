@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { Typography } from "@/components/ui/Typography";
 
 interface OptionType {
   label: string;
@@ -43,15 +44,11 @@ export const ControlledSelect: FC<ControlledSelectProps> = ({
         <div className="space-y-1">
           {label && <Label>{label}</Label>}
 
-          <Select
-            value={field.value || ""}
-            onValueChange={field.onChange}
-          >
+          <Select value={field.value || ""} onValueChange={field.onChange}>
             <SelectTrigger
               className={cn(
                 "w-full border rounded-lg",
-                fieldState.error && "border-destructive",
-                className
+                className,
               )}
             >
               <SelectValue placeholder={placeholder} />
@@ -65,11 +62,10 @@ export const ControlledSelect: FC<ControlledSelectProps> = ({
               ))}
             </SelectContent>
           </Select>
-
           {fieldState.error && (
-            <p className="text-xs text-destructive">
+            <Typography size="xs" color="destructive">
               {fieldState.error.message}
-            </p>
+            </Typography>
           )}
         </div>
       )}

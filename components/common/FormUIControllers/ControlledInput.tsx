@@ -3,6 +3,7 @@ import { FC } from "react";
 import { Controller, Control } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Typography } from "@/components/ui/Typography";
 
 interface ControlledInputProps {
   name: string;
@@ -27,10 +28,8 @@ export const ControlledInput: FC<ControlledInputProps> = ({
       control={control}
       render={({ field, fieldState }) => (
         <div className="space-y-1 relative w-full">
-          {
-            label && <Label>{label}</Label>
-          }
-          
+          {label && <Label>{label}</Label>}
+
           <Input
             {...field}
             type={type}
@@ -39,7 +38,9 @@ export const ControlledInput: FC<ControlledInputProps> = ({
             className={className}
           />
           {fieldState.error && (
-            <p className="text-xs text-destructive">{fieldState.error.message}</p>
+            <Typography size="xs" color="destructive">
+              {fieldState.error.message}
+            </Typography>
           )}
         </div>
       )}

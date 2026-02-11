@@ -98,13 +98,6 @@ export function CountryAndPhoneInput<T extends Record<string, any>>({
           className="flex-1 rounded-l-none"
         />
       </div>
-
-      {/* Errors */}
-      {/* {errors?.[countrycode] && (
-        <Typography size="xs" color="destructive">
-          {errors[countrycode]?.message as string}
-        </Typography>
-      )} */}
     </div>
   );
 }
