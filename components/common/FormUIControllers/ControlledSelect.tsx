@@ -11,12 +11,19 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
+interface OptionType {
+  label: string;
+  value: string;
+  [key: string]: any;
+}
 interface ControlledSelectProps {
   name: string;
   label: string;
   control: Control<any>;
   placeholder: string;
-  options: { label: string; value: string | number }[];
+  options: OptionType[];
+  className?: string;
+  renderOption?: (opt: OptionType) => React.ReactNode;
 }
 
 export const ControlledSelect: FC<ControlledSelectProps> = ({
@@ -24,7 +31,9 @@ export const ControlledSelect: FC<ControlledSelectProps> = ({
   label,
   control,
   placeholder,
+  renderOption,
   options,
+  className,
 }) => {
   return (
     <Controller
@@ -32,32 +41,31 @@ export const ControlledSelect: FC<ControlledSelectProps> = ({
       control={control}
       render={({ field, fieldState }) => (
         <div className="space-y-1">
-          <Label>{label}</Label>
+          {label && <Label>{label}</Label>}
+
           <Select
-            onValueChange={(value) => {
-              const numValue = Number(value);
-              field.onChange(isNaN(numValue) ? value : numValue);
-            }}
-            value={field.value?.toString()}
+            value={field.value || ""}
+            onValueChange={field.onChange}
           >
             <SelectTrigger
               className={cn(
-                "w-full border rounded",
+                "w-full border rounded-lg",
                 fieldState.error && "border-destructive",
+                className
               )}
             >
               <SelectValue placeholder={placeholder} />
             </SelectTrigger>
+
             <SelectContent>
-              <SelectGroup>
-                {options.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value.toString()}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
+              {options.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value.toString()}>
+                  {renderOption ? renderOption(opt) : opt.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
+
           {fieldState.error && (
             <p className="text-xs text-destructive">
               {fieldState.error.message}

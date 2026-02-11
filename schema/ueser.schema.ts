@@ -6,7 +6,6 @@ export const loginFormSchema = (t: (key: string) => string) =>
     countryCode: z
       .string()
       .nonempty(t("login.errors.countryRequired")),
-
     phoneNumber: z
       .string()
       .nonempty(t("login.errors.phoneRequired"))
