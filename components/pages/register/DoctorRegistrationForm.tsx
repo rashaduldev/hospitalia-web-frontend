@@ -4,7 +4,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formSchema, FormValues } from "@/schema/ueser.schema";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";;
+import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { CountryAndPhoneInput } from "@/components/common/Country&PhoneInput";
 import { registerAction } from "@/actions/auth.actions";
@@ -168,10 +168,10 @@ export default function DoctorRegistrationForm() {
           {/* CountryCode with phone */}
           <CountryAndPhoneInput
             control={control}
-            nameCode="countryCode"
+            countrycode="countryCode"
             mobileNumber="mobileNumber"
             label="Phone"
-            error={errors.mobileNumber?.message}
+            errors={errors}
           />
 
           {/* Password */}

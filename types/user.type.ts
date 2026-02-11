@@ -1,13 +1,13 @@
-import { Control } from "react-hook-form";
+import { Control, FieldErrors, FieldValues, Path } from "react-hook-form";
 
-export interface PhoneInputProps {
-  control: Control<any>;
-  nameCode: string;
-  mobileNumber?: string;
-  phoneNumber?:string;
+export type PhoneInputProps<T extends FieldValues> = {
+  control: Control<T>;
+  countrycode: Path<T>;
+  mobileNumber: Path<T>;
   label?: string;
-  error?: string;
-}
+  errors?: FieldErrors<T>;
+};
+
 
 export type Country = {
   name: string;

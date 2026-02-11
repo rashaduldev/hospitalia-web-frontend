@@ -37,8 +37,6 @@ const DoctorLoginForm = () => {
         phoneNumber: data.phoneNumber,
         password: data.password,
       };
-      console.log("payload data",payload);
-      
       const res = await loginAction(payload);
       if (!res.success) {
         setError("root", {
@@ -49,7 +47,7 @@ const DoctorLoginForm = () => {
       }
       router.push("/dashboard");
     } catch (error: any) {
-       setError("root", {
+      setError("root", {
         type: "manual",
         message: error.message || "Something went wrong",
       });
@@ -71,10 +69,10 @@ const DoctorLoginForm = () => {
           {/* Country and Phone */}
           <CountryAndPhoneInput
             control={control}
-            nameCode="countryCode"
+            countrycode="countryCode"
             mobileNumber="phoneNumber"
             label="Phone"
-            error={errors.phoneNumber?.message}
+            errors={errors}
           />
 
           {/* Password */}
@@ -101,7 +99,7 @@ const DoctorLoginForm = () => {
           {/* Feedback Messages */}
           {errors.root && (
             <Typography size="xs" color="destructive" weight="semiBold">
-                {errors.root.message}
+              {errors.root.message}
             </Typography>
           )}
 
