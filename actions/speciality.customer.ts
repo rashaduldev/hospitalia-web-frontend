@@ -9,6 +9,7 @@ export const getSpecialitiesAllCustomer = async (
 ): Promise<ApiResponse<Speciality[]>> => {
   const res = await apiClient<{ content: Speciality[] }>({
     endpoint: "/api/speciality/all",
+    method: "GET",
     params: lang ? { lang } : undefined,
   });
   const specialities = res.payload?.content ?? [];
