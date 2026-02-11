@@ -55,33 +55,48 @@ export default function DoctorRegistrationForm() {
       return res.payload || [];
     },
   });
-
-  const onSubmit = async (data: FormValues) => {
-    const bodyData: RegisterRequestData = {
-      firstName: data.firstName,
-      lastName: data.lastName || "",
-      gender: data.gender.toUpperCase() as "MALE" | "FEMALE",
-      email: data.email,
-      dateOfBirth: data.dateOfBirth,
-      userType: data.userType.toUpperCase() as
-        | "DOCTOR"
-        | "HOSPITAL"
-        | "SECRETARY",
-      countryCode: data.countryCode,
-      mobileNumber: data.mobileNumber,
-      password: data.password,
-      professionalInfoRequest: {
-        designation: data.designation,
-        specialityId: [Number(data.specialityId)],
-        departmentId: [0],
-        fileObjectId: 0,
-        workPhoneNumber: "",
-        onmsRegistrationNumber: data.onmsRegistrationNumber,
-        professionalStatement: data.professionalStatement || "",
-      },
-    };
+  const onSubmit = async ({
+    firstName,
+    lastName,
+    gender,
+    email,
+    dateOfBirth,
+    userType,
+    countryCode,
+    mobileNumber,
+    password,
+    designation,
+    specialityId,
+    onmsRegistrationNumber,
+    professionalStatement,
+  }: FormValues) => {
     try {
-      const res = await registerAction({body:bodyData});
+      const res = await registerAction({
+        body: {
+          firstName,
+          lastName: lastName || "",
+          gender: gender.toUpperCase() as "MALE" | "FEMALE",
+          email,
+          dateOfBirth,
+          userType: userType.toUpperCase() as
+            | "DOCTOR"
+            | "HOSPITAL"
+            | "SECRETARY",
+          countryCode,
+          mobileNumber,
+          password,
+          professionalInfoRequest: {
+            designation,
+            specialityId: [Number(specialityId)],
+            departmentId: [0],
+            fileObjectId: 0,
+            workPhoneNumber: "",
+            onmsRegistrationNumber,
+            professionalStatement: professionalStatement || "",
+          },
+        },
+      });
+
       if (!res.success) {
         setError("root", {
           type: "manual",
@@ -89,7 +104,6 @@ export default function DoctorRegistrationForm() {
         });
         return;
       }
-      setSuccess(true);
       router.push("/doctor/login");
     } catch (error: any) {
       setError("root", {

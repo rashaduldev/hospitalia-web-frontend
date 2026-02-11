@@ -13,7 +13,6 @@ import { login } from "@/actions/auth.actions";
 import { useRouter } from "next/navigation";
 import { DynamicHeading } from "@/components/common/DynamicHeading";
 import { Typography } from "@/components/ui/Typography";
-import { LoginRequestData } from "@/types/user.type";
 import { useI18n } from "@/locales/client";
 
 const DoctorLoginForm = () => {
@@ -27,8 +26,8 @@ const DoctorLoginForm = () => {
     formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(
-  loginFormSchema((key) => t(key as keyof typeof t) as string)
-),
+      loginFormSchema((key) => t(key as keyof typeof t) as string),
+    ),
     defaultValues: {
       password: "",
       countryCode: "",
@@ -36,15 +35,20 @@ const DoctorLoginForm = () => {
     },
   });
   const router = useRouter();
-  const onSubmit = async (data: LoginFormValues) => {
-    try {
-      const bodyData: LoginRequestData = {
-        countryCode: data.countryCode,
-        phoneNumber: data.phoneNumber,
-        password: data.password,
-      };
 
-      const res = await login({ body: bodyData });
+  const onSubmit = async ({
+    countryCode,
+    phoneNumber,
+    password,
+  }: LoginFormValues) => {
+    try {
+      const res = await login({
+        body: {
+          countryCode,
+          phoneNumber,
+          password,
+        },
+      });
 
       if (!res.success) {
         setError("root", {
@@ -66,7 +70,6 @@ const DoctorLoginForm = () => {
   return (
     <div className="max-w-111.5 mx-auto w-full">
       <form onSubmit={handleSubmit(onSubmit)}>
-
         {/* Dynamic Title & Description */}
         <DynamicHeading
           title={t("login.title")}
@@ -76,7 +79,6 @@ const DoctorLoginForm = () => {
         />
 
         <div className="space-y-4">
-
           {/* Country and Phone */}
           <CountryAndPhoneInput
             control={control}
@@ -117,16 +119,13 @@ const DoctorLoginForm = () => {
           {/* Submit Button */}
           <div className="w-full text-left">
             <Button className="w-full" type="submit" disabled={isSubmitting}>
-              {isSubmitting
-                ? t("login.loginLoading")
-                : t("login.loginBtn")}
+              {isSubmitting ? t("login.loginLoading") : t("login.loginBtn")}
             </Button>
           </div>
         </div>
 
         {/* Links */}
         <div className="mt-8 space-y-4 flex flex-col gap-2">
-
           <Link href="/doctor/registration">
             <Typography
               size="sm"
@@ -148,7 +147,6 @@ const DoctorLoginForm = () => {
               {t("login.forgotPassword")}
             </Typography>
           </Link>
-
         </div>
       </form>
     </div>
