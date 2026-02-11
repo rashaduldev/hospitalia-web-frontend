@@ -23,7 +23,7 @@ export interface ApiResponse<T> {
   status: number;
 }
 
-export interface RegisterRequestPayload {
+export interface RegisterRequestData {
   firstName: string;
   lastName?: string;
   gender: "MALE" | "FEMALE";
@@ -44,13 +44,13 @@ export interface RegisterRequestPayload {
     professionalStatement?: string;
   };
 }
-export interface LoginRequestPayload {
+export interface LoginRequestData {
   countryCode?: string;
   phoneNumber: string;
   password: string;
 }
 
-export interface LoginResponsePayload {
+export interface LoginResponseData {
   token?: string;
   refreshToken?: string;
   userId?: number;

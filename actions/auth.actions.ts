@@ -1,30 +1,50 @@
 "use server";
 
 import { apiClient } from "@/lib/api";
-import { RegisterRequestPayload, LoginRequestPayload, LoginResponsePayload } from "@/types/user.type";
+import {
+  LoginRequestData,
+  LoginResponseData,
+  RegisterRequestData,
+} from "@/types/user.type";
 
-// registation
-export async function registerAction(
-  payload: RegisterRequestPayload,
-  params?: Record<string, string | number | boolean>
-) {
-  return apiClient({
+// Register
+export const registerAction = async ({
+  body,
+  lang,
+}: {
+  body: RegisterRequestData;
+  lang?: string;
+}) => {
+  const data = await apiClient({
     endpoint: "/api/auth/sign-up",
     method: "POST",
-    body: payload,
-    params,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    params: lang ? { lang } : undefined,
+    body,
   });
-}
 
-// login
-export async function loginAction(
-  payload: LoginRequestPayload,
-  params?: Record<string, string | number | boolean>
-) {
-  return apiClient<LoginResponsePayload>({
+  return data;
+};
+
+// Login
+export const login = async ({
+  body,
+  lang,
+}: {
+  body: LoginRequestData;
+  lang?: string;
+}) => {
+  const data = await apiClient<LoginResponseData>({
     endpoint: "/api/auth/sign-in",
     method: "POST",
-    body: payload,
-    params,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    params: lang ? { lang } : undefined,
+    body,
   });
-}
+
+  return data;
+};

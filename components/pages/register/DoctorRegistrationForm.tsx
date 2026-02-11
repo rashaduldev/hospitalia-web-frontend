@@ -14,7 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ControlledInput } from "@/components/common/FormUIControllers/ControlledInput";
 import { ControlledSelect } from "@/components/common/FormUIControllers/ControlledSelect";
 import { ControlledTextarea } from "@/components/common/FormUIControllers/ControlledTextarea";
-import { RegisterRequestPayload } from "@/types/user.type";
+import { RegisterRequestData } from "@/types/user.type";
 import { ControlledDateInput } from "@/components/common/FormUIControllers/ControlledDateInput";
 
 export default function DoctorRegistrationForm() {
@@ -57,7 +57,7 @@ export default function DoctorRegistrationForm() {
   });
 
   const onSubmit = async (data: FormValues) => {
-    const payload: RegisterRequestPayload = {
+    const bodyData: RegisterRequestData = {
       firstName: data.firstName,
       lastName: data.lastName || "",
       gender: data.gender.toUpperCase() as "MALE" | "FEMALE",
@@ -81,7 +81,7 @@ export default function DoctorRegistrationForm() {
       },
     };
     try {
-      const res = await registerAction(payload);
+      const res = await registerAction({body:bodyData});
       if (!res.success) {
         setError("root", {
           type: "manual",

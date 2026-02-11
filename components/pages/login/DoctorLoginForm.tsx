@@ -9,11 +9,11 @@ import { CountryAndPhoneInput } from "@/components/common/Country&PhoneInput";
 import { ControlledInput } from "@/components/common/FormUIControllers/ControlledInput";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { loginAction } from "@/actions/auth.actions";
+import { login } from "@/actions/auth.actions";
 import { useRouter } from "next/navigation";
 import { DynamicHeading } from "@/components/common/DynamicHeading";
 import { Typography } from "@/components/ui/Typography";
-import { LoginRequestPayload } from "@/types/user.type";
+import { LoginRequestData } from "@/types/user.type";
 import { useI18n } from "@/locales/client";
 
 const DoctorLoginForm = () => {
@@ -38,13 +38,13 @@ const DoctorLoginForm = () => {
   const router = useRouter();
   const onSubmit = async (data: LoginFormValues) => {
     try {
-      const payload: LoginRequestPayload = {
+      const bodyData: LoginRequestData = {
         countryCode: data.countryCode,
         phoneNumber: data.phoneNumber,
         password: data.password,
       };
 
-      const res = await loginAction(payload);
+      const res = await login({ body: bodyData });
 
       if (!res.success) {
         setError("root", {
