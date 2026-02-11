@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formSchema, FormValues } from "@/schema/ueser.schema";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,6 @@ import { useQuery } from "@tanstack/react-query";
 import { ControlledInput } from "@/components/common/FormUIControllers/ControlledInput";
 import { ControlledSelect } from "@/components/common/FormUIControllers/ControlledSelect";
 import { ControlledTextarea } from "@/components/common/FormUIControllers/ControlledTextarea";
-import { RegisterRequestData } from "@/types/user.type";
 import { ControlledDateInput } from "@/components/common/FormUIControllers/ControlledDateInput";
 
 export default function DoctorRegistrationForm() {
@@ -70,47 +69,39 @@ export default function DoctorRegistrationForm() {
     onmsRegistrationNumber,
     professionalStatement,
   }: FormValues) => {
-    try {
-      const res = await registerAction({
-        body: {
-          firstName,
-          lastName: lastName || "",
-          gender: gender.toUpperCase() as "MALE" | "FEMALE",
-          email,
-          dateOfBirth,
-          userType: userType.toUpperCase() as
-            | "DOCTOR"
-            | "HOSPITAL"
-            | "SECRETARY",
-          countryCode,
-          mobileNumber,
-          password,
-          professionalInfoRequest: {
-            designation,
-            specialityId: [Number(specialityId)],
-            departmentId: [0],
-            fileObjectId: 0,
-            workPhoneNumber: "",
-            onmsRegistrationNumber,
-            professionalStatement: professionalStatement || "",
-          },
-        },
-      });
+    const res = await registerAction({
+      body: {
+        firstName,
+        lastName: lastName || "",
+        gender: gender.toUpperCase() as "MALE" | "FEMALE",
+        email,
+        dateOfBirth,
+        userType: userType.toUpperCase() as "DOCTOR" | "HOSPITAL" | "SECRETARY",
+        countryCode,
+        mobileNumber,
+        password,
 
-      if (!res.success) {
-        setError("root", {
-          type: "manual",
-          message: res.message,
-        });
-        return;
-      }
-      router.push("/doctor/login");
-    } catch (error: any) {
+        professionalInfoRequest: {
+          designation,
+          specialityId: [Number(specialityId)],
+          departmentId: [0],
+          fileObjectId: 0,
+          workPhoneNumber: "",
+          onmsRegistrationNumber,
+          professionalStatement: professionalStatement || "",
+        },
+      },
+    });
+
+    if (!res.success) {
       setError("root", {
         type: "manual",
-        message: error.message || "Something went wrong",
+        message: res.message,
       });
+      return;
     }
+
+    router.push("/doctor/login");
   };
 
   return (

@@ -18,7 +18,6 @@ import { useI18n } from "@/locales/client";
 const DoctorLoginForm = () => {
   const t = useI18n();
   const [showPassword, setShowPassword] = useState(false);
-
   const {
     handleSubmit,
     control,
@@ -35,36 +34,27 @@ const DoctorLoginForm = () => {
     },
   });
   const router = useRouter();
-
   const onSubmit = async ({
     countryCode,
     phoneNumber,
     password,
   }: LoginFormValues) => {
-    try {
-      const res = await login({
-        body: {
-          countryCode,
-          phoneNumber,
-          password,
-        },
-      });
+    const res = await login({
+      body: {
+        countryCode,
+        phoneNumber,
+        password,
+      },
+    });
 
-      if (!res.success) {
-        setError("root", {
-          type: "manual",
-          message: res.message,
-        });
-        return;
-      }
-
-      router.push("/dashboard");
-    } catch (error: any) {
+    if (!res.success) {
       setError("root", {
         type: "manual",
-        message: error.message || t("common.somethingWrong"),
+        message: res.message,
       });
+      return;
     }
+    router.push("/dashboard");
   };
 
   return (
