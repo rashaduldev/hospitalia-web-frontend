@@ -45,9 +45,7 @@ export const formSchema = z
       ),
     confirmPassword: z.string().min(1, "Confirm password is required"),
     designation: z.string().min(2, "Designation is required"),
-    specialityId: z.string({
-      message: "Speciality is required",
-    }),
+    specialityId: z.string().min(1,"Speciality is required"),
     onmsRegistrationNumber: z.string().optional(),
     professionalStatement: z.string().optional(),
   })
