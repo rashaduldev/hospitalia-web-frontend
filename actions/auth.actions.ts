@@ -8,14 +8,8 @@ import {
 } from "@/types/user.type";
 
 // Register
-export const registerAction = async ({
-  body,
-  lang,
-}: {
-  body: RegisterRequestData;
-  lang?: string;
-}) => {
-  const data = await apiClient({
+export const register = async (body: RegisterRequestData, lang?: string) => {
+  return apiClient({
     endpoint: "/api/auth/sign-up",
     method: "POST",
     headers: {
@@ -24,19 +18,11 @@ export const registerAction = async ({
     params: lang ? { lang } : undefined,
     body,
   });
-
-  return data;
 };
 
 // Login
-export const login = async ({
-  body,
-  lang,
-}: {
-  body: LoginRequestData;
-  lang?: string;
-}) => {
-  const data = await apiClient<LoginResponseData>({
+export const login = async (body: LoginRequestData, lang?: string) => {
+  return apiClient<LoginResponseData>({
     endpoint: "/api/auth/sign-in",
     method: "POST",
     headers: {
@@ -45,6 +31,4 @@ export const login = async ({
     params: lang ? { lang } : undefined,
     body,
   });
-
-  return data;
 };

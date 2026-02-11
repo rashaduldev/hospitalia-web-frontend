@@ -40,11 +40,9 @@ const DoctorLoginForm = () => {
     password,
   }: LoginFormValues) => {
     const res = await login({
-      body: {
         countryCode,
         phoneNumber,
         password,
-      },
     });
 
     if (!res.success) {

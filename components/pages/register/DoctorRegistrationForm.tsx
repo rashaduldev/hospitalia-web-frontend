@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { CountryAndPhoneInput } from "@/components/common/Country&PhoneInput";
-import { registerAction } from "@/actions/auth.actions";
 import { useRouter } from "next/navigation";
 import { getSpecialitiesAllCustomer } from "@/actions/speciality.customer";
 import { useQuery } from "@tanstack/react-query";
@@ -15,6 +14,7 @@ import { ControlledInput } from "@/components/common/FormUIControllers/Controlle
 import { ControlledSelect } from "@/components/common/FormUIControllers/ControlledSelect";
 import { ControlledTextarea } from "@/components/common/FormUIControllers/ControlledTextarea";
 import { ControlledDateInput } from "@/components/common/FormUIControllers/ControlledDateInput";
+import { register } from "@/actions/auth.actions";
 
 export default function DoctorRegistrationForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -68,8 +68,7 @@ export default function DoctorRegistrationForm() {
     onmsRegistrationNumber,
     professionalStatement,
   }: FormValues) => {
-    const res = await registerAction({
-      body: {
+    const res = await register({
         firstName,
         lastName: lastName || "",
         gender,
@@ -88,7 +87,6 @@ export default function DoctorRegistrationForm() {
           workPhoneNumber: "",
           onmsRegistrationNumber,
           professionalStatement: professionalStatement || "",
-        },
       },
     });
 
