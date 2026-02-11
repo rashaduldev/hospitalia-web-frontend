@@ -1,18 +1,26 @@
 import { z } from "zod";
 
-// User Login schema
-export const LoginformSchema = z.object({
-  countryCode: z.string().nonempty("CountryCode is required"),
-  phoneNumber: z
-    .string()
-    .nonempty("Mobile number is required")
-    .min(4, "Phone number is too short")
-    .max(15, "Phone number is too long"),
 
-  password: z.string().min(6, "Password must be at least 6 characters"),
-});
+export const loginFormSchema = (t: (key: string) => string) =>
+  z.object({
+    countryCode: z
+      .string()
+      .nonempty(t("login.errors.countryRequired")),
 
-export type LoginFormValues = z.infer<typeof LoginformSchema>;
+    phoneNumber: z
+      .string()
+      .nonempty(t("login.errors.phoneRequired"))
+      .min(4, t("login.errors.phoneShort"))
+      .max(15, t("login.errors.phoneLong")),
+
+    password: z
+      .string()
+      .min(6, t("login.errors.passwordMin")),
+  });
+
+export type LoginFormValues = z.infer<
+  ReturnType<typeof loginFormSchema>
+>;
 
 // Doctor Registration schema
 export const formSchema = z

@@ -4,7 +4,7 @@ export default {
     patient: "Patient Login",
     doctor: "Doctor / Secretary",
   },
-    banner: {
+  banner: {
     titleMain: "Simplify patient experience",
     titleSub: "Streamline healthcare providers’ work.",
     cardTitle: "Get Appointment",
@@ -15,7 +15,7 @@ export default {
     searchHere: "Search Here",
     searchBtn: "Search",
   },
-    stats: {
+  stats: {
     patients: "Patient Served",
     monthlyUsers: "Monthly Active Users",
     doctors: "Professional Doctors",
@@ -30,26 +30,48 @@ export default {
       stat3: { count: "24/7", des: "Support Availability" },
     },
   },
-ourPackages: {
-  title: "Our Health Packages",
-  earlyPregnancy: "Early Pregnancy Pack",
-  generalHealth: "General Health Checkup",
-  cardiacCare: "Cardiac Care Package",
+  ourPackages: {
+    title: "Our Health Packages",
+    earlyPregnancy: "Early Pregnancy Pack",
+    generalHealth: "General Health Checkup",
+    cardiacCare: "Cardiac Care Package",
 
-  antenatal: "Antenatal Checkup",
-  ultrasound: "Ultrasound Scan",
-  bloodUrine: "Blood & Urine Tests",
+    antenatal: "Antenatal Checkup",
+    ultrasound: "Ultrasound Scan",
+    bloodUrine: "Blood & Urine Tests",
 
-  doctorConsult: "Doctor Consultation",
-  bpCheck: "Blood Pressure Check",
-  basicLab: "Basic Lab Tests",
+    doctorConsult: "Doctor Consultation",
+    bpCheck: "Blood Pressure Check",
+    basicLab: "Basic Lab Tests",
 
-  ecg: "ECG Test",
-  heartConsult: "Heart Specialist Consultation",
-  cholesterol: "Cholesterol Test",
+    ecg: "ECG Test",
+    heartConsult: "Heart Specialist Consultation",
+    cholesterol: "Cholesterol Test",
 
-  checkBtn: "Check Details",
-},
+    checkBtn: "Check Details",
+  },
+  login: {
+    title: "Login as a Provider",
+    description: "Enter your details below to login",
 
+    phoneLabel: "Phone",
+    passwordLabel: "Password",
+
+    loginBtn: "Login",
+    loginLoading: "Login...",
+
+    noAccount: "Don't have an account? Sign up",
+    forgotPassword: "Forgot your password?",
+    errors: {
+      countryRequired: "Country code is required",
+      phoneRequired: "Mobile number is required",
+      phoneShort: "Phone number is too short",
+      phoneLong: "Phone number is too long",
+      passwordMin: "Password must be at least 6 characters",
+    },
+  },
+
+  common: {
+    somethingWrong: "Something went wrong",
+  },
 };
-

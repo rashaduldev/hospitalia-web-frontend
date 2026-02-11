@@ -122,13 +122,13 @@ export function CountryAndPhoneInput<T extends Record<string, any>>({
 
       {/* Errors */}
       {errors?.[countrycode] && (
-        <Typography size="xs" color="destructive" weight="semiBold">
+        <Typography size="xs" color="destructive">
           {errors[countrycode]?.message as string}
         </Typography>
       )}
 
       {errors?.[mobileNumber] && (
-        <Typography size="xs" color="destructive" weight="semiBold">
+        <Typography size="xs" color="destructive">
           {errors[mobileNumber]?.message as string}
         </Typography>
       )}

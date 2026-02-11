@@ -1,7 +1,8 @@
 "use client";
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginformSchema, LoginFormValues } from "@/schema/ueser.schema";
+import { loginFormSchema, LoginFormValues } from "@/schema/ueser.schema";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { CountryAndPhoneInput } from "@/components/common/Country&PhoneInput";
@@ -13,16 +14,21 @@ import { useRouter } from "next/navigation";
 import { DynamicHeading } from "@/components/common/DynamicHeading";
 import { Typography } from "@/components/ui/Typography";
 import { LoginRequestPayload } from "@/types/user.type";
+import { useI18n } from "@/locales/client";
 
 const DoctorLoginForm = () => {
+  const t = useI18n();
   const [showPassword, setShowPassword] = useState(false);
+
   const {
     handleSubmit,
     control,
     setError,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
-    resolver: zodResolver(LoginformSchema),
+    resolver: zodResolver(
+  loginFormSchema((key) => t(key as keyof typeof t) as string)
+),
     defaultValues: {
       password: "",
       countryCode: "",
@@ -37,7 +43,9 @@ const DoctorLoginForm = () => {
         phoneNumber: data.phoneNumber,
         password: data.password,
       };
+
       const res = await loginAction(payload);
+
       if (!res.success) {
         setError("root", {
           type: "manual",
@@ -45,11 +53,12 @@ const DoctorLoginForm = () => {
         });
         return;
       }
+
       router.push("/dashboard");
     } catch (error: any) {
       setError("root", {
         type: "manual",
-        message: error.message || "Something went wrong",
+        message: error.message || t("common.somethingWrong"),
       });
     }
   };
@@ -57,21 +66,23 @@ const DoctorLoginForm = () => {
   return (
     <div className="max-w-111.5 mx-auto w-full">
       <form onSubmit={handleSubmit(onSubmit)}>
+
         {/* Dynamic Title & Description */}
         <DynamicHeading
-          title="Login as a Provider"
-          description="Enter your details below to login"
-          titleProps={{ size: "2xl", weight: "semiBold", color: "primary" }}
+          title={t("login.title")}
+          description={t("login.description")}
+          titleProps={{ size: "2xl", weight: "semiBold", color: "foreground" }}
           className="mb-6"
         />
 
         <div className="space-y-4">
+
           {/* Country and Phone */}
           <CountryAndPhoneInput
             control={control}
             countrycode="countryCode"
             mobileNumber="phoneNumber"
-            label="Phone"
+            label={t("login.phoneLabel")}
             errors={errors}
           />
 
@@ -79,7 +90,7 @@ const DoctorLoginForm = () => {
           <div className="relative">
             <ControlledInput
               name="password"
-              label="Password"
+              label={t("login.passwordLabel")}
               type={showPassword ? "text" : "password"}
               control={control}
               placeholder="••••••••"
@@ -96,7 +107,7 @@ const DoctorLoginForm = () => {
             </div>
           </div>
 
-          {/* Feedback Messages */}
+          {/* Server Error message */}
           {errors.root && (
             <Typography size="xs" color="destructive" weight="semiBold">
               {errors.root.message}
@@ -106,13 +117,16 @@ const DoctorLoginForm = () => {
           {/* Submit Button */}
           <div className="w-full text-left">
             <Button className="w-full" type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Login..." : "Login"}
+              {isSubmitting
+                ? t("login.loginLoading")
+                : t("login.loginBtn")}
             </Button>
           </div>
         </div>
 
         {/* Links */}
         <div className="mt-8 space-y-4 flex flex-col gap-2">
+
           <Link href="/doctor/registration">
             <Typography
               size="sm"
@@ -120,9 +134,10 @@ const DoctorLoginForm = () => {
               color="secondary"
               className="hover:underline"
             >
-              Don't have an account? Sign up
+              {t("login.noAccount")}
             </Typography>
           </Link>
+
           <Link href="/doctor/forgot-password">
             <Typography
               size="sm"
@@ -130,10 +145,10 @@ const DoctorLoginForm = () => {
               color="primary"
               className="hover:underline"
             >
-              {" "}
-              Forgot your password?
+              {t("login.forgotPassword")}
             </Typography>
           </Link>
+
         </div>
       </form>
     </div>
