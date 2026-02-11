@@ -92,7 +92,7 @@ export function CountryAndPhoneInput<T extends Record<string, any>>({
 
         {/* Phone Number */}
        <ControlledInput
-          name="mobileNumber"
+          name={mobileNumber}
           control={control}
           placeholder="Enter your number"
           className="flex-1 rounded-l-none"
