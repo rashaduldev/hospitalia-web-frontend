@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { PhoneInputProps } from "@/types/user.type";
 import { useQuery } from "@tanstack/react-query";
+import { Typography } from "../ui/Typography";
 
 type Country = {
   name: string;
@@ -23,7 +24,7 @@ type Country = {
 
 async function fetchCountries(): Promise<Country[]> {
   const res = await fetch(
-    "https://restcountries.com/v3.1/all?fields=name,idd,flags,cca2"
+    "https://restcountries.com/v3.1/all?fields=name,idd,flags,cca2",
   );
   const data = await res.json();
 
@@ -41,11 +42,10 @@ async function fetchCountries(): Promise<Country[]> {
     .sort((a: any, b: any) => a.name.localeCompare(b.name));
 
   return Array.from(
-  new Map<string, Country>(
-    list.map((i: Country) => [i.dialCode, i])
-  ).values()
-);
-
+    new Map<string, Country>(
+      list.map((i: Country) => [i.dialCode, i]),
+    ).values(),
+  );
 }
 
 export function CountryAndPhoneInput<T extends Record<string, any>>({
@@ -82,10 +82,7 @@ export function CountryAndPhoneInput<T extends Record<string, any>>({
 
                 <SelectContent>
                   {countries.map((country) => (
-                    <SelectItem
-                      key={country.isoCode}
-                      value={country.dialCode}
-                    >
+                    <SelectItem key={country.isoCode} value={country.dialCode}>
                       <div className="flex items-center gap-2">
                         <Image
                           width={18}
@@ -95,9 +92,13 @@ export function CountryAndPhoneInput<T extends Record<string, any>>({
                           className="rounded object-cover h-4.5 w-auto"
                           unoptimized
                         />
-                        <span className="text-xs">
+                        <Typography
+                        as="span"
+                        size="xs"
+                        color="foreground"
+                        >
                           {country.dialCode}
-                        </span>
+                        </Typography>
                       </div>
                     </SelectItem>
                   ))}
@@ -113,11 +114,7 @@ export function CountryAndPhoneInput<T extends Record<string, any>>({
             name={mobileNumber}
             control={control}
             render={({ field }) => (
-              <Input
-                {...field}
-                placeholder="Number"
-                className="flex-1 pl-32"
-              />
+              <Input {...field} placeholder="Number" className="flex-1 pl-32" />
             )}
           />
         </div>
@@ -125,15 +122,15 @@ export function CountryAndPhoneInput<T extends Record<string, any>>({
 
       {/* Errors */}
       {errors?.[countrycode] && (
-        <p className="text-destructive text-xs">
+        <Typography size="xs" color="destructive" weight="semiBold">
           {errors[countrycode]?.message as string}
-        </p>
+        </Typography>
       )}
 
       {errors?.[mobileNumber] && (
-        <p className="text-destructive text-xs">
+        <Typography size="xs" color="destructive" weight="semiBold">
           {errors[mobileNumber]?.message as string}
-        </p>
+        </Typography>
       )}
     </div>
   );
