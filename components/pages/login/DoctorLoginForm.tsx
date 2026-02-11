@@ -10,7 +10,6 @@ import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { loginAction } from "@/actions/auth.actions";
 import { useRouter } from "next/navigation";
-import { useServerFormError } from "@/hooks/useServerFormError";
 import { DynamicHeading } from "@/components/common/DynamicHeading";
 import { Typography } from "@/components/ui/Typography";
 import { LoginRequestPayload } from "@/types/user.type";
@@ -31,8 +30,6 @@ const DoctorLoginForm = () => {
     },
   });
   const router = useRouter();
-  const serverErrorHandler = useServerFormError<LoginFormValues>(setError);
-
   const onSubmit = async (data: LoginFormValues) => {
     try {
       const payload: LoginRequestPayload = {
@@ -40,6 +37,8 @@ const DoctorLoginForm = () => {
         phoneNumber: data.phoneNumber,
         password: data.password,
       };
+      console.log("payload data",payload);
+      
       const res = await loginAction(payload);
       if (!res.success) {
         setError("root", {
@@ -50,7 +49,10 @@ const DoctorLoginForm = () => {
       }
       router.push("/dashboard");
     } catch (error: any) {
-      serverErrorHandler(error);
+       setError("root", {
+        type: "manual",
+        message: error.message || "Something went wrong",
+      });
     }
   };
 

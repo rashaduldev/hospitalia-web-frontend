@@ -4,9 +4,10 @@ import { z } from "zod";
 // User Login schema
 export const LoginformSchema = z
   .object({
-    countryCode: z.string().min(1, "CountryCode is required").optional(),
+    countryCode: z.string().nonempty("CountryCode is required"),
     phoneNumber: z
       .string()
+      .nonempty("Mobile number is required")
       .min(4, "Phone number is too short")
       .max(15, "Phone number is too long"),
     password: z.string().min(6, "Password must be at least 6 characters"),
@@ -30,6 +31,7 @@ export const formSchema = z
     countryCode: z.string().min(1, "CountryCode is required").optional(),
     mobileNumber: z
       .string()
+      .nonempty("Mobile number is required")
       .min(4, "MobileNumber number is too short")
       .max(15, "MobileNumber number is too long"),
     password: z
