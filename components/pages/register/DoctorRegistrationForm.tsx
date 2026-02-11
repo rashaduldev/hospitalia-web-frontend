@@ -9,7 +9,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { CountryAndPhoneInput } from "@/components/common/Country&PhoneInput";
 import { registerAction } from "@/actions/auth.actions";
 import { useRouter } from "next/navigation";
-import { getSpecialitiesCustomer } from "@/actions/speciality.customer";
+import { getSpecialitiesAllCustomer } from "@/actions/speciality.customer";
 import { useQuery } from "@tanstack/react-query";
 import { ControlledInput } from "@/components/common/FormUIControllers/ControlledInput";
 import { ControlledSelect } from "@/components/common/FormUIControllers/ControlledSelect";
@@ -37,17 +37,16 @@ export default function DoctorRegistrationForm() {
       designation: "",
       countryCode: "",
       mobileNumber: "",
-      specialityId: undefined,
+      specialityId: "",
     },
     mode: "onChange",
   });
 
   const router = useRouter();
-  const { data: specialities = [], isLoading } = useQuery({
+  const { data: specialities = [] } = useQuery({
     queryKey: ["specialities"],
     queryFn: async () => {
-      const res = await getSpecialitiesCustomer();
-
+      const res = await getSpecialitiesAllCustomer();
       if (!res.success) {
         throw new Error(res.message);
       }
@@ -73,10 +72,10 @@ export default function DoctorRegistrationForm() {
       body: {
         firstName,
         lastName: lastName || "",
-        gender: gender.toUpperCase() as "MALE" | "FEMALE",
+        gender,
         email,
         dateOfBirth,
-        userType: userType.toUpperCase() as "DOCTOR" | "HOSPITAL" | "SECRETARY",
+        userType,
         countryCode,
         mobileNumber,
         password,
@@ -134,9 +133,8 @@ export default function DoctorRegistrationForm() {
             control={control}
             placeholder="Choose your gender"
             options={[
-              { label: "Male", value: "male" },
-              { label: "Female", value: "female" },
-              { label: "Others", value: "others" },
+              { label: "Male", value: "MALE" },
+              { label: "Female", value: "FEMALE" },
             ]}
           />
 
@@ -147,9 +145,9 @@ export default function DoctorRegistrationForm() {
             control={control}
             placeholder="Select user type"
             options={[
-              { label: "Doctor", value: "doctor" },
-              { label: "Hospital", value: "hospital" },
-              { label: "Secretary", value: "secretary" },
+              { label: "Doctor", value: "DOCTOR" },
+              { label: "Hospital", value: "HOSPITAL" },
+              { label: "Secretary", value: "SECRETARY" },
             ]}
           />
 
@@ -244,10 +242,9 @@ export default function DoctorRegistrationForm() {
             placeholder="Select speciality"
             options={specialities.map((item: any) => ({
               label: item.name,
-              value: item.id,
+              value: String(item.id),
             }))}
           />
-
           {/* ONMS Registration Number */}
           <ControlledInput
             name="onmsRegistrationNumber"

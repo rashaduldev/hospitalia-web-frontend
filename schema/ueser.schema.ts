@@ -26,14 +26,10 @@ export const formSchema = z
   .object({
     firstName: z.string().min(2, "First name must be at least 2 characters"),
     lastName: z.string().optional(),
-    gender: z.enum(["male", "female"], {
-      message: "Gender is required",
-    }),
+    gender: z.enum(["MALE", "FEMALE"], { message: "Gender is required" }),
     email: z.email("Invalid email").optional().or(z.literal("")),
     dateOfBirth: z.string().optional().or(z.literal("")),
-    userType: z.enum(["doctor", "hospital", "secretary"], {
-      message: "UserType is required",
-    }),
+    userType: z.enum(["DOCTOR", "HOSPITAL", "SECRETARY"], { message: "UserType is required" }),
     countryCode: z.string().nonempty("CountryCode is required"),
     mobileNumber: z
       .string()
@@ -49,7 +45,7 @@ export const formSchema = z
       ),
     confirmPassword: z.string().min(1, "Confirm password is required"),
     designation: z.string().min(2, "Designation is required"),
-    specialityId: z.number({
+    specialityId: z.string({
       message: "Speciality is required",
     }),
     onmsRegistrationNumber: z.string().optional(),

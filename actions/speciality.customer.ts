@@ -1,16 +1,19 @@
 "use server";
 
+import { apiClient } from "@/lib/api";
 import { ApiResponse } from "@/types/user.type";
 import { Speciality } from "@/types/speciality.type";
-import { apiClient } from "@/lib/api";
 
-export async function getSpecialitiesCustomer(): Promise<ApiResponse<Speciality[]>> {
-  const res = await apiClient<any>("/api/speciality/all", {
-    method: "GET",
+export const getSpecialitiesAllCustomer = async (
+  lang?: string,
+): Promise<ApiResponse<Speciality[]>> => {
+  const res = await apiClient<{ content: Speciality[] }>({
+    endpoint: "/api/speciality/all",
+    params: lang ? { lang } : undefined,
   });
-
+  const specialities = res.payload?.content ?? [];
   return {
     ...res,
-    payload: res.payload?.content || [],
+    payload: specialities,
   };
-}
+};
