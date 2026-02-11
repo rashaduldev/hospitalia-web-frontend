@@ -12,7 +12,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/Typography";
 
-interface ControlledDateInputProps {
+type ControlledDateInputProps ={
   name: string;
   label: string;
   control: Control<any>;

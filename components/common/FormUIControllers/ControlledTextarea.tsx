@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Typography } from "@/components/ui/Typography";
 
-interface ControlledTextareaProps {
+type ControlledTextareaProps ={
   name: string;
   label: string;
   control: Control<any>;

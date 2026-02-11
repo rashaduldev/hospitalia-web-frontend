@@ -4,7 +4,6 @@ import { Label } from "@/components/ui/label"; // Ba FieldLabel
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -12,12 +11,12 @@ import {
 import { cn } from "@/lib/utils";
 import { Typography } from "@/components/ui/Typography";
 
-interface OptionType {
+type OptionType ={
   label: string;
   value: string;
   [key: string]: any;
 }
-interface ControlledSelectProps {
+type ControlledSelectProps ={
   name: string;
   label: string;
   control: Control<any>;

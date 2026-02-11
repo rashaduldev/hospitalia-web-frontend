@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Typography } from "@/components/ui/Typography";
 
-interface ControlledInputProps {
+type ControlledInputProps ={
   name: string;
   label?: string;
   control: Control<any>;

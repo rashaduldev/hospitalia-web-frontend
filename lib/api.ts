@@ -1,6 +1,6 @@
 import { ApiResponse } from "@/types/user.type";
 
-export interface ApiClientOptions<Request = any> {
+export type ApiClientOptions<Request = any> ={
   endpoint: string;
   method?: "GET" | "POST" | "PUT" | "DELETE";
   body?: Request;

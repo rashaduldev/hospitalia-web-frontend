@@ -16,14 +16,14 @@ export type Country = {
   flag: string;
 };
 
-export interface ApiResponse<T> {
+export type ApiResponse<T> ={
   success: boolean;
   message: string;
   payload: T | null;
   status: number;
 }
 
-export interface RegisterRequestData {
+export type RegisterRequestData ={
   firstName: string;
   lastName?: string;
   gender: "MALE" | "FEMALE";
@@ -44,13 +44,13 @@ export interface RegisterRequestData {
     professionalStatement?: string;
   };
 }
-export interface LoginRequestData {
+export type LoginRequestData ={
   countryCode?: string;
   phoneNumber: string;
   password: string;
 }
 
-export interface LoginResponseData {
+export type LoginResponseData ={
   token?: string;
   refreshToken?: string;
   userId?: number;
