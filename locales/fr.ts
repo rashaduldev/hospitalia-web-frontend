@@ -76,4 +76,64 @@ export default {
   common: {
     somethingWrong: "Une erreur est survenue",
   },
+  register: {
+  title: "Rejoignez Rendewou en tant que prestataire",
+  personalInfo: "Informations personnelles",
+  professionalInfo: "Informations professionnelles",
+
+  firstName: "Prénom",
+  lastName: "Nom de famille",
+  gender: "Genre",
+  userType: "Type d’utilisateur",
+  email: "Email (optionnel)",
+  dateOfBirth: "Date de naissance",
+  phone: "Téléphone",
+
+  password: "Mot de passe",
+  confirmPassword: "Confirmer le mot de passe",
+
+  designation: "Titre / Fonction",
+  speciality: "Spécialité",
+  onms: "Numéro d’enregistrement ONMS (optionnel)",
+  statement: "Déclaration professionnelle",
+
+  submit: "S’inscrire en tant que professionnel de santé",
+  creating: "Création du compte...",
+  alreadyAccount: "Vous avez déjà un compte ?",
+
+  genderOptions: {
+    male: "Homme",
+    female: "Femme",
+  },
+
+  userTypeOptions: {
+    doctor: "Médecin",
+    hospital: "Hôpital",
+    secretary: "Secrétaire",
+  },
+
+  errors: {
+    firstNameMin: "Le prénom doit contenir au moins 2 caractères",
+    genderRequired: "Le genre est requis",
+    invalidEmail: "Adresse e-mail invalide",
+    userTypeRequired: "Le type d’utilisateur est requis",
+
+    countryRequired: "Le code du pays est requis",
+    phoneRequired: "Le numéro de téléphone est requis",
+    phoneShort: "Le numéro de téléphone est trop court",
+    phoneLong: "Le numéro de téléphone est trop long",
+
+    passwordMin: "Le mot de passe doit contenir au moins 8 caractères",
+    passwordStrength:
+      "Le mot de passe doit contenir une majuscule, une minuscule, un chiffre et un caractère spécial",
+
+    confirmPasswordRequired: "La confirmation du mot de passe est requise",
+
+    designationRequired: "La désignation est requise",
+    specialityRequired: "La spécialité est requise",
+
+    passwordNotMatch: "Les mots de passe ne correspondent pas",
+  },
+},
+
 };

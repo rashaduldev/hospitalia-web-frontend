@@ -1,3 +1,5 @@
+import { title } from "process";
+
 export default {
   nav: {
     home: "Home",
@@ -74,4 +76,64 @@ export default {
   common: {
     somethingWrong: "Something went wrong",
   },
+    register: {
+    title: "Join Rendewou as a Provider",
+    personalInfo: "Personal Information",
+    professionalInfo: "Professional Information",
+
+    firstName: "First Name",
+    lastName: "Last Name",
+    gender: "Gender",
+    userType: "User Type",
+    email: "Email (Optional)",
+    dateOfBirth: "Date of Birth",
+    phone: "Phone",
+
+    password: "Password",
+    confirmPassword: "Confirm Password",
+
+    designation: "Title / Designation",
+    speciality: "Speciality",
+    onms: "ONMS Registration Number (Optional)",
+    statement: "Professional Statement",
+
+    submit: "Register as a Healthcare Provider",
+    creating: "Creating account...",
+    alreadyAccount: "Already Have an Account?",
+
+    genderOptions: {
+      male: "Male",
+      female: "Female",
+    },
+
+    userTypeOptions: {
+      doctor: "Doctor",
+      hospital: "Hospital",
+      secretary: "Secretary",
+    },
+
+    errors: {
+      firstNameMin: "First name must be at least 2 characters",
+      genderRequired: "Gender is required",
+      invalidEmail: "Invalid email address",
+      userTypeRequired: "User type is required",
+
+      countryRequired: "Country code is required",
+      phoneRequired: "Mobile number is required",
+      phoneShort: "Mobile number is too short",
+      phoneLong: "Mobile number is too long",
+
+      passwordMin: "Password must be at least 8 characters",
+      passwordStrength:
+        "Password must contain uppercase, lowercase, number and special character",
+
+      confirmPasswordRequired: "Confirm password is required",
+
+      designationRequired: "Designation is required",
+      specialityRequired: "Speciality is required",
+
+      passwordNotMatch: "Passwords do not match",
+    },
+  },
+
 };

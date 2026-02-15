@@ -1,8 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { formSchema, FormValues } from "@/schema/ueser.schema";
+import { RegisterFormSchema, FormValues } from "@/schema/ueser.schema";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
@@ -15,12 +15,15 @@ import { ControlledSelect } from "@/components/common/FormUIControllers/Controll
 import { ControlledTextarea } from "@/components/common/FormUIControllers/ControlledTextarea";
 import { ControlledDateInput } from "@/components/common/FormUIControllers/ControlledDateInput";
 import { register } from "@/actions/auth.actions";
+import { useI18n } from "@/locales/client";
+import { Typography } from "@/components/ui/Typography";
 import { Spinner } from "@/components/ui/spinner";
 
 export default function DoctorRegistrationForm() {
+  const t = useI18n();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [success] = useState(false);
 
   const {
     handleSubmit,
@@ -28,7 +31,9 @@ export default function DoctorRegistrationForm() {
     setError,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(
+      RegisterFormSchema((key) => t(key as keyof typeof t) as string),
+    ),
     defaultValues: {
       firstName: "",
       lastName: "",
@@ -44,7 +49,7 @@ export default function DoctorRegistrationForm() {
   });
 
   const router = useRouter();
-
+  
   const { data } = useQuery({
     queryKey: ["specialities"],
     queryFn: async () => {
@@ -111,13 +116,15 @@ export default function DoctorRegistrationForm() {
     <form onSubmit={handleSubmit(onSubmit)}>
       {/* PERSONAL INFO */}
       <div className="rounded-lg border bg-card p-6 space-y-5">
-        <h3 className="text-2xl font-semibold">Personal Information</h3>
+        <Typography size="2xl" as="h3" color="foreground">
+          {t("register.personalInfo")}
+        </Typography>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {/* First Name */}
           <ControlledInput
             name="firstName"
-            label="First Name"
+            label={t("register.firstName")}
             control={control}
             placeholder="Enter your first name"
           />
@@ -125,7 +132,7 @@ export default function DoctorRegistrationForm() {
           {/* Last Name */}
           <ControlledInput
             name="lastName"
-            label="Last Name"
+            label={t("register.lastName")}
             control={control}
             placeholder="Enter your last name"
           />
@@ -133,32 +140,47 @@ export default function DoctorRegistrationForm() {
           {/* Gender */}
           <ControlledSelect
             name="gender"
-            label="Gender"
+            label={t("register.gender")}
             control={control}
             placeholder="Choose your gender"
             options={[
-              { label: "Male", value: "MALE" },
-              { label: "Female", value: "FEMALE" },
+              {
+                label: t("register.genderOptions.male"),
+                value: "MALE",
+              },
+              {
+                label: t("register.genderOptions.female"),
+                value: "FEMALE",
+              },
             ]}
           />
 
           {/* User Type */}
           <ControlledSelect
             name="userType"
-            label="User Type"
+            label={t("register.userType")}
             control={control}
             placeholder="Select user type"
             options={[
-              { label: "Doctor", value: "DOCTOR" },
-              { label: "Hospital", value: "HOSPITAL" },
-              { label: "Secretary", value: "SECRETARY" },
+              {
+                label: t("register.userTypeOptions.doctor"),
+                value: "DOCTOR",
+              },
+              {
+                label: t("register.userTypeOptions.hospital"),
+                value: "HOSPITAL",
+              },
+              {
+                label: t("register.userTypeOptions.secretary"),
+                value: "SECRETARY",
+              },
             ]}
           />
 
           {/* Email */}
           <ControlledInput
             name="email"
-            label="Email (Optional)"
+            label={t("register.email")}
             type="email"
             control={control}
             placeholder="Enter your email"
@@ -167,7 +189,7 @@ export default function DoctorRegistrationForm() {
           {/* Date of Birth */}
           <ControlledDateInput
             name="dateOfBirth"
-            label="Date of Birth"
+            label={t("register.dateOfBirth")}
             control={control}
             error={errors.dateOfBirth?.message}
           />
@@ -177,7 +199,7 @@ export default function DoctorRegistrationForm() {
             control={control}
             countrycode="countryCode"
             mobileNumber="mobileNumber"
-            label="Phone"
+            label={t("register.phone")}
             errors={errors}
           />
 
@@ -185,7 +207,7 @@ export default function DoctorRegistrationForm() {
           <div className="relative">
             <ControlledInput
               name="password"
-              label="Password"
+              label={t("register.password")}
               type={showPassword ? "text" : "password"}
               control={control}
               placeholder="••••••••"
@@ -206,7 +228,7 @@ export default function DoctorRegistrationForm() {
           <div className="relative">
             <ControlledInput
               name="confirmPassword"
-              label="Confirm Password"
+              label={t("register.confirmPassword")}
               type={showConfirmPassword ? "text" : "password"}
               control={control}
               placeholder="••••••••"
@@ -227,13 +249,15 @@ export default function DoctorRegistrationForm() {
 
       {/* PROFESSIONAL INFO */}
       <div className="rounded-lg border bg-card p-6 space-y-5 my-12">
-        <h3 className="text-2xl font-semibold">Professional Information</h3>
+        <Typography size="2xl" as="h3" color="foreground">
+          {t("register.professionalInfo")}
+        </Typography>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {/* Designation */}
           <ControlledInput
             name="designation"
-            label="Title / Designation"
+            label={t("register.designation")}
             control={control}
             placeholder="Enter your title/designation"
           />
@@ -249,11 +273,10 @@ export default function DoctorRegistrationForm() {
               value: String(item.id),
             }))}
           />
-
           {/* ONMS Registration Number */}
           <ControlledInput
             name="onmsRegistrationNumber"
-            label="ONMS Registration Number (Optional)"
+            label={t("register.onms")}
             control={control}
             placeholder="Enter your registration number"
           />
@@ -262,7 +285,7 @@ export default function DoctorRegistrationForm() {
         {/* Professional Statement */}
         <ControlledTextarea
           name="professionalStatement"
-          label="Professional Statement"
+          label={t("register.statement")}
           control={control}
           placeholder="Write your professional statement"
         />
@@ -291,7 +314,7 @@ export default function DoctorRegistrationForm() {
             href="/doctor/login"
             className="text-sm font-medium text-primary hover:underline"
           >
-            Already Have an Account?
+            {t("register.alreadyAccount")}
           </Link>
         </div>
       </div>
