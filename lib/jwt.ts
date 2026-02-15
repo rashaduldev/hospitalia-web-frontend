@@ -1,12 +1,22 @@
-import jwt from 'jsonwebtoken';
+import { jwtVerify } from 'jose';
 
-const SECRET = process.env.JWT_SECRET || 'your-secret';
+const SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 
-export function verifyToken(token: string) {
+interface MyTokenPayload {
+  roles?: { roleName: string }[];
+  userType?: string;
+  sub?: string;
+  iat?: number;
+  exp?: number;
+}
+
+export async function verifyToken(token: string): Promise<MyTokenPayload> {
   try {
-    const decoded = jwt.verify(token, SECRET);
-    return decoded as any;
-  } catch (err) {
+    const { payload } = await jwtVerify(token, SECRET);
+    console.log('Decoded payload:', payload);
+    return payload as MyTokenPayload;
+  } catch (err: any) {
+    console.error('JWT verification failed:', err.message);
     throw new Error('Invalid token');
   }
 }

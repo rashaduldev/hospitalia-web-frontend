@@ -1,59 +1,92 @@
 // middleware.ts
-import { createI18nMiddleware } from 'next-international/middleware';
-import { NextRequest, NextResponse } from 'next/server';
-import { verifyToken } from './lib/jwt';
+import { createI18nMiddleware } from "next-international/middleware";
+import { NextRequest, NextResponse } from "next/server";
+import { jwtVerify } from "jose";
 
 const I18nMiddleware = createI18nMiddleware({
-  locales: ['en', 'fr'],
-  defaultLocale: 'en'
-})
-  
-// Define public routes
+  locales: ["en", "fr"],
+  defaultLocale: "en",
+});
+
+// Public routes
 const PUBLIC_ROUTES = [
-  '/',
-  '/login',
-  '/signup',
-  '/forgot-password',
-  '/about',
+  "/",
+  "/login",
+  "/doctor/login",
+  "/doctor/registration",
+  "/forgot-password",
+  "/about",
 ];
+
+// Remove locale prefix
+function removeLocale(pathname: string) {
+  return pathname.replace(/^\/(en|fr)/, "") || "/";
+}
+
+// Edge-compatible JWT verification
+const SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
+
+interface MyTokenPayload {
+  roles?: { roleName: string }[];
+  userType?: string;
+  sub?: string;
+  iat?: number;
+  exp?: number;
+}
+
+async function verifyToken(token: string): Promise<MyTokenPayload> {
+  try {
+    const { payload } = await jwtVerify(token, SECRET);
+    return payload as MyTokenPayload;
+  } catch (err: any) {
+    console.error("JWT verification failed:", err.message);
+    throw new Error("Invalid token");
+  }
+}
 
 export async function middleware(req: NextRequest) {
   const url = req.nextUrl.clone();
-  
+
   // Run i18n first
-  const response = await I18nMiddleware(req);
-  if (!response) return NextResponse.next();
+  const i18nResponse = await I18nMiddleware(req);
 
-  const pathname = req.nextUrl.pathname;
+  const pathname = removeLocale(req.nextUrl.pathname);
+  console.log("pathname:", pathname);
 
-  // Allow public routes
-  if (PUBLIC_ROUTES.some(route => pathname.startsWith(route))) {
-    return NextResponse.next();
-  }
+  // Check public routes
+  const isPublic = PUBLIC_ROUTES.some((route) => {
+    if (route === "/") return pathname === "/";
+    return pathname.startsWith(route);
+  });
 
-  // Protected route check
-  const token = req.cookies.get('token')?.value;
+  if (isPublic) return i18nResponse || NextResponse.next();
+
+  // Protected routes
+  const token = req.cookies.get("accessToken")?.value;
+  console.log("Raw token:", token, "Length:", token?.length);
 
   if (!token) {
-    // No token → redirect to login
-    url.pathname = '/login';
+    url.pathname = "/doctor/login";
     return NextResponse.redirect(url);
   }
 
-  // Verify token
   try {
-    const payload = verifyToken(token); // decode & validate token
-    // Optional: attach user info to headers for server actions/layout
-    req.headers.set('x-user-type', payload.userType);
-    req.headers.set('x-user-role', payload.roles[0]?.roleName || '');
-    return NextResponse.next();
+    const payload = await verifyToken(token);
+    console.log("JWT payload:", payload);
+
+    const headers = new Headers(req.headers);
+    headers.set("x-user-role", payload.roles?.[0]?.roleName || "");
+    headers.set("x-user-type", payload.userType || "");
+
+    return NextResponse.next({
+      request: { headers },
+    });
   } catch (err) {
-    // Invalid token → redirect to login
-    url.pathname = '/login';
+    url.pathname = "/doctor/login";
     return NextResponse.redirect(url);
   }
 }
 
 export const config = {
-  matcher: ['/((?!api|static|.*\\..*|_next|favicon.ico|robots.txt).*)']
+  matcher: ["/((?!api|static|.*\\..*|_next|favicon.ico|robots.txt).*)"],
 };

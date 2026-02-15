@@ -1,8 +1,4 @@
-import React from 'react'
-
-const DashboardNavbar = ({user}:{user:any}) => {
-    console.log(user);
-    
+const DashboardNavbar = ({user}:{user:any}) => {    
   return (
     <div>
       DashboardNavbar

@@ -18,6 +18,7 @@ import { register } from "@/actions/auth.actions";
 import { useI18n } from "@/locales/client";
 import { Typography } from "@/components/ui/Typography";
 import { Spinner } from "@/components/ui/spinner";
+import { useLocalePath } from "@/lib/locale";
 
 export default function DoctorRegistrationForm() {
   const t = useI18n();
@@ -311,7 +312,7 @@ export default function DoctorRegistrationForm() {
           </Button>
 
           <Link
-            href="/doctor/login"
+            href={useLocalePath('/doctor/login')}
             className="text-sm font-medium text-primary hover:underline"
           >
             {t("register.alreadyAccount")}
