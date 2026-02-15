@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { DynamicHeading } from "@/components/common/DynamicHeading";
 import { Typography } from "@/components/ui/Typography";
 import { useI18n } from "@/locales/client";
+import { Spinner } from "@/components/ui/spinner";
 
 const DoctorLoginForm = () => {
   const t = useI18n();
@@ -107,6 +108,7 @@ const DoctorLoginForm = () => {
           {/* Submit Button */}
           <div className="w-full text-left">
             <Button className="w-full" type="submit" disabled={isSubmitting}>
+              {isSubmitting && <Spinner data-icon="inline-start" />}
               {isSubmitting ? t("login.loginLoading") : t("login.loginBtn")}
             </Button>
           </div>

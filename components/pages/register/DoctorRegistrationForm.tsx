@@ -15,6 +15,7 @@ import { ControlledSelect } from "@/components/common/FormUIControllers/Controll
 import { ControlledTextarea } from "@/components/common/FormUIControllers/ControlledTextarea";
 import { ControlledDateInput } from "@/components/common/FormUIControllers/ControlledDateInput";
 import { register } from "@/actions/auth.actions";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function DoctorRegistrationForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -280,6 +281,7 @@ export default function DoctorRegistrationForm() {
             type="submit"
             disabled={isSubmitting || success}
           >
+            {isSubmitting && <Spinner data-icon="inline-start" />}
             {isSubmitting
               ? "Creating account..."
               : "Register as a Healthcare Provider"}
