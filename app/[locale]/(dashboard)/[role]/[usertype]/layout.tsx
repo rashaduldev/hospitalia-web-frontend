@@ -7,10 +7,9 @@ export default async function UserLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const token = (await cookies()).get('token')?.value || '';
+  const token = (await cookies()).get('accessToken')?.value || '';
   const user = await getCurrentUser(token);
 
-  // Optional: restrict access per userType
   if (!user) {
     return <div>Access denied. Please login.</div>;
   }
