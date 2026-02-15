@@ -15,6 +15,7 @@ import { DynamicHeading } from "@/components/common/DynamicHeading";
 import { Typography } from "@/components/ui/Typography";
 import { useI18n } from "@/locales/client";
 import { Spinner } from "@/components/ui/spinner";
+import { saveSession } from "@/lib/saveSession";
 
 const DoctorLoginForm = () => {
   const t = useI18n();
@@ -53,7 +54,11 @@ const DoctorLoginForm = () => {
       });
       return;
     }
-    router.push("/dashboard");
+    saveSession(res);
+    const role = res?.payload?.user?.roles[0]?.roleName.toLowerCase();
+    const userType = res?.payload?.user?.userType?.toLowerCase();
+    const dashboardPath = `/${role}/${userType}/dashboard`;
+    router.push(dashboardPath);
   };
 
   return (
