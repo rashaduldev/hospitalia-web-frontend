@@ -23,7 +23,6 @@ const I18nMiddleware = createI18nMiddleware({
   defaultLocale: 'fr',
 });
 
-// Define public routes
 const PUBLIC_ROUTES = [
   '/',
   '/login',
