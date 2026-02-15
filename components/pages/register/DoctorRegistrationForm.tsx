@@ -43,16 +43,21 @@ export default function DoctorRegistrationForm() {
   });
 
   const router = useRouter();
-  const { data: specialities = [] } = useQuery({
+
+  const { data } = useQuery({
     queryKey: ["specialities"],
     queryFn: async () => {
       const res = await getSpecialitiesAllCustomer();
+
       if (!res.success) {
         throw new Error(res.message);
       }
-      return res.payload || [];
+
+      return res.payload;
     },
   });
+  const specialities = data?.content ?? [];
+
   const onSubmit = async ({
     firstName,
     lastName,
@@ -69,24 +74,24 @@ export default function DoctorRegistrationForm() {
     professionalStatement,
   }: FormValues) => {
     const res = await register({
-        firstName,
-        lastName: lastName || "",
-        gender,
-        email,
-        dateOfBirth,
-        userType,
-        countryCode,
-        mobileNumber,
-        password,
+      firstName,
+      lastName: lastName || "",
+      gender,
+      email,
+      dateOfBirth,
+      userType,
+      countryCode,
+      mobileNumber,
+      password,
 
-        professionalInfoRequest: {
-          designation,
-          specialityId: [Number(specialityId)],
-          departmentId: [0],
-          fileObjectId: 0,
-          workPhoneNumber: "",
-          onmsRegistrationNumber,
-          professionalStatement: professionalStatement || "",
+      professionalInfoRequest: {
+        designation,
+        specialityId: [Number(specialityId)],
+        departmentId: [0],
+        fileObjectId: 0,
+        workPhoneNumber: "",
+        onmsRegistrationNumber,
+        professionalStatement: professionalStatement || "",
       },
     });
 
@@ -238,11 +243,12 @@ export default function DoctorRegistrationForm() {
             label="Speciality"
             control={control}
             placeholder="Select speciality"
-            options={specialities.map((item: any) => ({
+            options={specialities.map((item) => ({
               label: item.name,
               value: String(item.id),
             }))}
           />
+
           {/* ONMS Registration Number */}
           <ControlledInput
             name="onmsRegistrationNumber"

@@ -8,22 +8,29 @@ export type PhoneInputProps<T extends FieldValues> = {
   errors?: FieldErrors<T>;
 };
 
-
 export type Country = {
   name: string;
   isoCode: string;
-  dialCode: string; 
+  dialCode: string;
   flag: string;
 };
 
-export type ApiResponse<T> ={
+export type ApiResponse<T> = {
   success: boolean;
   message: string;
   payload: T | null;
   status: number;
+};
+
+export interface Paginated<T> {
+  content: T[];
+  page: number;
+  limit: number;
+  total: number;
 }
 
-export type RegisterRequestData ={
+
+export type RegisterRequestData = {
   firstName: string;
   lastName?: string;
   gender: "MALE" | "FEMALE";
@@ -43,15 +50,15 @@ export type RegisterRequestData ={
     onmsRegistrationNumber?: string;
     professionalStatement?: string;
   };
-}
-export type LoginRequestData ={
+};
+export type LoginRequestData = {
   countryCode?: string;
   phoneNumber: string;
   password: string;
-}
+};
 
-export type LoginResponseData ={
+export type LoginResponseData = {
   token?: string;
   refreshToken?: string;
   userId?: number;
-}
+};
