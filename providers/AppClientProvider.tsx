@@ -3,7 +3,7 @@
 import { ReactNode } from "react";
 import { I18nProviderClient } from "@/locales/client";
 
-interface AppClientProviderProps {
+type AppClientProviderProps ={
   locale: string;
   children: ReactNode;
 }

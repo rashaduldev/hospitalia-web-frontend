@@ -1,55 +1,91 @@
 import { z } from "zod";
 
 
-// User Login schema
-export const LoginformSchema = z
-  .object({
-    countryCode: z.string().min(1, "CountryCode is required").optional(),
+export const loginFormSchema = (t: (key: string) => string) =>
+  z.object({
+    countryCode: z
+      .string()
+      .nonempty(t("login.errors.countryRequired")),
     phoneNumber: z
       .string()
-      .min(4, "Phone number is too short")
-      .max(15, "Phone number is too long"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
-  })
+      .nonempty(t("login.errors.phoneRequired"))
+      .min(4, t("login.errors.phoneShort"))
+      .max(15, t("login.errors.phoneLong")),
 
-export type LoginFormValues = z.infer<typeof LoginformSchema>
-
-// Doctor Registration schema
-export const formSchema = z
-  .object({
-    firstName: z.string().min(2, "First name must be at least 2 characters"),
-    lastName: z.string().optional(),
-    gender: z.enum(["male", "female"], {
-      message: "Gender is required",
-    }),
-    email: z.email("Invalid email").optional().or(z.literal("")),
-    dateOfBirth: z.string().optional().or(z.literal("")),
-    userType: z.enum(["doctor", "hospital", "secretary"], {
-      message: "UserType is required",
-    }),
-    countryCode: z.string().min(1, "CountryCode is required").optional(),
-    mobileNumber: z
-      .string()
-      .min(4, "MobileNumber number is too short")
-      .max(15, "MobileNumber number is too long"),
     password: z
       .string()
-      .min(8, "Password must be at least 8 characters")
-      .regex(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-        "Password must have a digit, a special character and a capital letter and a small letter",
-      ),
-    confirmPassword: z.string().min(1, "Confirm password is required"),
-    designation: z.string().min(2, "Designation is required"),
-    specialityId: z.number({
-      message: "Speciality is required",
-    }),
-    onmsRegistrationNumber: z.string().optional(),
-    professionalStatement: z.string().optional(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
+      .min(6, t("login.errors.passwordMin")),
   });
 
-export type FormValues = z.infer<typeof formSchema>;
+export type LoginFormValues = z.infer<
+  ReturnType<typeof loginFormSchema>
+>;
+
+// Doctor Registration schema
+export const RegisterFormSchema = (t: (key: string) => string) =>
+  z
+    .object({
+      firstName: z
+        .string()
+        .min(2, t("register.errors.firstNameMin")),
+
+      lastName: z.string().optional(),
+
+      gender: z.enum(["MALE", "FEMALE"], {
+        message: t("register.errors.genderRequired"),
+      }),
+
+      email: z
+        .string()
+        .email(t("register.errors.invalidEmail"))
+        .optional()
+        .or(z.literal("")),
+
+      dateOfBirth: z.string().optional().or(z.literal("")),
+
+      userType: z.enum(["DOCTOR", "HOSPITAL", "SECRETARY"], {
+        message: t("register.errors.userTypeRequired"),
+      }),
+
+      countryCode: z
+        .string()
+        .nonempty(t("register.errors.countryRequired")),
+
+      mobileNumber: z
+        .string()
+        .nonempty(t("register.errors.phoneRequired"))
+        .min(4, t("register.errors.phoneShort"))
+        .max(15, t("register.errors.phoneLong")),
+
+      password: z
+        .string()
+        .min(8, t("register.errors.passwordMin"))
+        .regex(
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+          t("register.errors.passwordStrength"),
+        ),
+
+      confirmPassword: z
+        .string()
+        .min(1, t("register.errors.confirmPasswordRequired")),
+
+      designation: z
+        .string()
+        .min(2, t("register.errors.designationRequired")),
+
+      specialityId: z
+        .string()
+        .min(1, t("register.errors.specialityRequired")),
+
+      onmsRegistrationNumber: z.string().optional(),
+
+      professionalStatement: z.string().optional(),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: t("register.errors.passwordNotMatch"),
+      path: ["confirmPassword"],
+    });
+
+export type FormValues = z.infer<
+  ReturnType<typeof RegisterFormSchema>
+>;

@@ -1,11 +1,20 @@
 import { FC, useState } from "react";
 import { Controller, Control } from "react-hook-form";
 import { FieldLabel, Field } from "@/components/ui/field";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { Typography } from "@/components/ui/Typography";
 
-export const ControlledDatePicker: FC<{ name: string; label: string; control: Control<any> }> = ({ name, label, control }) => {
+export const ControlledDatePicker: FC<{
+  name: string;
+  label: string;
+  control: Control<any>;
+}> = ({ name, label, control }) => {
   const [open, setOpen] = useState(false);
   return (
     <Controller
@@ -16,8 +25,13 @@ export const ControlledDatePicker: FC<{ name: string; label: string; control: Co
           <FieldLabel>{label}</FieldLabel>
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" className={`w-full justify-start font-normal ${fieldState.error ? "border-destructive" : ""}`}>
-                {field.value ? new Date(field.value).toLocaleDateString() : "Select date"}
+              <Button
+                variant="outline"
+                className={`w-full justify-start font-normal ${fieldState.error ? "border-destructive" : ""}`}
+              >
+                {field.value
+                  ? new Date(field.value).toLocaleDateString()
+                  : "Select date"}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
@@ -34,7 +48,6 @@ export const ControlledDatePicker: FC<{ name: string; label: string; control: Co
               />
             </PopoverContent>
           </Popover>
-          {fieldState.error && <p className="text-xs text-destructive mt-1">{fieldState.error.message}</p>}
         </Field>
       )}
     />

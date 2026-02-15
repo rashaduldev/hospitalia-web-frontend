@@ -3,11 +3,16 @@
 import React, { useState } from "react";
 import { Control, Controller } from "react-hook-form";
 import { Field, FieldLabel } from "@/components/ui/field";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
+import { Typography } from "@/components/ui/Typography";
 
-interface ControlledDateInputProps {
+type ControlledDateInputProps ={
   name: string;
   label: string;
   control: Control<any>;
@@ -60,7 +65,6 @@ export const ControlledDateInput: React.FC<ControlledDateInputProps> = ({
               />
             </PopoverContent>
           </Popover>
-          {error && <p className="text-xs text-destructive mt-1">{error}</p>}
         </Field>
       )}
     />

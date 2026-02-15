@@ -1,29 +1,36 @@
-import { Control } from "react-hook-form";
+import { Control, FieldErrors, FieldValues, Path } from "react-hook-form";
 
-export interface PhoneInputProps {
-  control: Control<any>;
-  nameCode: string;
-  mobileNumber?: string;
-  phoneNumber?:string;
+export type PhoneInputProps<T extends FieldValues> = {
+  control: Control<T>;
+  countrycode: Path<T>;
+  mobileNumber: Path<T>;
   label?: string;
-  error?: string;
-}
+  errors?: FieldErrors<T>;
+};
 
 export type Country = {
   name: string;
   isoCode: string;
-  dialCode: string; 
+  dialCode: string;
   flag: string;
 };
 
-export interface ApiResponse<T> {
+export type ApiResponse<T> = {
   success: boolean;
   message: string;
   payload: T | null;
   status: number;
+};
+
+export interface Paginated<T> {
+  content: T[];
+  page: number;
+  limit: number;
+  total: number;
 }
 
-export interface RegisterRequestPayload {
+
+export type RegisterRequestData = {
   firstName: string;
   lastName?: string;
   gender: "MALE" | "FEMALE";
@@ -43,4 +50,15 @@ export interface RegisterRequestPayload {
     onmsRegistrationNumber?: string;
     professionalStatement?: string;
   };
-}
+};
+export type LoginRequestData = {
+  countryCode?: string;
+  phoneNumber: string;
+  password: string;
+};
+
+export type LoginResponseData = {
+  token?: string;
+  refreshToken?: string;
+  userId?: number;
+};

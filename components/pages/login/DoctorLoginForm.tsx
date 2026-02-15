@@ -1,30 +1,33 @@
 "use client";
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginformSchema, LoginFormValues } from "@/schema/ueser.schema";
+import { loginFormSchema, LoginFormValues } from "@/schema/ueser.schema";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { CountryAndPhoneInput } from "@/components/common/Country&PhoneInput";
 import { ControlledInput } from "@/components/common/FormUIControllers/ControlledInput";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { loginAction } from "@/actions/auth.actions";
+import { login } from "@/actions/auth.actions";
 import { useRouter } from "next/navigation";
-import { useServerFormError } from "@/hooks/useServerFormError";
-import { FormError, FormSuccess } from "@/components/common/Feedback";
 import { DynamicHeading } from "@/components/common/DynamicHeading";
 import { Typography } from "@/components/ui/Typography";
+import { useI18n } from "@/locales/client";
+import { Spinner } from "@/components/ui/spinner";
 
 const DoctorLoginForm = () => {
+  const t = useI18n();
   const [showPassword, setShowPassword] = useState(false);
-  const [success, setSuccess] = useState(false);
   const {
     handleSubmit,
     control,
     setError,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
-    resolver: zodResolver(LoginformSchema),
+    resolver: zodResolver(
+      loginFormSchema((key) => t(key as keyof typeof t) as string),
+    ),
     defaultValues: {
       password: "",
       countryCode: "",
@@ -32,16 +35,25 @@ const DoctorLoginForm = () => {
     },
   });
   const router = useRouter();
-  const serverErrorHandler = useServerFormError<LoginFormValues>(setError);
+  const onSubmit = async ({
+    countryCode,
+    phoneNumber,
+    password,
+  }: LoginFormValues) => {
+    const res = await login({
+        countryCode,
+        phoneNumber,
+        password,
+    });
 
-  const onSubmit = async (data: LoginFormValues) => {
-    try {
-      await loginAction(data);
-      setSuccess(true);
-      router.push("/dashboard");
-    } catch (error: any) {
-      serverErrorHandler(error);
+    if (!res.success) {
+      setError("root", {
+        type: "manual",
+        message: res.message,
+      });
+      return;
     }
+    router.push("/dashboard");
   };
 
   return (
@@ -49,9 +61,9 @@ const DoctorLoginForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         {/* Dynamic Title & Description */}
         <DynamicHeading
-          title="Login as a Provider"
-          description="Enter your details below to login"
-          titleProps={{ size: "2xl", weight: "semiBold", color: "primary" }}
+          title={t("login.title")}
+          description={t("login.description")}
+          titleProps={{ size: "2xl", weight: "semiBold", color: "foreground" }}
           className="mb-6"
         />
 
@@ -59,17 +71,17 @@ const DoctorLoginForm = () => {
           {/* Country and Phone */}
           <CountryAndPhoneInput
             control={control}
-            nameCode="countryCode"
+            countrycode="countryCode"
             mobileNumber="phoneNumber"
-            label="Phone"
-            error={errors.phoneNumber?.message}
+            label={t("login.phoneLabel")}
+            errors={errors}
           />
 
           {/* Password */}
           <div className="relative">
             <ControlledInput
               name="password"
-              label="Password"
+              label={t("login.passwordLabel")}
               type={showPassword ? "text" : "password"}
               control={control}
               placeholder="••••••••"
@@ -86,20 +98,18 @@ const DoctorLoginForm = () => {
             </div>
           </div>
 
-          {/* Feedback Messages */}
-          <div className="space-y-2">
-            {errors.root?.serverError?.message && (
-              <FormError message={errors.root.serverError.message} />
-            )}
-            {success && (
-              <FormSuccess message="Account created successfully! Redirecting to dashboard..." />
-            )}
-          </div>
+          {/* Server Error message */}
+          {errors.root && (
+            <Typography size="xs" color="destructive" weight="semiBold">
+              {errors.root.message}
+            </Typography>
+          )}
 
           {/* Submit Button */}
           <div className="w-full text-left">
             <Button className="w-full" type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Login..." : "Login"}
+              {isSubmitting && <Spinner data-icon="inline-start" />}
+              {isSubmitting ? t("login.loginLoading") : t("login.loginBtn")}
             </Button>
           </div>
         </div>
@@ -113,9 +123,10 @@ const DoctorLoginForm = () => {
               color="secondary"
               className="hover:underline"
             >
-              Don't have an account? Sign up
+              {t("login.noAccount")}
             </Typography>
           </Link>
+
           <Link href="/doctor/forgot-password">
             <Typography
               size="sm"
@@ -123,8 +134,7 @@ const DoctorLoginForm = () => {
               color="primary"
               className="hover:underline"
             >
-              {" "}
-              Forgot your password?
+              {t("login.forgotPassword")}
             </Typography>
           </Link>
         </div>
