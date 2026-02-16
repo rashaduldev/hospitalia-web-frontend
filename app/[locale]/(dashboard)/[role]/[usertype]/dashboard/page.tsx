@@ -4,9 +4,9 @@ import {
 } from "@/components/ui/sidebar"
 
 import data from "./data.json"
-import { SiteHeader } from "@/components/site-header"
 import { DataTable } from "@/components/data-table"
 import { AppSidebar } from "@/components/app-sidebar"
+import { SiteHeader } from "@/components/site-header"
 
 export default function Page() {
   return (
