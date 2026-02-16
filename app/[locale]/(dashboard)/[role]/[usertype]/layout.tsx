@@ -1,13 +1,14 @@
-import { cookies } from 'next/headers';
-import { getCurrentUser } from '@/actions/user.actions';
-import DashboardNavbar from '@/components/pages/dashboard/Navbar';
+import { cookies } from "next/headers";
+import { getCurrentUser } from "@/actions/user.actions";
+import DashboardNavbar from "@/components/pages/dashboard/Navbar";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 export default async function UserLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const token = (await cookies()).get('accessToken')?.value || '';
+  const token = (await cookies()).get("accessToken")?.value || "";
   const user = await getCurrentUser(token);
 
   if (!user) {
@@ -17,7 +18,7 @@ export default async function UserLayout({
   return (
     <div>
       <DashboardNavbar user={user} />
-      <main>{children}</main>
+      <TooltipProvider>{children}</TooltipProvider>
     </div>
   );
 }
