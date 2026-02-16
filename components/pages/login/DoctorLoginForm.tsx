@@ -15,7 +15,6 @@ import { DynamicHeading } from "@/components/common/DynamicHeading";
 import { Typography } from "@/components/ui/Typography";
 import { useI18n } from "@/locales/client";
 import { Spinner } from "@/components/ui/spinner";
-import { saveSession } from "@/lib/saveSession";
 import { useLocalePath } from "@/lib/locale";
 
 const DoctorLoginForm = () => {
@@ -57,7 +56,7 @@ const DoctorLoginForm = () => {
       });
       return;
     }
-    saveSession(res);
+    // setCookies(res);
     const role = res?.payload?.user?.roles[0]?.roleName.toLowerCase();
     const userType = res?.payload?.user?.userType?.toLowerCase();
     const dashboardPath = `/${locale}/${role}/${userType}/dashboard`;

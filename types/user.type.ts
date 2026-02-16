@@ -69,9 +69,8 @@ export type User = {
 
 
 export type LoginResponseData ={
-  token?: string;
+  accessToken?: string | undefined;
   refreshToken?: string;
   userId?: number;
   user?: User;
 }
-
