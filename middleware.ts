@@ -1,7 +1,6 @@
-// middleware.ts
 import { createI18nMiddleware } from "next-international/middleware";
 import { NextRequest, NextResponse } from "next/server";
-import { jwtVerify } from "jose";
+import { decodeJwt } from "jose";
 
 const I18nMiddleware = createI18nMiddleware({
   locales: ["en", "fr"],
@@ -18,72 +17,50 @@ const PUBLIC_ROUTES = [
   "/about",
 ];
 
-// Remove locale prefix
 function removeLocale(pathname: string) {
   return pathname.replace(/^\/(en|fr)/, "") || "/";
 }
 
-// Edge-compatible JWT verification
-const SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
-
-interface MyTokenPayload {
-  roles?: { roleName: string }[];
-  userType?: string;
-  sub?: string;
-  iat?: number;
-  exp?: number;
-}
-
-async function verifyToken(token: string): Promise<MyTokenPayload> {
-  try {
-    const { payload } = await jwtVerify(token, SECRET);
-    return payload as MyTokenPayload;
-  } catch (err: any) {
-    console.error("JWT verification failed:", err.message);
-    throw new Error("Invalid token");
-  }
-}
-
 export async function middleware(req: NextRequest) {
-  const url = req.nextUrl.clone();
+  const { pathname } = req.nextUrl;
+  const purePathname = removeLocale(pathname);
 
-  // Run i18n first
-  const i18nResponse = await I18nMiddleware(req);
+  const i18nResponse = I18nMiddleware(req);
 
-  const pathname = removeLocale(req.nextUrl.pathname);
-  console.log("pathname:", pathname);
-
-  // Check public routes
+  // Public Route Logic
   const isPublic = PUBLIC_ROUTES.some((route) => {
-    if (route === "/") return pathname === "/";
-    return pathname.startsWith(route);
+    if (route === "/") return purePathname === "/";
+    return purePathname.startsWith(route);
   });
 
-  if (isPublic) return i18nResponse || NextResponse.next();
+  if (isPublic) {
+    return i18nResponse;
+  }
 
-  // Protected routes
+  // Protected Route Logic
   const token = req.cookies.get("accessToken")?.value;
-  console.log("Raw token:", token, "Length:", token?.length);
 
   if (!token) {
-    url.pathname = "/doctor/login";
-    return NextResponse.redirect(url);
+    const locale = pathname.split("/")[1] || "en";
+    const loginUrl = new URL(`/${locale}/doctor/login`, req.url);
+    return NextResponse.redirect(loginUrl);
   }
 
   try {
-    const payload = await verifyToken(token);
-    console.log("JWT payload:", payload);
+    const payload = decodeJwt(token);
+    const isExpired = payload.exp ? Date.now() >= payload.exp * 1000 : false;
 
-    const headers = new Headers(req.headers);
-    headers.set("x-user-role", payload.roles?.[0]?.roleName || "");
-    headers.set("x-user-type", payload.userType || "");
-
-    return NextResponse.next({
-      request: { headers },
-    });
+    if (isExpired) {
+       throw new Error("Token expired");
+    }
+    return i18nResponse;
   } catch (err) {
-    url.pathname = "/doctor/login";
-    return NextResponse.redirect(url);
+    const locale = pathname.split("/")[1] || "en";
+    const loginUrl = new URL(`/${locale}/doctor/login`, req.url);
+    
+    const response = NextResponse.redirect(loginUrl);
+    response.cookies.delete("accessToken");
+    return response;
   }
 }
 
