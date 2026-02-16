@@ -1,14 +1,16 @@
-import { apiClient } from "@/lib/api";
+"use server";
 
-export const getCurrentUser = async (
-    token: string,
-    lang?: string,
-) => {
+import { apiClient } from "@/lib/api";
+import { getAccessToken } from "./auth";
+
+export async function getCurrentUser(lang?: string) {
+  const token = await getAccessToken();
+
   if (!token) return null;
 
   const res = await apiClient({
-    endpoint: '/api/users/me',
-    method: 'GET',
+    endpoint: "/api/users/me",
+    method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -16,4 +18,4 @@ export const getCurrentUser = async (
   });
 
   return res.payload;
-};
+}
