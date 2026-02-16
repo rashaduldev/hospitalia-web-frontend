@@ -17,7 +17,7 @@ export default async function UserLayout({
 
   return (
     <div>
-      <DashboardNavbar user={user} />
+      {/* <DashboardNavbar user={user} /> */}
       <TooltipProvider>{children}</TooltipProvider>
     </div>
   );

@@ -2,15 +2,6 @@
 
 import * as React from "react";
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar";
-import {
   LayoutDashboardIcon,
   ListIcon,
   ChartBarIcon,
@@ -20,9 +11,19 @@ import {
   SearchIcon,
   CircleUserRound,
 } from "lucide-react";
-import DashboardLogo from "@/public/assets/logo.svg";
+import DashboardLogo from "@/public/icons/dashLogo"
 import { NavDocuments } from "./nav-documents";
 import { NavSecondary } from "./nav-secondary";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "./ui/sidebar";
+import Image from "next/image";
 
 const data = {
   user: {

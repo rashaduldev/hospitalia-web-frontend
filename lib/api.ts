@@ -1,12 +1,12 @@
 import { ApiResponse } from "@/types/user.type";
 
-export type ApiClientOptions<Request = any> ={
+export type ApiClientOptions<Request = any> = {
   endpoint: string;
   method?: "GET" | "POST" | "PUT" | "DELETE";
   body?: Request;
   params?: Record<string, string | number | boolean>;
   headers?: Record<string, string>;
-}
+};
 
 export async function apiClient<Response = any, Request = any>({
   endpoint,
@@ -19,7 +19,10 @@ export async function apiClient<Response = any, Request = any>({
 
   const queryString = params
     ? `?${Object.entries(params)
-        .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`)
+        .map(
+          ([key, value]) =>
+            `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`,
+        )
         .join("&")}`
     : "";
 
@@ -31,7 +34,10 @@ export async function apiClient<Response = any, Request = any>({
       "Content-Type": "application/json",
       ...headers,
     },
-    body: body && method !== "GET" && method !== "DELETE" ? JSON.stringify(body) : undefined,
+    body:
+      body && method !== "GET" && method !== "DELETE"
+        ? JSON.stringify(body)
+        : undefined,
   });
 
   let data: any = {};
