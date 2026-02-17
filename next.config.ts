@@ -1,17 +1,44 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  reactStrictMode: true,
+  trailingSlash: true,
+  compress: true,
+
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production",
+  },
   images: {
+    dangerouslyAllowLocalIP: process.env.NODE_ENV === "development",
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "**",
-      },
-      {
-        protocol: "http",
-        hostname: "**",
-      },
     ],
+  },
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
+  },
+  experimental: {
+    serverActions: {
+      allowedOrigins: ["app.getrapidcart.com", "localhost:3060"],
+    },
+    serverComponentsHmrCache: true,
+    viewTransition: true,
+  },
+
+  serverExternalPackages: ["pino", "pino-pretty"],
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "X-Accel-Buffering",
+            value: "no",
+          },
+        ],
+      },
+    ];
   },
 };
 
