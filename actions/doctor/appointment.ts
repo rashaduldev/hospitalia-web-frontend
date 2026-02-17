@@ -11,7 +11,6 @@ export const getUpcomingAppointments = async (
   page = 1
 ) => {  
   const token = await getAccessToken();
-  console.log("token", token);
   const res = await apiClient<Paginated<Appointment>>({
     endpoint: `/api/appointments/all/upcoming/doctorUserId/${doctorUserId}`,
     method: "GET",

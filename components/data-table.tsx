@@ -52,9 +52,7 @@ export function DataTableWithExport<TData, TValue>({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-  const [globalFilter, setGlobalFilter] = useState("");
-  console.log("data,",data);
-  
+  const [globalFilter, setGlobalFilter] = useState(""); 
 
   const table = useReactTable({
     data,

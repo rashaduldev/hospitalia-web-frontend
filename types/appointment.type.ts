@@ -1,10 +1,13 @@
 export interface Appointment {
   id: string;
   doctorUserId: string;
+  patientUserId: number;
   patientName: string;
   appointmentDate: string;
   startTime: string;
   endTime: string;
+  slotDuration: number;
+  locationName: string;
   status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
   doctorLocationId?: string;
   notes?: string;
