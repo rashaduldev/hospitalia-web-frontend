@@ -27,7 +27,6 @@ export function AppSidebar({
   user,
   ...props
 }: React.ComponentProps<typeof Sidebar> & { user: any }) {
-  const pathname = usePathname();
   const roleLinks = React.useMemo(() => {
     const links = [];
     if (user === "DOCTOR") {
@@ -70,9 +69,9 @@ export function AppSidebar({
         <SidebarMenu>
           <Link
             href="/en/customer/doctor/dashboard"
-            className="w-full bg-primary py-6 flex justify-center"
+            className="w-full bg-primary py-5 flex justify-center"
           >
-            <DashboardLogo className="w-32 h-8" />
+            <DashboardLogo className="w-32 h-6" />
           </Link>
           <div className="flex items-center justify-center gap-3 py-4 border-b">
             <CircleUserRound className="size-5" />
@@ -90,7 +89,6 @@ export function AppSidebar({
           <NavDocuments items={commonLinks} />
         </div>
       </SidebarContent>
-
       <SidebarFooter />
     </Sidebar>
   );
