@@ -20,7 +20,6 @@ import { useLocalePath } from "@/lib/locale";
 const DoctorLoginForm = () => {
   const t = useI18n();
   const params = useParams();
-  const locale = params?.locale ?? 'en';
   const [showPassword, setShowPassword] = useState(false);
   const {
     handleSubmit,
@@ -59,7 +58,7 @@ const DoctorLoginForm = () => {
     // setCookies(res);
     const role = res?.payload?.user?.roles[0]?.roleName.toLowerCase();
     const userType = res?.payload?.user?.userType?.toLowerCase();
-    const dashboardPath = `/${locale}/${role}/${userType}/dashboard`;
+    const dashboardPath = `/${role}/${userType}/dashboard`;
     router.push(dashboardPath);
   };
 

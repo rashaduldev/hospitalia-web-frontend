@@ -10,7 +10,7 @@ export const ROUTES = {
   DOCTOR: [
     {
       name: "Dashboard",
-      url: "/en/customer/doctor/dashboard",
+      url: "/customer/doctor/dashboard",
       icon: LayoutDashboardIcon,
     },
     {
@@ -27,7 +27,7 @@ export const ROUTES = {
   HOSPITAL: [
     {
       name: "Dashboard",
-      url: "/en/customer/hospital/dashboard",
+      url: "/customer/hospital/dashboard",
       icon: LayoutDashboardIcon,
     },
     {
