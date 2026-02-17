@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 const I18nMiddleware = createI18nMiddleware({
   locales: ["en", "fr"],
   defaultLocale: "en",
+  urlMappingStrategy:"rewrite",
 });
 
 const PUBLIC_ROUTES = [
