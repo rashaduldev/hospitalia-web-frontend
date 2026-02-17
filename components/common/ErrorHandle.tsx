@@ -29,7 +29,7 @@ export default function ErrorHandle({
         </Typography>
         <div className="flex gap-4">
           <Link
-            href="/doctor/login"
+            href="/login"
             className="flex-1 text-center bg-primary text-muted py-2 rounded-md hover:bg-primary transition"
           >
             Return to Login

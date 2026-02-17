@@ -10,10 +10,8 @@ const I18nMiddleware = createI18nMiddleware({
 const PUBLIC_ROUTES = [
   "/",
   "/login",
-  "/doctor/login",
-  "/doctor/registration",
+  "/register",
   "/forgot-password",
-  "/about",
 ];
 
 function removeLocale(pathname: string) {

@@ -123,7 +123,7 @@ const DoctorLoginForm = () => {
 
         {/* Links */}
         <div className="mt-8 space-y-4 flex flex-col gap-2">
-          <Link href={useLocalePath('/doctor/registration')}>
+          <Link href={useLocalePath('/register')}>
             <Typography
               size="sm"
               weight="medium"
@@ -134,7 +134,7 @@ const DoctorLoginForm = () => {
             </Typography>
           </Link>
 
-          <Link href={useLocalePath('/doctor/forgot-password')}>
+          <Link href={useLocalePath('/forgot-password')}>
             <Typography
               size="sm"
               weight="medium"

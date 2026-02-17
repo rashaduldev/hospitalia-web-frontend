@@ -110,7 +110,7 @@ export default function DoctorRegistrationForm() {
       return;
     }
 
-    router.push("/doctor/login");
+    router.push("/login");
   };
 
   return (
@@ -312,7 +312,7 @@ export default function DoctorRegistrationForm() {
           </Button>
 
           <Link
-            href={useLocalePath('/doctor/login')}
+            href={useLocalePath('/login')}
             className="text-sm font-medium text-primary hover:underline"
           >
             {t("register.alreadyAccount")}
