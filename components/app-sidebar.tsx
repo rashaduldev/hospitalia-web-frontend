@@ -30,7 +30,7 @@ export function AppSidebar({
   const pathname = usePathname();
   const roleLinks = React.useMemo(() => {
     const links = [];
-    if (user?.role === "doctor") {
+    if (user === "DOCTOR") {
       links.push(
         {
           name: "Dashboard",
@@ -82,7 +82,7 @@ export function AppSidebar({
           </div>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent className="flex flex-col h-full">
+      <SidebarContent className="flex flex-col h-full mt-5">
         <div className="flex-1">
           <NavDocuments items={roleLinks} />
         </div>

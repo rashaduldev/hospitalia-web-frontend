@@ -17,7 +17,7 @@ type Size =
 export type TextProps = {
   as?: ElementType;
   size?: Size;
-  color?: "primary" | "secondary" | "black" | "green" | "red" | "brand" | "destructive" | "muted" | "muted_foreground" | "foreground";
+  color?: "primary" | "secondary" | "black" | "green" | "red" | "brand" | "destructive" | "muted" | "muted_foreground" | "foreground" | "ghost_foreground";
   weight?: "thin" | "normal" | "medium" | "semiBold" | "bold" | "black";
   align?: "center" | "left" | "right" | "justify" | "custom";
   fontFamily?: "body" | "heading"; 
@@ -56,6 +56,7 @@ export const Typography: FC<TextProps> = ({
     destructive: "text-destructive",
     muted: "text-muted",
     muted_foreground: "text-muted-foreground",
+    ghost_foreground: "text-ghost-foreground",
     foreground:"text-foreground",
     black: "text-card-foreground",
     green: "text-secondary",
