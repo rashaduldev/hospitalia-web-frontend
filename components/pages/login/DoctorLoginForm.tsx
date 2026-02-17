@@ -10,14 +10,17 @@ import { ControlledInput } from "@/components/common/FormUIControllers/Controlle
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { login } from "@/actions/auth.actions";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { DynamicHeading } from "@/components/common/DynamicHeading";
 import { Typography } from "@/components/ui/Typography";
 import { useI18n } from "@/locales/client";
 import { Spinner } from "@/components/ui/spinner";
+import { useLocalePath } from "@/lib/locale";
 
 const DoctorLoginForm = () => {
   const t = useI18n();
+  const params = useParams();
+  const locale = params?.locale ?? 'en';
   const [showPassword, setShowPassword] = useState(false);
   const {
     handleSubmit,
@@ -53,7 +56,11 @@ const DoctorLoginForm = () => {
       });
       return;
     }
-    router.push("/dashboard");
+    // setCookies(res);
+    const role = res?.payload?.user?.roles[0]?.roleName.toLowerCase();
+    const userType = res?.payload?.user?.userType?.toLowerCase();
+    const dashboardPath = `/${locale}/${role}/${userType}/dashboard`;
+    router.push(dashboardPath);
   };
 
   return (
@@ -116,7 +123,7 @@ const DoctorLoginForm = () => {
 
         {/* Links */}
         <div className="mt-8 space-y-4 flex flex-col gap-2">
-          <Link href="/doctor/registration">
+          <Link href={useLocalePath('/doctor/registration')}>
             <Typography
               size="sm"
               weight="medium"
@@ -127,7 +134,7 @@ const DoctorLoginForm = () => {
             </Typography>
           </Link>
 
-          <Link href="/doctor/forgot-password">
+          <Link href={useLocalePath('/doctor/forgot-password')}>
             <Typography
               size="sm"
               weight="medium"

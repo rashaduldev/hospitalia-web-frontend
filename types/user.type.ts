@@ -57,8 +57,20 @@ export type LoginRequestData = {
   password: string;
 };
 
-export type LoginResponseData = {
-  token?: string;
+export type Role = {
+  roleName: string;
+};
+
+export type User = {
+  id: number;
+  roles: Role[];
+  userType: string;
+};
+
+
+export type LoginResponseData ={
+  accessToken?: string;
   refreshToken?: string;
   userId?: number;
-};
+  user?: User;
+}
