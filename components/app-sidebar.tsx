@@ -3,15 +3,13 @@
 import * as React from "react";
 import {
   LayoutDashboardIcon,
-  ListIcon,
   ChartBarIcon,
   FolderIcon,
-  UsersIcon,
   Settings2Icon,
   SearchIcon,
   CircleUserRound,
 } from "lucide-react";
-import DashboardLogo from "@/public/icons/dashLogo"
+import DashboardLogo from "@/public/icons/dashLogo";
 import { NavDocuments } from "./nav-documents";
 import { NavSecondary } from "./nav-secondary";
 import {
@@ -23,58 +21,40 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "./ui/sidebar";
-import Image from "next/image";
+import Link from "next/link";
 
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  navMain: [
-    {
-      title: "Lifecycle",
-      url: "#",
-      icon: <ListIcon />,
-    },
-
-    {
-      title: "Team",
-      url: "#",
-      icon: <UsersIcon />,
-    },
-  ],
   navSecondary: [
     {
       title: "Settings",
-      url: "#",
+      url: "/b",
       icon: <Settings2Icon />,
     },
     {
       title: "Sign Out",
-      url: "#",
+      url: "dd",
       icon: <SearchIcon />,
     },
   ],
   documents: [
     {
       name: "Dashboard",
-      url: "#",
+      url: "/en/customer/doctor/dashboard",
       icon: <LayoutDashboardIcon />,
     },
     {
       name: "Set Availability",
-      url: "#",
+      url: "/customer/doctor/availability",
       icon: <ChartBarIcon />,
     },
     {
       name: "Messages",
-      url: "#",
+      url: "/a",
       icon: <FolderIcon />,
     },
     {
       name: "Add Secretary",
-      url: "#",
+      url: "/s",
       icon: <FolderIcon />,
     },
   ],
@@ -90,25 +70,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="bg-primary! rounded-none [&_svg]:w-auto! [&_svg]:h-auto!"
             >
-              <a
-                href="#"
+              <Link
+                href=""
                 className="w-full h-full bg-primary py-5 flex justify-center"
               >
                 <DashboardLogo className="w-32 h-8" />
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className="data-[slot=sidebar-menu-button]:p-1.5!"
-            >
-              <a href="#">
-                <CircleUserRound className="size-5!" />
-                <span className="text-base font-semibold">Welcome Back</span>
-              </a>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+          <Link
+            href="#"
+            className="flex items-center justify-center gap-3 py-4"
+          >
+            <CircleUserRound className="size-5!" />
+            <span className="text-base font-semibold">Welcome Back</span>
+          </Link>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
