@@ -7,10 +7,11 @@ import { getAccessToken } from "../auth";
 
 // Doctor upcoming appointments by doctor user id
 export const getUpcomingAppointments = async (
-  doctorUserId: string,
+  doctorUserId: number,
   page = 1
-) => {
+) => {  
   const token = await getAccessToken();
+  console.log("token", token);
   const res = await apiClient<Paginated<Appointment>>({
     endpoint: `/api/appointments/all/upcoming/doctorUserId/${doctorUserId}`,
     method: "GET",
@@ -18,14 +19,13 @@ export const getUpcomingAppointments = async (
     headers: {
       Authorization: `Bearer ${token}`,
     },
-  });
-
+  });  
   return res;
 };
 
 // Doctor today's appointments by doctor user id
 export const getTodaysAppointments = async (
-  doctorUserId: string,
+  doctorUserId: number,
   page = 1
 ) => {
   const token = await getAccessToken();
@@ -37,6 +37,5 @@ export const getTodaysAppointments = async (
       Authorization: `Bearer ${token}`,
     },
   });
-
   return res;
 };

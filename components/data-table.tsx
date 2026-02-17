@@ -53,6 +53,8 @@ export function DataTableWithExport<TData, TValue>({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [globalFilter, setGlobalFilter] = useState("");
+  console.log("data,",data);
+  
 
   const table = useReactTable({
     data,
@@ -193,7 +195,7 @@ export function DataTableWithExport<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {data.length > 0 ? "No results." : "Today is not have any appointments."}
                 </TableCell>
               </TableRow>
             )}

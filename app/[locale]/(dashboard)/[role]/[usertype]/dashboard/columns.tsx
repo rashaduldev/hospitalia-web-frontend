@@ -42,7 +42,6 @@ export const appointmentColumns: ColumnDef<Appointment>[] = [
     accessorKey: "patient.name",
     header: "Patient Name",
     cell: ({ row }) => {
-      // Assuming Appointment type has a nested patient object
       const name = row.original.patient?.name || "Unknown Patient";
       return (
         <div className="flex flex-col">
