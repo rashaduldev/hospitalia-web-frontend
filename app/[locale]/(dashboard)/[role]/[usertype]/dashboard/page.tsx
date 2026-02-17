@@ -2,19 +2,24 @@ import { DataTableWithExport } from "@/components/data-table";
 import { getCurrentUser } from "@/actions/user.actions";
 import { getTodaysAppointments, getUpcomingAppointments } from "@/actions/doctor/appointment";
 import { appointmentColumns } from "./columns";
+import { getAccessToken } from "@/actions/auth";
 
 export default async function Page() {
-  const userRes = await getCurrentUser();
-  const doctorId = userRes?.user?.id;
+  const res = await getCurrentUser();
+  
+  const doctorId = res?.id;
+  const token = getAccessToken();
+  
+  
+  const todayAppoinment = getTodaysAppointments(doctorId);
+  const upcomingAppoinment = getUpcomingAppointments(doctorId);
+  console.log("todayRes",todayAppoinment);
+  console.log("upcomingRes",upcomingAppoinment);
 
-  // Fetch data in parallel
   const [todayRes, upcomingRes] = await Promise.all([
     getTodaysAppointments(doctorId),
     getUpcomingAppointments(doctorId),
   ]);
-
-  console.log("todayRes",todayRes);
-  console.log("upcomingRes",upcomingRes);
   
   return (
     <div className="mx-6 space-y-10">
