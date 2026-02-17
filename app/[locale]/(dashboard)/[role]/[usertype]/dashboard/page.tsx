@@ -1,15 +1,40 @@
-import DataTableWithExportDemo from "@/components/data-table"
+import { DataTableWithExport } from "@/components/data-table";
+import { getCurrentUser } from "@/actions/user.actions";
+import { getTodaysAppointments, getUpcomingAppointments } from "@/actions/doctor/appointment";
+import { appointmentColumns } from "./columns";
 
-import data from "./data.json"
+export default async function Page() {
+  const userRes = await getCurrentUser();
+  const doctorId = userRes?.user?.id;
 
-export default function Page() {
+  // Fetch data in parallel
+  const [todayRes, upcomingRes] = await Promise.all([
+    getTodaysAppointments(doctorId),
+    getUpcomingAppointments(doctorId),
+  ]);
+
+  console.log("todayRes",todayRes);
+  console.log("upcomingRes",upcomingRes);
+  
   return (
-    <div className="mx-6">
-      {/* todays appoinment table */}
-      <DataTableWithExportDemo />
-      
-      {/* upcomming appoinment table */}
-      <DataTableWithExportDemo />
+    <div className="mx-6 space-y-10">
+      <div>
+        <h2 className="text-2xl font-bold mb-4">Today's Appointments</h2>
+        <DataTableWithExport 
+          columns={appointmentColumns} 
+          data={todayRes?.data || []} 
+          filename="todays-appointments"
+        />
+      </div>
+
+      <div>
+        <h2 className="text-2xl font-bold mb-4">Upcoming Appointments</h2>
+        <DataTableWithExport 
+          columns={appointmentColumns} 
+          data={upcomingRes?.data || []} 
+          filename="upcoming-appointments"
+        />
+      </div>
     </div>
-  )
+  );
 }
