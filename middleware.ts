@@ -5,6 +5,7 @@ import { decodeJwt } from "jose";
 const I18nMiddleware = createI18nMiddleware({
   locales: ["en", "fr"],
   defaultLocale: "en",
+  urlMappingStrategy:"rewrite",
 });
 
 // Public routes

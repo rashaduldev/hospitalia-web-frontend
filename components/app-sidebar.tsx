@@ -1,17 +1,17 @@
 "use client";
 
 import * as React from "react";
+import { usePathname } from "next/navigation";
 import {
   LayoutDashboardIcon,
   ChartBarIcon,
   FolderIcon,
   Settings2Icon,
-  SearchIcon,
   CircleUserRound,
+  LogOut,
 } from "lucide-react";
 import DashboardLogo from "@/public/icons/dashLogo";
 import { NavDocuments } from "./nav-documents";
-import { NavSecondary } from "./nav-secondary";
 import {
   Sidebar,
   SidebarContent,
@@ -23,76 +23,75 @@ import {
 } from "./ui/sidebar";
 import Link from "next/link";
 
-const data = {
-  navSecondary: [
+export function AppSidebar({
+  user,
+  ...props
+}: React.ComponentProps<typeof Sidebar> & { user: any }) {
+  const pathname = usePathname();
+  const roleLinks = React.useMemo(() => {
+    const links = [];
+    if (user?.role === "doctor") {
+      links.push(
+        {
+          name: "Dashboard",
+          url: "/en/customer/doctor/dashboard",
+          icon: <LayoutDashboardIcon />,
+        },
+        {
+          name: "Set Availability",
+          url: "/customer/doctor/availability",
+          icon: <ChartBarIcon />,
+        },
+        {
+          name: "Add Secretary",
+          url: "/s",
+          icon: <FolderIcon />,
+        },
+      );
+    }
+    return links;
+  }, [user?.role]);
+  const commonLinks = [
     {
-      title: "Settings",
-      url: "/b",
+      name: "Settings",
+      url: "/a",
       icon: <Settings2Icon />,
     },
     {
-      title: "Sign Out",
-      url: "dd",
-      icon: <SearchIcon />,
+      name: "Sign Out",
+      url: "/logout",
+      icon: <LogOut />,
     },
-  ],
-  documents: [
-    {
-      name: "Dashboard",
-      url: "/en/customer/doctor/dashboard",
-      icon: <LayoutDashboardIcon />,
-    },
-    {
-      name: "Set Availability",
-      url: "/customer/doctor/availability",
-      icon: <ChartBarIcon />,
-    },
-    {
-      name: "Messages",
-      url: "/a",
-      icon: <FolderIcon />,
-    },
-    {
-      name: "Add Secretary",
-      url: "/s",
-      icon: <FolderIcon />,
-    },
-  ],
-};
+  ];
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="offcanvas" {...props}>
-      <SidebarHeader>
+      <SidebarHeader className="p-0">
         <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className="bg-primary! rounded-none [&_svg]:w-auto! [&_svg]:h-auto!"
-            >
-              <Link
-                href=""
-                className="w-full h-full bg-primary py-5 flex justify-center"
-              >
-                <DashboardLogo className="w-32 h-8" />
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
           <Link
-            href="#"
-            className="flex items-center justify-center gap-3 py-4"
+            href="/en/customer/doctor/dashboard"
+            className="w-full bg-primary py-6 flex justify-center"
           >
-            <CircleUserRound className="size-5!" />
-            <span className="text-base font-semibold">Welcome Back</span>
+            <DashboardLogo className="w-32 h-8" />
           </Link>
+          <div className="flex items-center justify-center gap-3 py-4 border-b">
+            <CircleUserRound className="size-5" />
+            <span className="text-base font-semibold">
+              {user?.fullName || "Welcome Back"}
+            </span>
+          </div>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
-        {/* <NavMain items={data.navMain} /> */}
-        <NavDocuments items={data.documents} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+      <SidebarContent className="flex flex-col h-full">
+        <div className="flex-1">
+          <NavDocuments items={roleLinks} />
+        </div>
+        <div className="mt-auto pb-4">
+          <NavDocuments items={commonLinks} />
+        </div>
       </SidebarContent>
-      <SidebarFooter>{/* <NavUser user={data.user} /> */}</SidebarFooter>
+
+      <SidebarFooter />
     </Sidebar>
   );
 }
