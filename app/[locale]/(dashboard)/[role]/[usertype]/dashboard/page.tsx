@@ -1,32 +1,49 @@
 import { DataTableWithExport } from "@/components/data-table";
 import { getCurrentUser } from "@/actions/user.actions";
-import { getTodaysAppointments, getUpcomingAppointments } from "@/actions/doctor/appointment";
+import {
+  getTodaysAppointments,
+  getUpcomingAppointments,
+} from "@/actions/doctor/appointment";
 import { appointmentColumns } from "./columns";
+import { DynamicHeading } from "@/components/common/DynamicHeading";
+import { getI18n } from "@/locales/server";
 
 export default async function DoctorDashboardPage() {
+  const t = await getI18n()
   const res = await getCurrentUser();
-  
-  const doctorId = res?.id;    
-  
-  const todayAppoinment =await getTodaysAppointments(doctorId);
+
+  const doctorId = res?.id;
+
+  const todayAppoinment = await getTodaysAppointments(doctorId);
   const upcomingAppoinment = await getUpcomingAppointments(doctorId);
-  
+
   return (
     <div className="mx-6 space-y-10">
       <div>
-        <h2 className="text-2xl font-bold mb-4">Today's Appointments</h2>
-        <DataTableWithExport 
-          columns={appointmentColumns} 
-          data={todayAppoinment?.payload?.content || []} 
+        <DynamicHeading
+          title={t("appoinment.today")}
+          description={t("appoinment.todaydescription")}
+          titleProps={{ size: "2xl", weight: "bold", color: "secondary" }}
+          descriptionProps={{size:"sm"}}
+          className="mb-6"
+        />
+        <DataTableWithExport
+          columns={appointmentColumns}
+          data={todayAppoinment?.payload?.content || []}
           filename="todays-appointments"
         />
       </div>
 
       <div>
-        <h2 className="text-2xl font-bold mb-4">Upcoming Appointments</h2>
-        <DataTableWithExport 
-          columns={appointmentColumns} 
-          data={upcomingAppoinment?.payload?.content || []} 
+        <DynamicHeading
+          title={t("appoinment.upcoming")}
+          description={t("appoinment.upcomingdescription")}
+          titleProps={{ size: "2xl", weight: "bold", color: "secondary" }}
+          className="mb-6"
+        />
+        <DataTableWithExport
+          columns={appointmentColumns}
+          data={upcomingAppoinment?.payload?.content || []}
           filename="upcoming-appointments"
         />
       </div>

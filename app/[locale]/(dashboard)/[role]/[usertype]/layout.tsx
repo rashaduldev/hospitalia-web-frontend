@@ -31,7 +31,7 @@ export default async function UserLayout({
             } as React.CSSProperties
           }
         >
-          <AppSidebar variant="inset" user={res?.userType} />
+          <AppSidebar variant="inset" userRole={res?.userType} />
           <SidebarInset>
             <SiteHeader user={res} />
             <div className="flex flex-1 flex-col">

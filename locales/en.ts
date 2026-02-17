@@ -76,7 +76,7 @@ export default {
   common: {
     somethingWrong: "Something went wrong",
   },
-    register: {
+  register: {
     title: "Join Rendewou as a Provider",
     personalInfo: "Personal Information",
     professionalInfo: "Professional Information",
@@ -135,5 +135,12 @@ export default {
       passwordNotMatch: "Passwords do not match",
     },
   },
-
+  appoinment: {
+    SearchPlaceholder: "Search by date, location",
+    today: "Todays Appointments",
+    todaydescription: "See all of your appointments scheduled today",
+    upcoming: "Upcoming Appointments",
+    upcomingdescription: "See all of your upcoming appointments",
+    noAppointments: "No appointments found.",
+  },
 };
