@@ -34,10 +34,7 @@ export function middleware(req: NextRequest) {
   const token = req.cookies.get("accessToken")?.value;
 
   if (!token) {
-    const locale = pathname.split("/")[1] || "en";
-    return NextResponse.redirect(
-      new URL(`/${locale}/doctor/login`, req.url)
-    );
+    return NextResponse.redirect(new URL("/login", req.url));
   }
 
   return i18nResponse;
