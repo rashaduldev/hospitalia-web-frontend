@@ -8,14 +8,43 @@ import {
 } from "@/types/user.type";
 import { cookies } from "next/headers";
 
+// cookie save
+export const setAuthCookies = async (
+  accessToken: string,
+  refreshToken: string,
+) => {
+  const cookieStore = await cookies();
+
+  cookieStore.set("accessToken", accessToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60,
+  });
+
+  cookieStore.set("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 3,
+  });
+};
+
+// cookie delete
+export const deleteAuthCookies = async () => {
+  const cookieStore = await cookies();
+  cookieStore.delete("accessToken");
+  cookieStore.delete("refreshToken");
+};
+
 // Register
 export const register = async (body: RegisterRequestData, lang?: string) => {
   return apiClient({
     endpoint: "/api/auth/sign-up",
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     params: lang ? { lang } : undefined,
     body,
   });
@@ -35,21 +64,12 @@ export async function login(body: LoginRequestData, lang?: string) {
     return res;
   }
 
-  if (!res.payload?.accessToken || !res.payload?.refreshToken) {
+  const { accessToken, refreshToken } = res.payload || {};
+
+  if (!accessToken || !refreshToken) {
     throw new Error("Missing auth tokens");
   }
-  const cookieStore =await cookies();
-  cookieStore.set("accessToken", res.payload.accessToken, {
-    httpOnly: true,
-    path: "/",
-    maxAge: 60 * 60,
-  });
-
-  cookieStore.set("refreshToken", res.payload.refreshToken, {
-    httpOnly: true,
-    path: "/",
-    maxAge: 60 * 60 * 24 * 3,
-  });
+  await setAuthCookies(accessToken, refreshToken);
 
   return res;
 }
