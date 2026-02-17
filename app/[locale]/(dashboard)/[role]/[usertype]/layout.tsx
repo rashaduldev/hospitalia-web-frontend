@@ -10,12 +10,16 @@ export default async function UserLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const token = (await cookies()).get("accessToken")?.value || "";
-  const user = await getCurrentUser(token);
-
-  if (!user) {
-    return <div>Access denied. Please login.</div>;
+  const res = await getCurrentUser();  
+  if (!res) {
+    return (
+      <ErrorHandle
+        message={res?.message || "Unauthorized access. Please log in."} 
+        status={res?.statusCode}
+      />
+    );
   }
+  const user = res.payload;
 
   return (
     <div>
