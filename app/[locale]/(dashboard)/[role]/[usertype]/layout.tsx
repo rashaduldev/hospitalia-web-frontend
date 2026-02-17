@@ -1,4 +1,5 @@
 import { getCurrentUser } from '@/actions/user.actions';
+import Unauthorized from '@/components/common/Unauthorized';
 import DashboardNavbar from '@/components/pages/dashboard/Navbar';
 
 export default async function UserLayout({
@@ -6,16 +7,21 @@ export default async function UserLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = await getCurrentUser();
-
-  if (!user) {
-    return <div>Access denied. Please login.</div>;
+  const res = await getCurrentUser();  
+  if (!res) {
+    return (
+      <Unauthorized
+        message={res?.message || "Unauthorized access. Please log in."} 
+        status={res?.statusCode}
+      />
+    );
   }
+  const user = res.payload;
 
   return (
-    <div>
+    <div className="dashboard-wrapper">
       <DashboardNavbar user={user} />
-      <main>{children}</main>
+      <main className="p-6">{children}</main>
     </div>
   );
 }
