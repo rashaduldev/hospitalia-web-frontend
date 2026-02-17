@@ -10,26 +10,30 @@ import { cookies } from "next/headers";
 
 // cookie save
 export const setAuthCookies = async (
-  accessToken: string,
-  refreshToken: string,
+  accessToken?: string,
+  refreshToken?: string,
 ) => {
   const cookieStore = await cookies();
 
-  cookieStore.set("accessToken", accessToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60,
-  });
+  if (accessToken) {
+    cookieStore.set("accessToken", accessToken, {
+      httpOnly: process.env.NODE_ENV === 'production',
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/",
+      maxAge: 60 * 60,
+    });
+  }
 
-  cookieStore.set("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 3,
-  });
+  if (refreshToken) {
+    cookieStore.set("refreshToken", refreshToken, {
+      httpOnly: process.env.NODE_ENV === 'production',
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 3,
+    });
+  }
 };
 
 // cookie delete
@@ -65,10 +69,6 @@ export async function login(body: LoginRequestData, lang?: string) {
   }
 
   const { accessToken, refreshToken } = res.payload || {};
-
-  if (!accessToken || !refreshToken) {
-    throw new Error("Missing auth tokens");
-  }
   await setAuthCookies(accessToken, refreshToken);
 
   return res;

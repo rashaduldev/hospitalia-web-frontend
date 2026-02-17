@@ -1,5 +1,5 @@
 import { getCurrentUser } from '@/actions/user.actions';
-import Unauthorized from '@/components/common/Unauthorized';
+import ErrorHandle from '@/components/common/ErrorHandle';
 import DashboardNavbar from '@/components/pages/dashboard/Navbar';
 
 export default async function UserLayout({
@@ -10,7 +10,7 @@ export default async function UserLayout({
   const res = await getCurrentUser();  
   if (!res) {
     return (
-      <Unauthorized
+      <ErrorHandle
         message={res?.message || "Unauthorized access. Please log in."} 
         status={res?.statusCode}
       />

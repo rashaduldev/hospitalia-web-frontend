@@ -2,7 +2,7 @@ import Link from "next/link";
 import { AlertCircle } from "lucide-react";
 import { Typography } from "../ui/Typography";
 
-export default function Unauthorized({
+export default function ErrorHandle({
   message,
   status,
 }: {
