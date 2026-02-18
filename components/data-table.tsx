@@ -34,11 +34,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useI18n } from "@/locales/client";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  searchKey?: string;
   filename?: string;
   emptyMessage?: string;
 }
@@ -46,10 +46,10 @@ interface DataTableProps<TData, TValue> {
 export function DataTableWithExport<TData, TValue>({
   columns,
   data,
-  searchKey,
   filename = "export",
   emptyMessage = "No data available.",
 }: DataTableProps<TData, TValue>) {
+  const t = useI18n();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -120,9 +120,7 @@ export function DataTableWithExport<TData, TValue>({
     <div className="w-full">
       <div className="flex justify-between gap-2 pb-4 max-sm:flex-col sm:items-center">
         <Input
-          placeholder={
-            searchKey ? `${searchKey}...` : "Search all columns..."
-          }
+          placeholder={`${t("table.search")}...`}
           value={globalFilter ?? ""}
           onChange={(event) => setGlobalFilter(String(event.target.value))}
           className="max-w-sm"
@@ -130,13 +128,13 @@ export function DataTableWithExport<TData, TValue>({
         <div className="flex items-center space-x-2">
           {table.getSelectedRowModel().rows.length > 0 && (
             <span className="text-muted-foreground text-sm">
-              {table.getSelectedRowModel().rows.length} selected
+              {table.getSelectedRowModel().rows.length} {t("table.selected")}
             </span>
           )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
-                <DownloadIcon className="mr-2 h-4 w-4" /> Export
+                <DownloadIcon className="mr-2 h-4 w-4" /> {t("table.export")}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">

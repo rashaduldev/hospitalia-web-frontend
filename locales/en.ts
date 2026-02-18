@@ -72,7 +72,13 @@ export default {
       passwordMin: "Password must be at least 6 characters",
     },
   },
-
+  table: {
+    search: "Search",
+    searchPlaceholder: "Search all columns...",
+    export: "Export",
+    selected: "selected",
+    noData: "No data available.",
+  },
   common: {
     somethingWrong: "Something went wrong",
   },
@@ -136,7 +142,6 @@ export default {
     },
   },
   appoinment: {
-    SearchPlaceholder: "Search by date, location",
     today: "Todays Appointments",
     todaydescription: "See all of your appointments scheduled today",
     upcoming: "Upcoming Appointments",

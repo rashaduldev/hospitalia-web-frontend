@@ -72,6 +72,13 @@ export default {
       passwordMin: "Le mot de passe doit contenir au moins 6 caractères",
     },
   },
+  table: {
+    search: "Rechercher",
+    searchPlaceholder: "Rechercher dans toutes les colonnes...",
+    export: "Exporter",
+    selected: "sélectionné",
+    noData: "Aucune donnée disponible.",
+  },
 
   common: {
     somethingWrong: "Une erreur est survenue",

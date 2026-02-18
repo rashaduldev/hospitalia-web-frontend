@@ -39,7 +39,6 @@ export default async function DoctorDashboardPage() {
           columns={appointmentColumns}
           data={todayAppoinment?.payload?.content || []}
           filename="todays-appointments"
-          searchKey={t("appoinment.SearchPlaceholder")}
           emptyMessage={t("appoinment.no_today")}
         />
       </div>
@@ -55,7 +54,6 @@ export default async function DoctorDashboardPage() {
           columns={appointmentColumns}
           data={upcomingAppoinment?.payload?.content || []}
           filename="upcoming-appointments"
-          searchKey={t("appoinment.SearchPlaceholder")}
           emptyMessage={t("appoinment.no_upcoming")}
         />
       </div>
