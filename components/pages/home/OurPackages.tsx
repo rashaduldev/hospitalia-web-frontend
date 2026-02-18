@@ -8,7 +8,7 @@ export default function OurPackages() {
   const t = useI18n();
 
   return (
-    <section className="py-16">
+    <section className="py-16 section-container">
       <h2 className="text-3xl font-bold text-center mb-10">
         {t("ourPackages.title")}
       </h2>
