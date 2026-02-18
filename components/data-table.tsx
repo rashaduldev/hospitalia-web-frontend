@@ -40,6 +40,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   searchKey?: string;
   filename?: string;
+  emptyMessage?: string;
 }
 
 export function DataTableWithExport<TData, TValue>({
@@ -47,6 +48,7 @@ export function DataTableWithExport<TData, TValue>({
   data,
   searchKey,
   filename = "export",
+  emptyMessage = "No data available.",
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -189,11 +191,8 @@ export function DataTableWithExport<TData, TValue>({
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  {data.length > 0 ? "No results." : "Today is not have any appointments."}
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  {emptyMessage}
                 </TableCell>
               </TableRow>
             )}

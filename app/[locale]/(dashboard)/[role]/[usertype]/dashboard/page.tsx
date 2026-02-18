@@ -31,6 +31,7 @@ export default async function DoctorDashboardPage() {
           columns={appointmentColumns}
           data={todayAppoinment?.payload?.content || []}
           filename="todays-appointments"
+          emptyMessage="There are no today's appointments."
         />
       </div>
 
@@ -45,6 +46,7 @@ export default async function DoctorDashboardPage() {
           columns={appointmentColumns}
           data={upcomingAppoinment?.payload?.content || []}
           filename="upcoming-appointments"
+          emptyMessage="There are no upcoming appointments."
         />
       </div>
     </div>
