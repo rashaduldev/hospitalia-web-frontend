@@ -72,7 +72,7 @@ export default {
       passwordMin: "Le mot de passe doit contenir au moins 6 caractères",
     },
   },
-    table: {
+  table: {
     search: "Rechercher par date, lieu",
     export: "Exporter",
     selected: "sélectionné",
@@ -82,6 +82,13 @@ export default {
     results: "produits",
     previous: "Précédent",
     next: "Suivant",
+    column: {
+      duration: "Durée",
+      patientName: "Nom du patient",
+      location: "Lieu",
+      appointmentDate: "Date",
+      timeslot: "Créneau horaire",
+    },
   },
   common: {
     somethingWrong: "Une erreur est survenue",
