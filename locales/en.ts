@@ -73,12 +73,16 @@ export default {
     },
   },
   table: {
-    search: "Search",
-    searchPlaceholder: "Search all columns...",
-    export: "Export",
-    selected: "selected",
-    noData: "No data available.",
-  },
+  search: "Search by date, location",
+  export: "Export",
+  selected: "selected",
+  noData: "No appointments found",
+  showing: "Showing",
+  of: "of",
+  results: "products",
+  previous: "Previous",
+  next: "Next"
+},
   common: {
     somethingWrong: "Something went wrong",
   },

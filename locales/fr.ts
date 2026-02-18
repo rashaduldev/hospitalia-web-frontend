@@ -72,14 +72,17 @@ export default {
       passwordMin: "Le mot de passe doit contenir au moins 6 caractères",
     },
   },
-  table: {
-    search: "Rechercher",
-    searchPlaceholder: "Rechercher dans toutes les colonnes...",
+    table: {
+    search: "Rechercher par date, lieu",
     export: "Exporter",
     selected: "sélectionné",
-    noData: "Aucune donnée disponible.",
+    noData: "Aucun rendez-vous trouvé",
+    showing: "Affichage",
+    of: "sur",
+    results: "produits",
+    previous: "Précédent",
+    next: "Suivant",
   },
-
   common: {
     somethingWrong: "Une erreur est survenue",
   },

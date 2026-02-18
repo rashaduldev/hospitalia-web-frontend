@@ -3,7 +3,14 @@
 import { useState } from "react";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
-import { DownloadIcon, FileTextIcon, FileSpreadsheetIcon } from "lucide-react";
+import {
+  DownloadIcon,
+  FileTextIcon,
+  FileSpreadsheetIcon,
+  ChevronLeft,
+  ChevronRight,
+  MoreHorizontal,
+} from "lucide-react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -47,14 +54,14 @@ export function DataTableWithExport<TData, TValue>({
   columns,
   data,
   filename = "export",
-  emptyMessage = "No data available.",
+  emptyMessage,
 }: DataTableProps<TData, TValue>) {
   const t = useI18n();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-  const [globalFilter, setGlobalFilter] = useState(""); 
+  const [globalFilter, setGlobalFilter] = useState("");
 
   const table = useReactTable({
     data,
@@ -78,6 +85,7 @@ export function DataTableWithExport<TData, TValue>({
     },
   });
 
+  // --- Export Logic ---
   const getExportData = () => {
     const selectedRows = table.getSelectedRowModel().rows;
     return selectedRows.length > 0
@@ -101,12 +109,6 @@ export function DataTableWithExport<TData, TValue>({
     );
   };
 
-  const exportToJSON = () => {
-    const json = JSON.stringify(getExportData(), null, 2);
-    const blob = new Blob([json], { type: "application/json" });
-    downloadFile(blob, `${filename}-${new Date().toLocaleDateString()}.json`);
-  };
-
   const downloadFile = (blob: Blob, name: string) => {
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
@@ -116,9 +118,16 @@ export function DataTableWithExport<TData, TValue>({
     document.body.removeChild(link);
   };
 
+  // --- Pagination Helpers ---
+  const paginationState = table.getState().pagination;
+  const totalRows = table.getFilteredRowModel().rows.length;
+  const startRow = paginationState.pageIndex * paginationState.pageSize + 1;
+  const endRow = Math.min(startRow + paginationState.pageSize - 1, totalRows);
+
   return (
-    <div className="w-full">
-      <div className="flex justify-between gap-2 pb-4 max-sm:flex-col sm:items-center">
+    <div className="w-full space-y-4">
+      {/* Search and Export Bar */}
+      <div className="flex justify-between gap-2 pb-2 max-sm:flex-col sm:items-center">
         <Input
           placeholder={`${t("table.search")}...`}
           value={globalFilter ?? ""}
@@ -138,21 +147,15 @@ export function DataTableWithExport<TData, TValue>({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={exportToCSV}>
-                <FileTextIcon className="mr-2 size-4" /> CSV
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={exportToExcel}>
-                <FileSpreadsheetIcon className="mr-2 size-4" /> Excel
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={exportToJSON}>
-                <FileTextIcon className="mr-2 size-4" /> JSON
-              </DropdownMenuItem>
+              <DropdownMenuItem onClick={exportToCSV}>CSV</DropdownMenuItem>
+              <DropdownMenuItem onClick={exportToExcel}>Excel</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </div>
-      <div className="rounded-md border">
+
+      {/* Table */}
+      <div className="rounded-md border bg-white">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -189,13 +192,77 @@ export function DataTableWithExport<TData, TValue>({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  {emptyMessage}
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  {emptyMessage || t("table.noData")}
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
+      </div>
+
+      {/* Pagination Design (Matching Image) */}
+      <div className="flex items-center justify-between px-2 py-4">
+        <div className="text-sm text-muted-foreground">
+          {t("table.showing")} {startRow}-{endRow} {t("table.of")} {totalRows}{" "}
+          {t("table.results")}
+        </div>
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+            className="flex items-center gap-1"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            {t("table.previous")}
+          </Button>
+
+          {/* Page Numbers */}
+          <div className="flex items-center gap-1">
+            {table.getPageOptions().map((pageIndex) => {
+              // Logic to show limited page numbers (simplified for now)
+              if (
+                pageIndex === 0 ||
+                pageIndex === table.getPageCount() - 1 ||
+                (pageIndex >= table.getState().pagination.pageIndex - 1 &&
+                  pageIndex <= table.getState().pagination.pageIndex + 1)
+              ) {
+                return (
+                  <Button
+                    key={pageIndex}
+                    variant={
+                      table.getState().pagination.pageIndex === pageIndex
+                        ? "outline"
+                        : "ghost"
+                    }
+                    size="sm"
+                    className="h-8 w-8 p-0"
+                    onClick={() => table.setPageIndex(pageIndex)}
+                  >
+                    {pageIndex + 1}
+                  </Button>
+                );
+              }
+              return null;
+            })}
+          </div>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+            className="flex items-center gap-1"
+          >
+            {t("table.next")}
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </div>
   );
