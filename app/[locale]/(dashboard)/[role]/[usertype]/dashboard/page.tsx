@@ -6,16 +6,24 @@ import {
 } from "@/actions/doctor/appointment";
 import { appointmentColumns } from "./columns";
 import { DynamicHeading } from "@/components/common/DynamicHeading";
-import { getI18n } from "@/locales/server";
+import { getCurrentLocale, getI18n, getStaticParams } from "@/locales/server";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Hospitalia - Dashboard",
+  description: "This is the dashboard page for user. Here you can see your today's and upcoming appointments.",
+};
+
 
 export default async function DoctorDashboardPage() {
   const t = await getI18n()
+  const lang = await getCurrentLocale();  
   const res = await getCurrentUser();
 
   const doctorId = res?.id;
 
-  const todayAppoinment = await getTodaysAppointments(doctorId);
-  const upcomingAppoinment = await getUpcomingAppointments(doctorId);
+  const todayAppoinment = await getTodaysAppointments(doctorId, 0, 100, "creationDate", "desc", lang);
+  const upcomingAppoinment = await getUpcomingAppointments(doctorId, 0, 100, "creationDate", "desc", lang);
 
   return (
     <div className="mx-6 space-y-10">
@@ -31,7 +39,8 @@ export default async function DoctorDashboardPage() {
           columns={appointmentColumns}
           data={todayAppoinment?.payload?.content || []}
           filename="todays-appointments"
-          emptyMessage="There are no today's appointments."
+          searchKey={t("appoinment.SearchPlaceholder")}
+          emptyMessage={t("appoinment.no_today")}
         />
       </div>
 
@@ -46,7 +55,8 @@ export default async function DoctorDashboardPage() {
           columns={appointmentColumns}
           data={upcomingAppoinment?.payload?.content || []}
           filename="upcoming-appointments"
-          emptyMessage="There are no upcoming appointments."
+          searchKey={t("appoinment.SearchPlaceholder")}
+          emptyMessage={t("appoinment.no_upcoming")}
         />
       </div>
     </div>

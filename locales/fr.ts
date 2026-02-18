@@ -138,9 +138,10 @@ export default {
   appoinment: {
     SearchPlaceholder: "Rechercher par date, lieu",
     today: "Rendez-vous d'aujourd'hui",
-    todaydescription: "Voir tous vos rendez-vous prévus aujourd'hui",
-    upcoming: "Prochains rendez-vous",
-    upcomingdescription: "Voir tous vos prochains rendez-vous",
-    noAppointments: "Aucun rendez-vous trouvé.",
+    todaydescription: "Voir tous vos rendez-vous programmés pour aujourd'hui",
+    upcoming: "Rendez-vous à venir",
+    upcomingdescription: "Voir tous vos rendez-vous à venir",
+    no_today: "Il n'y a aucun rendez-vous aujourd'hui.",
+    no_upcoming: "Il n'y a aucun rendez-vous à venir.",
   },
 };

@@ -121,7 +121,7 @@ export function DataTableWithExport<TData, TValue>({
       <div className="flex justify-between gap-2 pb-4 max-sm:flex-col sm:items-center">
         <Input
           placeholder={
-            searchKey ? `Search ${searchKey}...` : "Search all columns..."
+            searchKey ? `${searchKey}...` : "Search all columns..."
           }
           value={globalFilter ?? ""}
           onChange={(event) => setGlobalFilter(String(event.target.value))}

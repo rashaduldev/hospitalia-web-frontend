@@ -141,6 +141,7 @@ export default {
     todaydescription: "See all of your appointments scheduled today",
     upcoming: "Upcoming Appointments",
     upcomingdescription: "See all of your upcoming appointments",
-    noAppointments: "No appointments found.",
+    no_today: "There are no today's appointments.",
+    no_upcoming: "There are no upcoming appointments.",
   },
 };
