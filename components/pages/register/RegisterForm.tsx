@@ -271,7 +271,7 @@ export default function RegistrationForm({
 
       {/* PROFESSIONAL INFO */}
       {!isPatient && (
-        <div className="rounded-lg border bg-card p-6 space-y-5 my-12">
+        <div className="rounded-lg border bg-card p-6 space-y-5 mt-12">
           <Typography size="2xl" as="h3" color="foreground">
             {t("register.professionalInfo")}
           </Typography>
