@@ -8,7 +8,7 @@ import { getAccessToken } from "../auth";
 // Doctor upcoming appointments by doctor user id
 export const getUpcomingAppointments = async (
   doctorUserId: number,
-  page = 0,
+  pageNo = 0,
   pageSize = 20,
   sortBy = "creationDate",
   ascOrDesc = "asc",
@@ -19,7 +19,7 @@ export const getUpcomingAppointments = async (
     endpoint: `/api/appointments/all/upcoming/doctorUserId/${doctorUserId}`,
     method: "GET",
     params: { 
-      page, 
+      pageNo, 
       pageSize, 
       sortBy, 
       ascOrDesc,
@@ -35,7 +35,7 @@ export const getUpcomingAppointments = async (
 // Doctor today's appointments by doctor user id
 export const getTodaysAppointments = async (
   doctorUserId: number,
-  page = 0,
+  pageNo = 0,
   pageSize = 20,
   sortBy = "creationDate",
   ascOrDesc = "asc",
@@ -46,7 +46,7 @@ export const getTodaysAppointments = async (
     endpoint: `/api/appointments/all/today/doctorUserId/${doctorUserId}`,
     method: "GET",
     params: { 
-      page, 
+      pageNo, 
       pageSize, 
       sortBy, 
       ascOrDesc,

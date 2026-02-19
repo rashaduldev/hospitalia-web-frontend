@@ -1,4 +1,4 @@
-export interface Appointment {
+export type Appointment = {
   id: string;
   doctorUserId: string;
   patientUserId: number;
@@ -14,7 +14,7 @@ export interface Appointment {
   createdAt: string;
 }
 
-export interface AppointmentBookingRequest {
+export type AppointmentBookingRequest = {
   doctorUserId: string;
   doctorLocationId: string;
   appointmentDate: string;
@@ -22,14 +22,14 @@ export interface AppointmentBookingRequest {
   patientNotes?: string;
 }
 
-export interface AppointmentUpdateRequest {
+export type AppointmentUpdateRequest = {
   appointmentId: string;
   appointmentDate?: string;
   slotId?: string;
   status?: string;
 }
 
-export interface AvailableSlot {
+export type AvailableSlot = {
   slotId: string;
   startTime: string;
   endTime: string;

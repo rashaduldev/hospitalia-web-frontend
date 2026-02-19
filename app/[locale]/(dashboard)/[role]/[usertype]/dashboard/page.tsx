@@ -18,9 +18,9 @@ export const metadata: Metadata = {
 export default async function DoctorDashboardPage() {
   const t = await getI18n()
   const lang = await getCurrentLocale();  
-  const res = await getCurrentUser();
+  const CurrentUser = await getCurrentUser();
 
-  const doctorId = res?.id;
+  const doctorId = CurrentUser?.id;
 
   const todayAppoinment = await getTodaysAppointments(doctorId, 0, 100, "creationDate", "desc", lang);
   const upcomingAppoinment = await getUpcomingAppointments(doctorId, 0, 100, "creationDate", "desc", lang);
