@@ -74,6 +74,7 @@ export default {
   },
   table: {
     search: "Search by date, location",
+    no_results_for: "No results found. Try adjusting your search criteria.",
     export: "Export",
     selected: "selected",
     noData: "No appointments found",

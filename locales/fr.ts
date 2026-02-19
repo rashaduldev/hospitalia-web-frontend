@@ -74,6 +74,7 @@ export default {
   },
   table: {
     search: "Rechercher par date, lieu",
+    no_results_for: "Aucun résultat trouvé. Essayez d’ajuster vos critères de recherche.",
     export: "Exporter",
     selected: "sélectionné",
     noData: "Aucun rendez-vous trouvé",

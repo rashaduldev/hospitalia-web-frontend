@@ -5,11 +5,8 @@ import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import {
   DownloadIcon,
-  FileTextIcon,
-  FileSpreadsheetIcon,
   ChevronLeft,
   ChevronRight,
-  MoreHorizontal,
 } from "lucide-react";
 import {
   ColumnDef,
@@ -41,14 +38,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useI18n } from "@/locales/client";
+import { format } from "date-fns/format";
+import { Typography } from "./ui/Typography";
 
-type DataTableProps<TData, TValue> ={
+type DataTableProps<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   filename?: string;
   emptyMessage?: string;
   excludeColumns?: string[];
-}
+};
 
 export function DataTableWithExport<TData, TValue>({
   columns,
@@ -80,7 +79,23 @@ export function DataTableWithExport<TData, TValue>({
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: "includesString",
+    globalFilterFn: (row, columnId, filterValue) => {
+
+      const searchValue = filterValue.toLowerCase();      
+      const location = String((row.original as any)?.locationName ?? "").toLowerCase();
+
+      const dateObj = (row.original as any)?.appointmentDate
+        ? new Date((row.original as any).appointmentDate)
+        : null;
+      const formattedDate = dateObj
+        ? format(dateObj, "dd MMM yyyy").toLowerCase()
+        : "";
+
+      return (
+        location.includes(searchValue) ||
+        formattedDate.includes(searchValue)
+      );
+    },
     state: {
       sorting,
       columnFilters,
@@ -198,10 +213,18 @@ export function DataTableWithExport<TData, TValue>({
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
+                  colSpan={filteredColumns.length}
+                  className="h-32 text-center"
                 >
-                  {emptyMessage || t("table.noData")}
+                  <div className="flex flex-col items-center justify-center space-y-2">
+                    <Typography size="sm" weight="medium" color="foreground">
+                      {globalFilter
+                        ? t("table.no_results_for" as any, {
+                            query: globalFilter,
+                          })
+                        : emptyMessage || t("table.noData")}
+                    </Typography>
+                  </div>
                 </TableCell>
               </TableRow>
             )}
