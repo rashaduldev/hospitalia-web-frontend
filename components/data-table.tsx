@@ -79,7 +79,7 @@ export function DataTableWithExport<TData, TValue>({
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: (row, columnId, filterValue) => {
+    globalFilterFn: (row, columnId, filterValue) => {      
 
       const searchValue = filterValue.toLowerCase();      
       const location = String((row.original as any)?.locationName ?? "").toLowerCase();

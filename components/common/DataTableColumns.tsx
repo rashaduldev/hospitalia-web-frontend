@@ -22,6 +22,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/Typography";
 import { useI18n } from "@/locales/client";
+import { AppointmentActionCell } from "../cells/AppointmentActionCell";
 
 const TranslatedHeader = ({ labelKey }: { labelKey: string }) => {
   const t = useI18n();
@@ -152,40 +153,6 @@ export const appointmentColumns: ColumnDef<Appointment>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => {
-      const appointment = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-40">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => console.log("View", appointment.id)}
-            >
-              <Eye className="mr-2 h-4 w-4" /> View Details
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => console.log("Status", appointment.id)}
-            >
-              <CheckCircle2 className="mr-2 h-4 w-4" /> Mark Completed
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => console.log("Delete", appointment.id)}
-              className="text-destructive focus:text-destructive"
-            >
-              <Trash className="mr-2 h-4 w-4" /> Cancel
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
+    cell: ({ row }) => <AppointmentActionCell appointment={row.original} />,
   },
 ];
