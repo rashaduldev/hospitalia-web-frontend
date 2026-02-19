@@ -130,7 +130,7 @@ export default function RegistrationForm({
       return;
     }
 
-    router.push(("/login") + `?userType=${userType.toLowerCase()}`);
+    router.push(isPatient ? "/login?userType=patient" : "/login");
   };
 
   return (
