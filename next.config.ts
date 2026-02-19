@@ -2,11 +2,11 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  trailingSlash: true,
+  // trailingSlash: true,
   compress: true,
 
   compiler: {
-    removeConsole: process.env.NODE_ENV === "production",
+    // removeConsole: process.env.NODE_ENV === "production",
   },
   images: {
     dangerouslyAllowLocalIP: process.env.NODE_ENV === "development",
@@ -20,10 +20,10 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     serverActions: {
-      allowedOrigins: ["app.getrapidcart.com", "localhost:3060"],
+      allowedOrigins: ["http://localhost:3000"],
     },
     serverComponentsHmrCache: true,
-    viewTransition: true,
+    // viewTransition: true,
   },
 
   serverExternalPackages: ["pino", "pino-pretty"],

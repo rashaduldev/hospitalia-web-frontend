@@ -16,7 +16,7 @@ export default function Header() {
   const NAV_LINKS = [
     { href: "/", label: t("nav.home") },
     { href: "/login", label: t("nav.patient") },
-    { href: "/doctor/registration", label: t("nav.doctor") },
+    { href: "/register", label: t("nav.doctor") },
   ];
 
   return (

@@ -72,11 +72,29 @@ export default {
       passwordMin: "Password must be at least 6 characters",
     },
   },
+  table: {
+    search: "Search by date, location",
+    export: "Export",
+    selected: "selected",
+    noData: "No appointments found",
+    showing: "Showing",
+    of: "of",
+    results: "products",
+    previous: "Previous",
+    next: "Next",
+    column: {
+      duration: "Time Duration",
+      patientName: "Patients Name",
+      location: "Location",
+      appointmentDate: "Date",
+      timeslot: "Time Slot",
+    },
+  },
 
   common: {
     somethingWrong: "Something went wrong",
   },
-    register: {
+  register: {
     title: "Join Rendewou as a Provider",
     personalInfo: "Personal Information",
     professionalInfo: "Professional Information",
@@ -135,5 +153,12 @@ export default {
       passwordNotMatch: "Passwords do not match",
     },
   },
-
+  appoinment: {
+    today: "Todays Appointments",
+    todaydescription: "See all of your appointments scheduled today",
+    upcoming: "Upcoming Appointments",
+    upcomingdescription: "See all of your upcoming appointments",
+    no_today: "There are no today's appointments.",
+    no_upcoming: "There are no upcoming appointments.",
+  },
 };

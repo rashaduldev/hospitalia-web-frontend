@@ -72,68 +72,93 @@ export default {
       passwordMin: "Le mot de passe doit contenir au moins 6 caractères",
     },
   },
-
+  table: {
+    search: "Rechercher par date, lieu",
+    export: "Exporter",
+    selected: "sélectionné",
+    noData: "Aucun rendez-vous trouvé",
+    showing: "Affichage",
+    of: "sur",
+    results: "produits",
+    previous: "Précédent",
+    next: "Suivant",
+    column: {
+      duration: "Durée",
+      patientName: "Nom du patient",
+      location: "Lieu",
+      appointmentDate: "Date",
+      timeslot: "Créneau horaire",
+    },
+  },
   common: {
     somethingWrong: "Une erreur est survenue",
   },
   register: {
-  title: "Rejoignez Rendewou en tant que prestataire",
-  personalInfo: "Informations personnelles",
-  professionalInfo: "Informations professionnelles",
+    title: "Rejoignez Rendewou en tant que prestataire",
+    personalInfo: "Informations personnelles",
+    professionalInfo: "Informations professionnelles",
 
-  firstName: "Prénom",
-  lastName: "Nom de famille",
-  gender: "Genre",
-  userType: "Type d’utilisateur",
-  email: "Email (optionnel)",
-  dateOfBirth: "Date de naissance",
-  phone: "Téléphone",
+    firstName: "Prénom",
+    lastName: "Nom de famille",
+    gender: "Genre",
+    userType: "Type d’utilisateur",
+    email: "Email (optionnel)",
+    dateOfBirth: "Date de naissance",
+    phone: "Téléphone",
 
-  password: "Mot de passe",
-  confirmPassword: "Confirmer le mot de passe",
+    password: "Mot de passe",
+    confirmPassword: "Confirmer le mot de passe",
 
-  designation: "Titre / Fonction",
-  speciality: "Spécialité",
-  onms: "Numéro d’enregistrement ONMS (optionnel)",
-  statement: "Déclaration professionnelle",
+    designation: "Titre / Fonction",
+    speciality: "Spécialité",
+    onms: "Numéro d’enregistrement ONMS (optionnel)",
+    statement: "Déclaration professionnelle",
 
-  submit: "S’inscrire en tant que professionnel de santé",
-  creating: "Création du compte...",
-  alreadyAccount: "Vous avez déjà un compte ?",
+    submit: "S’inscrire en tant que professionnel de santé",
+    creating: "Création du compte...",
+    alreadyAccount: "Vous avez déjà un compte ?",
 
-  genderOptions: {
-    male: "Homme",
-    female: "Femme",
+    genderOptions: {
+      male: "Homme",
+      female: "Femme",
+    },
+
+    userTypeOptions: {
+      doctor: "Médecin",
+      hospital: "Hôpital",
+      secretary: "Secrétaire",
+    },
+
+    errors: {
+      firstNameMin: "Le prénom doit contenir au moins 2 caractères",
+      genderRequired: "Le genre est requis",
+      invalidEmail: "Adresse e-mail invalide",
+      userTypeRequired: "Le type d’utilisateur est requis",
+
+      countryRequired: "Le code du pays est requis",
+      phoneRequired: "Le numéro de téléphone est requis",
+      phoneShort: "Le numéro de téléphone est trop court",
+      phoneLong: "Le numéro de téléphone est trop long",
+
+      passwordMin: "Le mot de passe doit contenir au moins 8 caractères",
+      passwordStrength:
+        "Le mot de passe doit contenir une majuscule, une minuscule, un chiffre et un caractère spécial",
+
+      confirmPasswordRequired: "La confirmation du mot de passe est requise",
+
+      designationRequired: "La désignation est requise",
+      specialityRequired: "La spécialité est requise",
+
+      passwordNotMatch: "Les mots de passe ne correspondent pas",
+    },
   },
-
-  userTypeOptions: {
-    doctor: "Médecin",
-    hospital: "Hôpital",
-    secretary: "Secrétaire",
+  appoinment: {
+    SearchPlaceholder: "Rechercher par date, lieu",
+    today: "Rendez-vous d'aujourd'hui",
+    todaydescription: "Voir tous vos rendez-vous programmés pour aujourd'hui",
+    upcoming: "Rendez-vous à venir",
+    upcomingdescription: "Voir tous vos rendez-vous à venir",
+    no_today: "Il n'y a aucun rendez-vous aujourd'hui.",
+    no_upcoming: "Il n'y a aucun rendez-vous à venir.",
   },
-
-  errors: {
-    firstNameMin: "Le prénom doit contenir au moins 2 caractères",
-    genderRequired: "Le genre est requis",
-    invalidEmail: "Adresse e-mail invalide",
-    userTypeRequired: "Le type d’utilisateur est requis",
-
-    countryRequired: "Le code du pays est requis",
-    phoneRequired: "Le numéro de téléphone est requis",
-    phoneShort: "Le numéro de téléphone est trop court",
-    phoneLong: "Le numéro de téléphone est trop long",
-
-    passwordMin: "Le mot de passe doit contenir au moins 8 caractères",
-    passwordStrength:
-      "Le mot de passe doit contenir une majuscule, une minuscule, un chiffre et un caractère spécial",
-
-    confirmPasswordRequired: "La confirmation du mot de passe est requise",
-
-    designationRequired: "La désignation est requise",
-    specialityRequired: "La spécialité est requise",
-
-    passwordNotMatch: "Les mots de passe ne correspondent pas",
-  },
-},
-
 };

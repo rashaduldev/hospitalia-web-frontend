@@ -1,93 +1,65 @@
 "use client";
 
 import * as React from "react";
-import { usePathname } from "next/navigation";
-import {
-  LayoutDashboardIcon,
-  ChartBarIcon,
-  FolderIcon,
-  Settings2Icon,
-  CircleUserRound,
-  LogOut,
-} from "lucide-react";
+import Link from "next/link";
 import DashboardLogo from "@/public/icons/dashLogo";
+import { CircleUserRound } from "lucide-react";
 import { NavDocuments } from "./nav-documents";
+import { ROUTES, Role } from "@/lib/constants";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
 } from "./ui/sidebar";
-import Link from "next/link";
 
-export function AppSidebar({
-  user,
-  ...props
-}: React.ComponentProps<typeof Sidebar> & { user: any }) {
-  const pathname = usePathname();
-  const roleLinks = React.useMemo(() => {
-    const links = [];
-    if (user?.role === "doctor") {
-      links.push(
-        {
-          name: "Dashboard",
-          url: "/en/customer/doctor/dashboard",
-          icon: <LayoutDashboardIcon />,
-        },
-        {
-          name: "Set Availability",
-          url: "/customer/doctor/availability",
-          icon: <ChartBarIcon />,
-        },
-        {
-          name: "Add Secretary",
-          url: "/s",
-          icon: <FolderIcon />,
-        },
-      );
-    }
-    return links;
-  }, [user?.role]);
-  const commonLinks = [
-    {
-      name: "Settings",
-      url: "/a",
-      icon: <Settings2Icon />,
-    },
-    {
-      name: "Sign Out",
-      url: "/logout",
-      icon: <LogOut />,
-    },
-  ];
+interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+  userRole: Role;
+}
+
+export function AppSidebar({ userRole, ...props }: AppSidebarProps) {
+
+  const formattedRoleLinks = React.useMemo(() => {
+    const links = ROUTES[userRole] || [];
+    return links.map((item) => ({
+      ...item,
+      icon: <item.icon className="size-4" />,
+    }));
+  }, [userRole]);
+
+  const formattedCommonLinks = React.useMemo(() => {
+    return ROUTES.COMMON.map((item) => ({
+      ...item,
+      icon: <item.icon className="size-4" />,
+    }));
+  }, []);
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader className="p-0">
         <SidebarMenu>
           <Link
-            href="/en/customer/doctor/dashboard"
-            className="w-full bg-primary py-6 flex justify-center"
+            href={ROUTES[userRole]?.[0]?.url || "/"}
+            className="w-full bg-primary py-5 flex justify-center"
           >
-            <DashboardLogo className="w-32 h-8" />
+            <DashboardLogo className="w-32 h-6" />
           </Link>
           <div className="flex items-center justify-center gap-3 py-4 border-b">
-            <CircleUserRound className="size-5" />
-            <span className="text-base font-semibold">
-              {user?.fullName || "Welcome Back"}
+            <CircleUserRound className="size-5 text-muted-foreground" />
+            <span className="text-sm font-semibold capitalize">
+              {userRole?.toLowerCase() || "User"} Portal
             </span>
           </div>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent className="flex flex-col h-full">
+
+      <SidebarContent className="flex flex-col h-full mt-5">
         <div className="flex-1">
-          <NavDocuments items={roleLinks} />
+          <NavDocuments items={formattedRoleLinks} />
         </div>
-        <div className="mt-auto pb-4">
-          <NavDocuments items={commonLinks} />
+        <div className="mt-auto pb-4 border-t pt-4">
+          <NavDocuments items={formattedCommonLinks} />
         </div>
       </SidebarContent>
 

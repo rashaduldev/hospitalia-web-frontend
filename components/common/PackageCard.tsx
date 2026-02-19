@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "../ui/card";
 import { useI18n } from "@/locales/client";
+import packageImage from "../../public/assets/packages/health.png";
 
 export type PackageItem = {
   titleKey: string;
@@ -29,7 +30,7 @@ const PackageCard = ({ pkg }: { pkg: PackageItem }) => {
       <Image
         width={400}
         height={250}
-        src="https://avatar.vercel.sh/shadcn1"
+        src={packageImage}
         alt="Package image"
         className="relative z-20 aspect-video w-full object-cover brightness-60 grayscale dark:brightness-40"
       />
