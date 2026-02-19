@@ -15,9 +15,8 @@ import { DynamicHeading } from "@/components/common/DynamicHeading";
 import { Typography } from "@/components/ui/Typography";
 import { useI18n } from "@/locales/client";
 import { Spinner } from "@/components/ui/spinner";
-import { useLocalePath } from "@/lib/locale";
 
-const DoctorLoginForm = () => {
+const LoginForm = ({ isPatient }: { isPatient: boolean }) => {
   const t = useI18n();
   const params = useParams();
   const [showPassword, setShowPassword] = useState(false);
@@ -63,7 +62,6 @@ const DoctorLoginForm = () => {
   };
 
   return (
-    <div className="max-w-111.5 mx-auto w-full">
       <form onSubmit={handleSubmit(onSubmit)}>
         {/* Dynamic Title & Description */}
         <DynamicHeading
@@ -122,7 +120,7 @@ const DoctorLoginForm = () => {
 
         {/* Links */}
         <div className="mt-8 space-y-4 flex flex-col gap-2">
-          <Link href={useLocalePath('/register')}>
+          <Link href={isPatient ? "/register?userType=patient" : "/register"}>
             <Typography
               size="sm"
               weight="medium"
@@ -133,7 +131,7 @@ const DoctorLoginForm = () => {
             </Typography>
           </Link>
 
-          <Link href={useLocalePath('/forgot-password')}>
+          <Link href="/forgot-password">
             <Typography
               size="sm"
               weight="medium"
@@ -145,8 +143,7 @@ const DoctorLoginForm = () => {
           </Link>
         </div>
       </form>
-    </div>
   );
 };
 
-export default DoctorLoginForm;
+export default LoginForm;
