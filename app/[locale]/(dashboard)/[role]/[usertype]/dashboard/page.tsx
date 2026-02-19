@@ -11,19 +11,32 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Hospitalia - Dashboard",
-  description: "This is the dashboard page for user. Here you can see your today's and upcoming appointments.",
+  description:"This is the dashboard page for user. Here you can see your today's and upcoming appointments.",
 };
 
-
 export default async function DoctorDashboardPage() {
-  const t = await getI18n()
-  const lang = await getCurrentLocale();  
+  const t = await getI18n();
+  const lang = await getCurrentLocale();
   const CurrentUser = await getCurrentUser();
 
   const doctorId = CurrentUser?.id;
 
-  const todayAppoinment = await getTodaysAppointments(doctorId, 0, 100, "creationDate", "desc", lang);
-  const upcomingAppoinment = await getUpcomingAppointments(doctorId, 0, 100, "creationDate", "desc", lang);
+  const todayAppoinment = await getTodaysAppointments({
+    doctorUserId: doctorId,
+    pageNo: 0,
+    pageSize: 100,
+    sortBy: "creationDate",
+    ascOrDesc: "desc",
+    lang,
+  });
+  const upcomingAppoinment = await getUpcomingAppointments({
+    doctorUserId: doctorId,
+    pageNo: 0,
+    pageSize: 100,
+    sortBy: "creationDate",
+    ascOrDesc: "desc",
+    lang,
+  });
 
   return (
     <div className="mx-6 space-y-10">
@@ -32,7 +45,7 @@ export default async function DoctorDashboardPage() {
           title={t("appoinment.today")}
           description={t("appoinment.todaydescription")}
           titleProps={{ size: "2xl", weight: "bold", color: "secondary" }}
-          descriptionProps={{size:"sm"}}
+          descriptionProps={{ size: "sm" }}
           className="mb-6"
         />
         <DataTableWithExport

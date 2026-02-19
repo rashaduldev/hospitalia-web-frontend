@@ -6,14 +6,21 @@ import { Paginated } from "@/types/user.type";
 import { getAccessToken } from "../auth";
 
 // Doctor upcoming appointments by doctor user id
-export const getUpcomingAppointments = async (
-  doctorUserId: number,
+export const getUpcomingAppointments = async ({
+  doctorUserId,
   pageNo = 0,
   pageSize = 20,
   sortBy = "creationDate",
   ascOrDesc = "asc",
-  lang?: string
-) => {
+  lang,
+}:{
+  doctorUserId: number;
+  pageNo?: number;
+  pageSize?: number;
+  sortBy?: string;
+  ascOrDesc?: string;
+  lang: string;
+}) => {
   const token = await getAccessToken();
   const res = await apiClient<Paginated<Appointment>>({
     endpoint: `/api/appointments/all/upcoming/doctorUserId/${doctorUserId}`,
@@ -23,7 +30,7 @@ export const getUpcomingAppointments = async (
       pageSize, 
       sortBy, 
       ascOrDesc,
-      ...(lang && { lang }),
+      lang,
     },
     headers: {
       Authorization: `Bearer ${token}`,
@@ -33,14 +40,21 @@ export const getUpcomingAppointments = async (
 };
 
 // Doctor today's appointments by doctor user id
-export const getTodaysAppointments = async (
-  doctorUserId: number,
+export const getTodaysAppointments = async ({
+  doctorUserId,
   pageNo = 0,
   pageSize = 20,
   sortBy = "creationDate",
   ascOrDesc = "asc",
-  lang?: string
-) => {
+  lang,
+}:{
+  doctorUserId: number;
+  pageNo?: number;
+  pageSize?: number;
+  sortBy?: string;
+  ascOrDesc?: string;
+  lang: string;
+}) => {
   const token = await getAccessToken();
   const res = await apiClient<Paginated<Appointment>>({
     endpoint: `/api/appointments/all/today/doctorUserId/${doctorUserId}`,
