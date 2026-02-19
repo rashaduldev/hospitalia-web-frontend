@@ -55,10 +55,7 @@ const LoginForm = ({ isPatient }: { isPatient: boolean }) => {
       return;
     }
     // setCookies(res);
-    const role = res?.payload?.user?.roles[0]?.roleName.toLowerCase();
-    const userType = res?.payload?.user?.userType?.toLowerCase();
-    const dashboardPath = `/${role}/${userType}/dashboard`;
-    router.push(dashboardPath);
+    router.push("/dashboard");
   };
 
   return (
