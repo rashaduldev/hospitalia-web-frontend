@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { RegisterFormSchema, FormValues } from "@/schema/ueser.schema";
+import { RegisterFormSchema, RegisterFormValues } from "@/schema/ueser.schema";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
@@ -20,7 +20,11 @@ import { Typography } from "@/components/ui/Typography";
 import { Spinner } from "@/components/ui/spinner";
 import { useLocalePath } from "@/lib/locale";
 
-export default function DoctorRegistrationForm() {
+export default function RegistrationForm({
+  isPatient,
+}: {
+  isPatient: boolean;
+}) {
   const t = useI18n();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -31,9 +35,12 @@ export default function DoctorRegistrationForm() {
     control,
     setError,
     formState: { errors, isSubmitting },
-  } = useForm<FormValues>({
+  } = useForm<RegisterFormValues>({
     resolver: zodResolver(
-      RegisterFormSchema((key) => t(key as keyof typeof t) as string),
+      RegisterFormSchema(
+        (key) => t(key as keyof typeof t) as string,
+        isPatient,
+      ),
     ),
     defaultValues: {
       firstName: "",
@@ -41,6 +48,7 @@ export default function DoctorRegistrationForm() {
       email: "",
       password: "",
       confirmPassword: "",
+      userType: isPatient ? "PATIENT" : "DOCTOR",
       designation: "",
       countryCode: "",
       mobileNumber: "",
@@ -50,7 +58,7 @@ export default function DoctorRegistrationForm() {
   });
 
   const router = useRouter();
-  
+
   const { data } = useQuery({
     queryKey: ["specialities"],
     queryFn: async () => {
@@ -79,28 +87,40 @@ export default function DoctorRegistrationForm() {
     specialityId,
     onmsRegistrationNumber,
     professionalStatement,
-  }: FormValues) => {
-    const res = await register({
+  }: RegisterFormValues) => {
+    const registerPayload = {
       firstName,
       lastName: lastName || "",
       gender,
       email,
       dateOfBirth,
-      userType,
+      userType: userType || (isPatient ? "PATIENT" : ""),
       countryCode,
       mobileNumber,
       password,
-
-      professionalInfoRequest: {
-        designation,
-        specialityId: [Number(specialityId)],
-        departmentId: [0],
-        fileObjectId: 0,
-        workPhoneNumber: "",
-        onmsRegistrationNumber,
-        professionalStatement: professionalStatement || "",
-      },
-    });
+      professionalInfoRequest: isPatient
+        ? {
+            designation: "",
+            specialityId: [],
+            departmentId: [],
+            fileObjectId: 0,
+            workPhoneNumber: "",
+            onmsRegistrationNumber: undefined,
+            professionalStatement: undefined,
+          }
+        : {
+            designation: designation || "",
+            specialityId: [Number(specialityId)],
+            departmentId: [0],
+            fileObjectId: 0,
+            workPhoneNumber: "",
+            onmsRegistrationNumber,
+            professionalStatement: professionalStatement || "",
+          },
+    };
+    console.log("registerPayload",registerPayload);
+    
+    const res = await register(registerPayload);
 
     if (!res.success) {
       setError("root", {
@@ -110,7 +130,7 @@ export default function DoctorRegistrationForm() {
       return;
     }
 
-    router.push("/login");
+    router.push(("/login") + `?userType=${userType.toLowerCase()}`);
   };
 
   return (
@@ -155,28 +175,29 @@ export default function DoctorRegistrationForm() {
               },
             ]}
           />
-
           {/* User Type */}
-          <ControlledSelect
-            name="userType"
-            label={t("register.userType")}
-            control={control}
-            placeholder="Select user type"
-            options={[
-              {
-                label: t("register.userTypeOptions.doctor"),
-                value: "DOCTOR",
-              },
-              {
-                label: t("register.userTypeOptions.hospital"),
-                value: "HOSPITAL",
-              },
-              {
-                label: t("register.userTypeOptions.secretary"),
-                value: "SECRETARY",
-              },
-            ]}
-          />
+          {!isPatient && (
+            <ControlledSelect
+              name="userType"
+              label={t("register.userType")}
+              control={control}
+              placeholder="Select user type"
+              options={[
+                {
+                  label: t("register.userTypeOptions.doctor"),
+                  value: "DOCTOR",
+                },
+                {
+                  label: t("register.userTypeOptions.hospital"),
+                  value: "HOSPITAL",
+                },
+                {
+                  label: t("register.userTypeOptions.secretary"),
+                  value: "SECRETARY",
+                },
+              ]}
+            />
+          )}
 
           {/* Email */}
           <ControlledInput
@@ -249,75 +270,75 @@ export default function DoctorRegistrationForm() {
       </div>
 
       {/* PROFESSIONAL INFO */}
-      <div className="rounded-lg border bg-card p-6 space-y-5 my-12">
-        <Typography size="2xl" as="h3" color="foreground">
-          {t("register.professionalInfo")}
-        </Typography>
+      {!isPatient && (
+        <div className="rounded-lg border bg-card p-6 space-y-5 my-12">
+          <Typography size="2xl" as="h3" color="foreground">
+            {t("register.professionalInfo")}
+          </Typography>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {/* Designation */}
-          <ControlledInput
-            name="designation"
-            label={t("register.designation")}
-            control={control}
-            placeholder="Enter your title/designation"
-          />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {/* Designation */}
+            <ControlledInput
+              name="designation"
+              label={t("register.designation")}
+              control={control}
+              placeholder="Enter your title/designation"
+            />
 
-          {/* Speciality */}
-          <ControlledSelect
-            name="specialityId"
-            label="Speciality"
+            {/* Speciality */}
+            <ControlledSelect
+              name="specialityId"
+              label="Speciality"
+              control={control}
+              placeholder="Select speciality"
+              options={specialities.map((item) => ({
+                label: item.name,
+                value: String(item.id),
+              }))}
+            />
+            {/* ONMS Registration Number */}
+            <ControlledInput
+              name="onmsRegistrationNumber"
+              label={t("register.onms")}
+              control={control}
+              placeholder="Enter your registration number"
+            />
+          </div>
+
+          {/* Professional Statement */}
+          <ControlledTextarea
+            name="professionalStatement"
+            label={t("register.statement")}
             control={control}
-            placeholder="Select speciality"
-            options={specialities.map((item) => ({
-              label: item.name,
-              value: String(item.id),
-            }))}
-          />
-          {/* ONMS Registration Number */}
-          <ControlledInput
-            name="onmsRegistrationNumber"
-            label={t("register.onms")}
-            control={control}
-            placeholder="Enter your registration number"
+            placeholder="Write your professional statement"
           />
         </div>
+      )}
+      {/* Feedback Messages */}
+      {errors.root && (
+        <p className="text-destructive text-xs font-semibold mt-4">
+          {errors.root.message}
+        </p>
+      )}
+      {/* Submit Button */}
+      <div className="flex flex-col items-center gap-4 mt-6 mb-12">
+        <Button
+          className="w-full max-w-md"
+          type="submit"
+          disabled={isSubmitting || success}
+        >
+          {isSubmitting && <Spinner data-icon="inline-start" />}
+          {isSubmitting
+            ? "Creating account..."
+            : "Register as a Healthcare Provider"}
+        </Button>
 
-        {/* Professional Statement */}
-        <ControlledTextarea
-          name="professionalStatement"
-          label={t("register.statement")}
-          control={control}
-          placeholder="Write your professional statement"
-        />
-
-        {/* Feedback Messages */}
-        {errors.root && (
-          <p className="text-destructive text-xs font-semibold">
-            {errors.root.message}
-          </p>
-        )}
-
-        {/* Submit Button */}
-        <div className="flex flex-col items-center gap-4 mt-6">
-          <Button
-            className="w-full max-w-md"
-            type="submit"
-            disabled={isSubmitting || success}
-          >
-            {isSubmitting && <Spinner data-icon="inline-start" />}
-            {isSubmitting
-              ? "Creating account..."
-              : "Register as a Healthcare Provider"}
-          </Button>
-
-          <Link
-            href={useLocalePath('/login')}
-            className="text-sm font-medium text-primary hover:underline"
-          >
-            {t("register.alreadyAccount")}
-          </Link>
-        </div>
+        <Link
+          href={isPatient ? "/login?userType=patient" : "/login"}
+          className="text-sm font-medium text-primary hover:underline"
+        >
+          {t("register.alreadyAccount")}
+        </Link>
       </div>
     </form>
   );

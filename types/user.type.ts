@@ -34,7 +34,7 @@ export type RegisterRequestData = {
   firstName: string;
   lastName?: string;
   gender: "MALE" | "FEMALE";
-  userType: "DOCTOR" | "HOSPITAL" | "SECRETARY";
+  userType: "DOCTOR" | "HOSPITAL" | "SECRETARY" | "PATIENT";
   email?: string;
   dateOfBirth?: string;
   countryCode?: string;
@@ -51,6 +51,7 @@ export type RegisterRequestData = {
     professionalStatement?: string;
   };
 };
+
 export type LoginRequestData = {
   countryCode?: string;
   phoneNumber: string;
