@@ -122,7 +122,6 @@ export const appointmentColumns: ColumnDef<Appointment>[] = [
   },
   {
     accessorKey: "slotDuration",
-    // header: "Time Slot",
     header: () => (
       <Typography size="sm" weight="medium" color="foreground">
         <TranslatedHeader labelKey="column.timeslot" />

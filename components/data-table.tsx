@@ -30,7 +30,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -43,11 +42,12 @@ import {
 } from "@/components/ui/table";
 import { useI18n } from "@/locales/client";
 
-interface DataTableProps<TData, TValue> {
+type DataTableProps<TData, TValue> ={
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   filename?: string;
   emptyMessage?: string;
+  excludeColumns?: string[];
 }
 
 export function DataTableWithExport<TData, TValue>({
@@ -55,8 +55,13 @@ export function DataTableWithExport<TData, TValue>({
   data,
   filename = "export",
   emptyMessage,
+  excludeColumns = [],
 }: DataTableProps<TData, TValue>) {
   const t = useI18n();
+  const filteredColumns = columns.filter((col: any) => {
+    const key = col.accessorKey || col.id;
+    return !excludeColumns.includes(key);
+  });
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -65,7 +70,7 @@ export function DataTableWithExport<TData, TValue>({
 
   const table = useReactTable({
     data,
-    columns,
+    columns: filteredColumns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -132,7 +137,7 @@ export function DataTableWithExport<TData, TValue>({
           placeholder={`${t("table.search")}...`}
           value={globalFilter ?? ""}
           onChange={(event) => setGlobalFilter(String(event.target.value))}
-          className="max-w-sm"
+          className="max-w-[320px]"
         />
         <div className="flex items-center space-x-2">
           {table.getSelectedRowModel().rows.length > 0 && (
@@ -155,7 +160,7 @@ export function DataTableWithExport<TData, TValue>({
       </div>
 
       {/* Table */}
-      <div className="rounded-md border bg-white">
+      <div className="rounded-md border bg-background">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

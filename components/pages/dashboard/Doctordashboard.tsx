@@ -5,14 +5,8 @@ import {
   getUpcomingAppointments,
 } from "@/actions/doctor/appointment";
 import { DynamicHeading } from "@/components/common/DynamicHeading";
-import { getCurrentLocale, getI18n, getStaticParams } from "@/locales/server";
-import { Metadata } from "next";
+import { getCurrentLocale, getI18n } from "@/locales/server";
 import { appointmentColumns } from "@/components/common/DataTableColumns";
-
-export const metadata: Metadata = {
-  title: "Hospitalia - Dashboard",
-  description:"This is the dashboard page for user. Here you can see your today's and upcoming appointments.",
-};
 
 export default async function DoctorDashboardPage() {
   const t = await getI18n();
@@ -65,6 +59,7 @@ export default async function DoctorDashboardPage() {
         />
         <DataTableWithExport
           columns={appointmentColumns}
+          excludeColumns={["patientName"]}
           data={upcomingAppoinment?.payload?.content || []}
           filename="upcoming-appointments"
           emptyMessage={t("appoinment.no_upcoming")}
