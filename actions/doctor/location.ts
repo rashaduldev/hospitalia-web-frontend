@@ -24,7 +24,7 @@ export const createDoctorLocation = async ({
   doctorUserId: string | number;
   hospitalName: string;
   address: string;
-  lang: string;
+  lang?: string;
 }) => {
   const token = await getAccessToken();
   const res = await apiClient({
