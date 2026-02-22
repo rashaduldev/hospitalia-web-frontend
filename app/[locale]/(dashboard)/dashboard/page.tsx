@@ -24,7 +24,7 @@ const DaynamicDashboardPage = async () => {
   };
 
   return (
-    <div className="dashboard-container">
+    <div className="dashboard-container py-4 md:py-6">
       {Dashboards[role as string] || <div>Unauthorized</div>}
     </div>
   );

@@ -175,6 +175,6 @@ export default {
     description: "Default Locations and Time Slots",
     deafult_location: "Default Locations",
     hospital_name_search: "Enter Hospital/Clinic Name",
-    hospital_location_search: "Enter Hospital/Clinic Name",
+    hospital_location_search: "Enter Hospital/Clinic Address",
   },
 };
