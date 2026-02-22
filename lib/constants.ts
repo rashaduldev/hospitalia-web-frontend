@@ -10,46 +10,46 @@ export const ROUTES = {
   DOCTOR: [
     {
       name: "Dashboard",
-      url: "/customer/doctor/dashboard",
+      url: "/dashboard",
       icon: LayoutDashboardIcon,
     },
     {
       name: "Set Availability",
-      url: "/customer/doctor/availability",
+      url: "/availability",
       icon: ChartBarIcon,
     },
     {
       name: "Add Secretary",
-      url: "/customer/doctor/secretary",
+      url: "/secretary",
       icon: FolderIcon,
     },
   ],
   HOSPITAL: [
     {
       name: "Dashboard",
-      url: "/customer/hospital/dashboard",
+      url: "/dashboard",
       icon: LayoutDashboardIcon,
     },
     {
       name: "Set Availability",
-      url: "/customer/doctor/availability",
+      url: "/availability",
       icon: ChartBarIcon,
     },
   ],
   PATIENT: [
     {
       name: "Dashboard",
-      url: "/customer/patient/dashboard",
+      url: "/dashboard",
       icon: LayoutDashboardIcon,
     },
     {
       name: "Get Appointment",
-      url: "/customer/patient/appointment",
+      url: "/appointment",
       icon: FolderIcon,
     },
     {
       name: "Message",
-      url: "/customer/patient/message",
+      url: "/message",
       icon: ChartBarIcon,
     },
   ],

@@ -170,4 +170,11 @@ export default {
     no_today: "There are no today's appointments.",
     no_upcoming: "There are no upcoming appointments.",
   },
+  availability: {
+    title: "Default Locations and Time Slots",
+    description: "Default Locations and Time Slots",
+    deafult_location: "Default Locations",
+    hospital_name_search: "Enter Hospital/Clinic Name",
+    hospital_location_search: "Enter Hospital/Clinic Name",
+  },
 };

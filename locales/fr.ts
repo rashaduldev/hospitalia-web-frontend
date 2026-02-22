@@ -172,4 +172,11 @@ export default {
     no_today: "Il n'y a aucun rendez-vous aujourd'hui.",
     no_upcoming: "Il n'y a aucun rendez-vous à venir.",
   },
+  availability: {
+    title: "Lieux et créneaux horaires par défaut",
+    description: "Lieux et créneaux horaires par défaut",
+    deafult_location: "Lieux par défaut",
+    hospital_name_search: "Entrez le nom de l'hôpital/de la clinique",
+    hospital_location_search: "Entrez le nom de l'hôpital/de la clinique",
+  },
 };
