@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -26,7 +27,6 @@ import {
   LocationFormValues,
 } from "@/schema/doctor.location.schema";
 import { Location, UpdateLocationParams } from "@/types/doctor.location.type";
-import { cn } from "@/lib/utils";
 import {
   createDoctorLocation,
   deleteDoctorLocation,
@@ -140,94 +140,85 @@ export function DefaultLocationManager({
         </Typography>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Hospital Name */}
-          <div className="space-y-1">
-            <Input
-              {...register("locationName")}
-              placeholder={t("availability.hospital_name_search")}
-              className="bg-background"
-            />
-            {errors.locationName && (
-              <p className="text-[10px] text-destructive">
-                {errors.locationName.message}
-              </p>
-            )}
-          </div>
+          <Input
+            {...register("locationName")}
+            placeholder={t("availability.hospital_name_search")}
+            className="bg-background"
+          />
+          {errors.locationName && (
+            <p className="text-[10px] text-destructive">
+              {errors.locationName.message}
+            </p>
+          )}
 
           {/* Address Line 1 */}
-          <div className="space-y-1">
-            <Input
-              {...register("addressLine1")}
-              placeholder={t("availability.hospital_location_search")}
-              className="bg-background"
-            />
-            {errors.addressLine1 && (
-              <p className="text-[10px] text-destructive">
-                {errors.addressLine1.message}
-              </p>
-            )}
-          </div>
+          <Input
+            {...register("addressLine1")}
+            placeholder={t("availability.hospital_location_search")}
+            className="bg-background"
+          />
+          {errors.addressLine1 && (
+            <p className="text-[10px] text-destructive">
+              {errors.addressLine1.message}
+            </p>
+          )}
 
           {/* City */}
-          <div className="space-y-1">
-            <Input
-              {...register("city")}
-              placeholder={t("availability.city_placeh")}
-              className="bg-background"
-            />
-            {errors.city && (
-              <p className="text-[10px] text-destructive">
-                {errors.city.message}
-              </p>
-            )}
-          </div>
+          <Input
+            {...register("city")}
+            placeholder={t("availability.city_placeh")}
+            className="bg-background"
+          />
+          {errors.city && (
+            <p className="text-[10px] text-destructive">
+              {errors.city.message}
+            </p>
+          )}
 
           {/* Postal Code */}
-          <div className="space-y-1">
-            <Input
-              {...register("postalCode")}
-              placeholder={t("availability.postal_code_placeh")}
-              className="bg-background"
-            />
-            {errors.postalCode && (
-              <p className="text-[10px] text-destructive">
-                {errors.postalCode.message}
-              </p>
-            )}
-          </div>
+          <Input
+            {...register("postalCode")}
+            placeholder={t("availability.postal_code_placeh")}
+            className="bg-background"
+          />
+          {errors.postalCode && (
+            <p className="text-[10px] text-destructive">
+              {errors.postalCode.message}
+            </p>
+          )}
         </div>
 
-        <div className="flex items-center gap-3 pt-2">
-          <Button className="px-5" type="submit" disabled={mutation.isPending}>
-            {mutation.isPending && (
-              <Loader2 className="animate-spin size-4 mr-2" />
-            )}
-            {editingId ? "Update Location" : "Add Default Location"}
+        <Button className="px-5" type="submit" disabled={mutation.isPending}>
+          {mutation.isPending && (
+            <Loader2 className="animate-spin size-4 mr-2" />
+          )}
+          {editingId ? "Update Location" : "Add Default Location"}
+        </Button>
+
+        {editingId && (
+          <Button
+            variant="outline"
+            type="button"
+            className="ml-2"
+            onClick={() => {
+              setEditingId(null);
+              reset();
+            }}
+          >
+            Cancel
           </Button>
-
-          {editingId && (
-            <Button
-              variant="outline"
-              type="button"
-              onClick={() => {
-                setEditingId(null);
-                reset();
-              }}
-            >
-              Cancel
-            </Button>
-          )}
-          {successMessage && (
-            <span className="text-secondary text-sm flex items-center gap-1">
-              <CheckCircle2 size={14} />
-              {successMessage}
-            </span>
-          )}
-          {mutation.isError && (
-            <span className="text-destructive text-sm flex items-center gap-1">
-              <AlertCircle size={14} /> Failed to save.
-            </span>
-          )}
-        </div>
+        )}
+        {successMessage && (
+          <span className="text-secondary text-sm flex items-center gap-1">
+            <CheckCircle2 size={14} />
+            {successMessage}
+          </span>
+        )}
+        {mutation.isError && (
+          <span className="text-destructive text-sm flex items-center gap-1">
+            <AlertCircle size={14} /> Failed to save.
+          </span>
+        )}
       </form>
 
       {/* List Section */}
@@ -247,7 +238,12 @@ export function DefaultLocationManager({
           >
             <div className="flex gap-4 p-2">
               <div>
-                <Typography size="sm" className="mb-1.5" as="p" color="foreground">
+                <Typography
+                  size="sm"
+                  className="mb-1.5"
+                  as="p"
+                  color="foreground"
+                >
                   {loc.locationName}
                 </Typography>
                 <Typography size="sm" as="p" color="muted_foreground">
@@ -286,18 +282,25 @@ export function DefaultLocationManager({
       <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Are you sure?</DialogTitle>
+            <DialogTitle className="text-xl">
+              {t("availability.delete_title")}
+            </DialogTitle>
           </DialogHeader>
+          <DialogDescription>
+            {t("availability.delete_description")}
+          </DialogDescription>
           <DialogFooter className="flex gap-2 mt-4">
             <Button variant="outline" onClick={() => setDeleteId(null)}>
-              No
+              {t("availability.btn_no")}
             </Button>
             <Button
               variant="destructive"
               disabled={deleteMutation.isPending}
               onClick={() => deleteMutation.mutate(deleteId!)}
             >
-              {deleteMutation.isPending ? "Deleting..." : "Yes, Delete"}
+              {deleteMutation.isPending
+                ? t("availability.btn_deleting")
+                : t("availability.btn_yes")}
             </Button>
           </DialogFooter>
         </DialogContent>

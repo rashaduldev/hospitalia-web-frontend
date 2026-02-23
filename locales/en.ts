@@ -178,5 +178,10 @@ export default {
     hospital_location_search: "Enter Hospital/Clinic Address",
     postal_code_placeh: "Ex: 1207",
     city_placeh: "Enter your city",
+    delete_title: "Are you sure?",
+    delete_description: "This location will be permanently deleted. This cannot be undone. Are you sure you want to delete?",
+    btn_no:"No",
+    btn_deleting:"Deleting...",
+    btn_yes:"Yes, Delete",
   },
 };

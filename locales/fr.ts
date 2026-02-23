@@ -180,5 +180,10 @@ export default {
     hospital_location_search: "Entrez l’adresse de l’hôpital/de la clinique",
     postal_code_placeh: "Ex : 1207",
     city_placeh: "Entrez votre ville",
+    delete_title: "Êtes-vous sûr ?",
+    delete_description: "Cet emplacement sera supprimé définitivement. Cette action est irréversible. Êtes-vous sûr de vouloir le supprimer ?",
+    btn_no: "Non",
+    btn_deleting: "Suppression en cours...",
+    btn_yes: "Oui, supprimer",
   },
 };
