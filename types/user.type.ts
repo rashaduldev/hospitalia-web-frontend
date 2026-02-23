@@ -33,15 +33,15 @@ export interface Paginated<T> {
 export type RegisterRequestData = {
   firstName: string;
   lastName?: string;
-  gender: "MALE" | "FEMALE";
-  userType: "DOCTOR" | "HOSPITAL" | "SECRETARY";
+  gender: string;
+  userType: string;
   email?: string;
   dateOfBirth?: string;
   countryCode?: string;
   mobileNumber: string;
   password: string;
 
-  professionalInfoRequest: {
+  professionalInfoRequest?: {
     designation: string;
     specialityId: number[];
     departmentId: number[];
@@ -51,6 +51,7 @@ export type RegisterRequestData = {
     professionalStatement?: string;
   };
 };
+
 export type LoginRequestData = {
   countryCode?: string;
   phoneNumber: string;

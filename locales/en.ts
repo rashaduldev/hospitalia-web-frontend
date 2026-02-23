@@ -4,7 +4,7 @@ export default {
   nav: {
     home: "Home",
     patient: "Patient Login",
-    doctor: "Doctor / Secretary",
+    doctor: "Doctor / Secretary Login",
   },
   banner: {
     titleMain: "Simplify patient experience",

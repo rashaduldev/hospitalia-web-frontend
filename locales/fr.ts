@@ -2,7 +2,7 @@ export default {
   nav: {
     home: "Accueil",
     patient: "Connexion Patient",
-    doctor: "Médecin / Secrétaire",
+    doctor: "Connexion Médecin / Secrétaire",
   },
   banner: {
     titleMain: "Simplifiez l’expérience des patients",
