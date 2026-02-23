@@ -40,7 +40,7 @@ export function AppSidebar({ userRole, ...props }: AppSidebarProps) {
       <SidebarHeader className="p-0">
         <SidebarMenu>
           <Link
-            href={ROUTES[userRole]?.[0]?.url || "/"}
+            href="/dashboard"
             className="w-full bg-primary py-5 flex justify-center"
           >
             <DashboardLogo className="w-32 h-6" />

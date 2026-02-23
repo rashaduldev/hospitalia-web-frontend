@@ -4,10 +4,10 @@ import {
   getTodaysAppointments,
   getUpcomingAppointments,
 } from "@/actions/doctor/appointment";
-import { appointmentColumns } from "./columns";
 import { DynamicHeading } from "@/components/common/DynamicHeading";
 import { getCurrentLocale, getI18n, getStaticParams } from "@/locales/server";
 import { Metadata } from "next";
+import { appointmentColumns } from "@/components/common/DataTableColumns";
 
 export const metadata: Metadata = {
   title: "Hospitalia - Dashboard",
@@ -39,7 +39,7 @@ export default async function DoctorDashboardPage() {
   });
 
   return (
-    <div className="mx-6 space-y-10">
+    <div className="space-y-10">
       <div>
         <DynamicHeading
           title={t("appoinment.today")}
