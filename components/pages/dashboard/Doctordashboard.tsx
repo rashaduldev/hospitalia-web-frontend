@@ -33,7 +33,7 @@ export default async function DoctorDashboardPage() {
   });
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-10 mt-5">
       <div>
         <DynamicHeading
           title={t("appoinment.today")}

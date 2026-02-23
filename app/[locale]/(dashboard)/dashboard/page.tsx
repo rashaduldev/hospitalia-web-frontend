@@ -1,4 +1,5 @@
 import { getCurrentUser } from '@/actions/user.actions';
+import Unauthorized from '@/components/common/Unauthorized';
 import AdminDashboardPage from '@/components/pages/dashboard/AdminDashboardPage';
 import DoctorDashboardPage from '@/components/pages/dashboard/Doctordashboard';
 import HospitalDashboardPage from '@/components/pages/dashboard/HospitalDashboardPage';
@@ -24,8 +25,8 @@ const DaynamicDashboardPage = async () => {
   };
 
   return (
-    <div className="dashboard-container py-4 md:py-6">
-      {Dashboards[role as string] || <div>Unauthorized</div>}
+    <div className="dashboard-container">
+      {Dashboards[role as string] || <Unauthorized/>}
     </div>
   );
 };

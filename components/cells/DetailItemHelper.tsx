@@ -1,10 +1,10 @@
-import { ReactNode } from "react";
+import { ReactElement, ReactNode } from "react";
 import { Typography } from "../ui/Typography";
 
 type DetailItemProps = {
   label: string;
   value?: string;
-  icon?: ReactNode;
+  icon?: ReactElement;
 }
 
 export const DetailItem = ({ label, value, icon }: DetailItemProps) => (

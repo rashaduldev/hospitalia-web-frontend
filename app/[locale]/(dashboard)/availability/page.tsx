@@ -1,4 +1,5 @@
 import { getCurrentUser } from '@/actions/user.actions';
+import Unauthorized from '@/components/common/Unauthorized';
 import Availability from '@/components/pages/dashboard/availability/Availability';
 import { Metadata } from 'next';
 import React from 'react';
@@ -20,7 +21,7 @@ const AvailabilityPage = async () => {
 
   return (
     <div className="dashboard-container">
-      {roleComponents[role as string] || <div>Unauthorized</div>}
+      {roleComponents[role as string] || <Unauthorized/>}
     </div>
   );
 };

@@ -179,9 +179,18 @@ export default {
     postal_code_placeh: "Ex: 1207",
     city_placeh: "Enter your city",
     delete_title: "Are you sure?",
-    delete_description: "This location will be permanently deleted. This cannot be undone. Are you sure you want to delete?",
-    btn_no:"No",
-    btn_deleting:"Deleting...",
-    btn_yes:"Yes, Delete",
+    delete_description:
+      "This location will be permanently deleted. This cannot be undone. Are you sure you want to delete?",
+    btn_no: "No",
+    btn_deleting: "Deleting...",
+    btn_yes: "Yes, Delete",
+  },
+  unauthorized: {
+    title: "Access Denied",
+    description:
+      "You do not have the required permissions to access this dashboard area. Please contact administration if you believe this is an error.",
+    go_back: "Go Back",
+    return_home: "Return Home",
+    error_code: "Error Code",
   },
 };

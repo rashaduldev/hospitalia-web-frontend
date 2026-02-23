@@ -18,7 +18,7 @@ import { register } from "@/actions/auth.actions";
 import { useI18n } from "@/locales/client";
 import { Typography } from "@/components/ui/Typography";
 import { Spinner } from "@/components/ui/spinner";
-import { useLocalePath } from "@/lib/locale";
+import { RegisterRequestData } from "@/types/user.type";
 
 export default function RegistrationForm({
   isPatient,
@@ -73,53 +73,33 @@ export default function RegistrationForm({
   });
   const specialities = data?.content ?? [];
 
-  const onSubmit = async ({
-    firstName,
-    lastName,
-    gender,
-    email,
-    dateOfBirth,
-    userType,
-    countryCode,
-    mobileNumber,
-    password,
-    designation,
-    specialityId,
-    onmsRegistrationNumber,
-    professionalStatement,
-  }: RegisterFormValues) => {
-    const registerPayload = {
-      firstName,
-      lastName: lastName || "",
-      gender,
-      email,
-      dateOfBirth,
-      userType: userType || (isPatient ? "PATIENT" : ""),
-      countryCode,
-      mobileNumber,
-      password,
-      professionalInfoRequest: isPatient
-        ? {
-            designation: "",
-            specialityId: [],
-            departmentId: [],
-            fileObjectId: 0,
-            workPhoneNumber: "",
-            onmsRegistrationNumber: undefined,
-            professionalStatement: undefined,
-          }
-        : {
-            designation: designation || "",
-            specialityId: [Number(specialityId)],
-            departmentId: [0],
-            fileObjectId: 0,
-            workPhoneNumber: "",
-            onmsRegistrationNumber,
-            professionalStatement: professionalStatement || "",
-          },
+  const onSubmit = async (data : RegisterFormValues) => {
+    const registerPayload: RegisterRequestData = {
+      firstName: data.firstName,
+      lastName: data.lastName,
+      gender: data.gender,
+      email: data.email,
+      dateOfBirth: data.dateOfBirth,
+      userType: data.userType || (isPatient ? "PATIENT" : "DOCTOR"),
+      countryCode: data.countryCode,
+      mobileNumber: data.mobileNumber,
+      password: data.password,
     };
-    console.log("registerPayload",registerPayload);
-    
+
+    if (!isPatient) {
+      const profInfo: any = {};      
+
+      if (data.designation) profInfo.designation = data.designation;
+      if (data.specialityId) profInfo.specialityId = [Number(data.specialityId)];
+      if (data.onmsRegistrationNumber)
+        profInfo.onmsRegistrationNumber = data.onmsRegistrationNumber;
+      if (data.professionalStatement)
+        profInfo.professionalStatement = data.professionalStatement;
+
+      if (Object.keys(profInfo).length > 0) {
+        registerPayload.professionalInfoRequest = profInfo;
+      }
+    }
     const res = await register(registerPayload);
 
     if (!res.success) {

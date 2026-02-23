@@ -4,17 +4,16 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useI18n } from "@/locales/client";
-import { useParams, usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { siteConfig } from "@/config/siteConfig";
+import { cn } from "@/lib/utils";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const t = useI18n();
-  const params = useParams();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const locale = params?.locale as string;
   const currentUserType = searchParams.get("userType");
 
   const NAV_LINKS = [
@@ -68,33 +67,54 @@ export default function Header() {
         <button
           onClick={() => setIsOpen((prev) => !prev)}
           aria-label="Toggle menu"
-          className="md:hidden flex flex-col gap-1.5 z-50"
+          className="md:hidden flex flex-col gap-1.5 z-50 focus:outline-none"
         >
           <span
-            className={`h-0.5 w-6 bg-card-foreground transition-transform duration-300 ${isOpen ? "rotate-45 translate-y-2" : ""}`}
+            className={cn(
+              "h-0.5 w-6 bg-card-foreground transition-all duration-300",
+              {
+                "rotate-45 translate-y-2":isOpen,
+              }
+            )}
           />
           <span
-            className={`h-0.5 w-6 bg-card-foreground transition-opacity duration-300 ${isOpen ? "opacity-0" : "opacity-100"}`}
+            className={cn(
+              "h-0.5 w-6 bg-card-foreground transition-all duration-300",
+              {
+                "opacity-0":isOpen,
+                "opacity-100":!isOpen
+              }
+            )}
           />
           <span
-            className={`h-0.5 w-6 bg-card-foreground transition-transform duration-300 ${isOpen ? "-rotate-45 -translate-y-2" : ""}`}
+            className={cn(
+              "h-0.5 w-6 bg-card-foreground transition-all duration-300",
+              {
+                "-rotate-45 -translate-y-2":isOpen
+              }
+            )}
           />
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Dropdown */}
       <div
-        className={`md:hidden absolute left-0 top-full w-full bg-background transition-all duration-300 ease-in-out
-        ${isOpen ? "opacity-100 translate-y-0 visible" : "opacity-0 -translate-y-5 invisible"}`}
+        className={cn(
+          "md:hidden absolute left-0 top-full w-full bg-background transition-all duration-300 ease-in-out",
+          {
+            "opacity-100 translate-y-0 visible":isOpen,
+            "opacity-0 -translate-y-5 invisible":!isOpen
+          }
+        )}
       >
-        <nav className="px-6 py-6">
+        <nav className="px-6 py-6 border-t">
           <ul className="flex flex-col gap-6 text-sm font-medium">
             {NAV_LINKS.map(
               (link) =>
                 !link.hidden && (
                   <li key={link.label}>
                     <Link
-                      href={`/${locale}${link.href}`}
+                      href={link.href}
                       onClick={() => setIsOpen(false)}
                       className="block hover:text-primary transition"
                     >

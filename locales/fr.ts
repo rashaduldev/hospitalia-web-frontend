@@ -181,9 +181,18 @@ export default {
     postal_code_placeh: "Ex : 1207",
     city_placeh: "Entrez votre ville",
     delete_title: "Êtes-vous sûr ?",
-    delete_description: "Cet emplacement sera supprimé définitivement. Cette action est irréversible. Êtes-vous sûr de vouloir le supprimer ?",
+    delete_description:
+      "Cet emplacement sera supprimé définitivement. Cette action est irréversible. Êtes-vous sûr de vouloir le supprimer ?",
     btn_no: "Non",
     btn_deleting: "Suppression en cours...",
     btn_yes: "Oui, supprimer",
+  },
+  unauthorized: {
+    title: "Accès refusé",
+    description:
+      "Vous n’avez pas les autorisations requises pour accéder à cette section du tableau de bord. Veuillez contacter l’administration si vous pensez qu’il s’agit d’une erreur.",
+    go_back: "Retour",
+    return_home: "Retour à l’accueil",
+    error_code: "Code d’erreur",
   },
 };
