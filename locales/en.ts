@@ -161,4 +161,11 @@ export default {
     no_today: "There are no today's appointments.",
     no_upcoming: "There are no upcoming appointments.",
   },
+  unauthorized: {
+    title: "Access Denied",
+    description: "You do not have the required permissions to access this dashboard area. Please contact administration if you believe this is an error.",
+    go_back: "Go Back",
+    return_home: "Return Home",
+    error_code: "Error Code",
+  },
 };

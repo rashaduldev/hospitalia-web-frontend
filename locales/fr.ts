@@ -161,4 +161,11 @@ export default {
     no_today: "Il n'y a aucun rendez-vous aujourd'hui.",
     no_upcoming: "Il n'y a aucun rendez-vous à venir.",
   },
+  unauthorized: {
+    title: "Accès refusé",
+    description:"Vous n’avez pas les autorisations requises pour accéder à cette section du tableau de bord. Veuillez contacter l’administration si vous pensez qu’il s’agit d’une erreur.",
+    go_back: "Retour",
+    return_home: "Retour à l’accueil",
+    error_code: "Code d’erreur",
+  },
 };
