@@ -88,38 +88,32 @@ export default function RegistrationForm({
     onmsRegistrationNumber,
     professionalStatement,
   }: RegisterFormValues) => {
-    const registerPayload = {
-      firstName,
-      lastName: lastName || "",
-      gender,
-      email,
-      dateOfBirth,
-      userType: userType || (isPatient ? "PATIENT" : ""),
-      countryCode,
-      mobileNumber,
-      password,
-      professionalInfoRequest: isPatient
-        ? {
-            designation: "",
-            specialityId: [],
-            departmentId: [],
-            fileObjectId: 0,
-            workPhoneNumber: "",
-            onmsRegistrationNumber: undefined,
-            professionalStatement: undefined,
-          }
-        : {
-            designation: designation || "",
-            specialityId: [Number(specialityId)],
-            departmentId: [0],
-            fileObjectId: 0,
-            workPhoneNumber: "",
-            onmsRegistrationNumber,
-            professionalStatement: professionalStatement || "",
-          },
+    const registerPayload: any = {
+      firstName: firstName,
+      lastName: lastName,
+      gender: gender,
+      email: email,
+      dateOfBirth: dateOfBirth,
+      userType: userType || (isPatient ? "PATIENT" : "DOCTOR"),
+      countryCode: countryCode,
+      mobileNumber: mobileNumber,
+      password: password,
     };
-    console.log("registerPayload",registerPayload);
-    
+
+    if (!isPatient) {
+      const profInfo: any = {};      
+
+      if (designation) profInfo.designation = designation;
+      if (specialityId) profInfo.specialityId = [Number(specialityId)];
+      if (onmsRegistrationNumber)
+        profInfo.onmsRegistrationNumber = onmsRegistrationNumber;
+      if (professionalStatement)
+        profInfo.professionalStatement = professionalStatement;
+
+      if (Object.keys(profInfo).length > 0) {
+        registerPayload.professionalInfoRequest = profInfo;
+      }
+    }
     const res = await register(registerPayload);
 
     if (!res.success) {
@@ -271,7 +265,7 @@ export default function RegistrationForm({
 
       {/* PROFESSIONAL INFO */}
       {!isPatient && (
-        <div className="rounded-lg border bg-card p-6 space-y-5 my-12">
+        <div className="rounded-lg border bg-card p-6 space-y-5 mt-12">
           <Typography size="2xl" as="h3" color="foreground">
             {t("register.professionalInfo")}
           </Typography>

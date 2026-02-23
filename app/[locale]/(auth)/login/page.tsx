@@ -7,7 +7,8 @@ import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Hospitalia | Login",
-  description: "Login to your Hospitalia account to securely access hospital services, manage appointments, and connect with healthcare professionals.",
+  description:
+    "Login to your Hospitalia account to securely access hospital services, manage appointments, and connect with healthcare professionals.",
 };
 
 export default async function LoginPage({
@@ -23,8 +24,10 @@ export default async function LoginPage({
       <Header />
       <main
         className={cn(
-          "flex-1 flex flex-col gap-0",
-          isPatient ? "md:grid md:grid-cols-2" : "items-center justify-center",
+          "flex-1 flex flex-col",
+          isPatient
+            ? "md:grid md:grid-cols-2 gap-8"
+            : "items-center justify-center",
         )}
       >
         {isPatient && (
@@ -43,7 +46,7 @@ export default async function LoginPage({
           className={cn(
             "w-full flex items-center justify-center py-10",
             isPatient
-              ? "md:justify-start md:pl-20 px-5 md:px-0"
+              ? "md:justify-start md:pl-20 px-5 md:px-4"
               : "mx-auto min-h-[60vh] px-5 md:px-0",
           )}
         >
