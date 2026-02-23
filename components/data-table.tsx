@@ -152,7 +152,7 @@ export function DataTableWithExport<TData, TValue>({
           placeholder={`${t("table.search")}...`}
           value={globalFilter ?? ""}
           onChange={(event) => setGlobalFilter(String(event.target.value))}
-          className="max-w-[320px]"
+          className="max-w-[20rem]"
         />
         <div className="flex items-center space-x-2">
           {table.getSelectedRowModel().rows.length > 0 && (
