@@ -1,372 +1,134 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Edit3,
-  Trash2,
-  Loader2,
-  MapPin,
-  AlertCircle,
-  CheckCircle2,
-} from "lucide-react";
+import { Edit3, Trash2, Loader2, MapPin, CheckCircle2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Typography } from "@/components/ui/Typography";
-import { useI18n } from "@/locales/client";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { locationSchema, LocationFormValues } from "@/schema/doctor.location.schema";
+import { Location } from "@/types/doctor.location.type";
 import { cn } from "@/lib/utils";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  createDoctorLocation,
-  updateDoctorLocation,
-  getDoctorLocations,
-  deleteDoctorLocation,
-} from "@/actions/doctor/location";
-import { Location, LocationFormValues } from "@/types/doctor.location.type";
-import { locationSchema } from "@/schema/doctor.location.schema";
+import { useLocations } from "@/hooks/use-locations";
 
-export function DefaultLocationManager({
-  doctorUserId,
-}: {
-  doctorUserId: string;
-}) {
-  const t = useI18n();
-  const [locations, setLocations] = useState<Location[]>([]);
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
+export function DefaultLocationManager({ doctorUserId }: { doctorUserId: string }) {
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  
+  const { data: locations, isLoading, mutation, deleteMutation } = useLocations(doctorUserId);
 
-  const [formStatus, setFormStatus] = useState<{
-    type: "success" | "error";
-    message: string;
-  } | null>(null);
-  const [deleteStatus, setDeleteStatus] = useState<{
-    type: "success" | "error";
-    message: string;
-  } | null>(null);
-
-  const [locationToDelete, setLocationToDelete] = useState<number | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    setValue,
-    setError,
-    formState: { isSubmitting, errors },
-  } = useForm<LocationFormValues>({
+  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm<LocationFormValues>({
     resolver: zodResolver(locationSchema),
-    defaultValues: { locationName: "", addressLine1: "" },
   });
-
-  const fetchLocations = async () => {
-    const res = await getDoctorLocations({ doctorUserId });
-    console.log("res", res);
-
-    if (res?.payload) setLocations(res.payload);
-    if (!res.success) {
-      setError("root", {
-        type: "manual",
-        message: res.message,
-      });
-      return;
-    }
-    setIsInitialLoading(false);
-  };
-
-  useEffect(() => {
-    fetchLocations();
-  }, [doctorUserId]);
-
-  // Create/Update Logic
-  const onSubmit = async (data: LocationFormValues) => {
-    setFormStatus(null);
-    try {
-      // FIX: Ensure keys match what your Server Action expects
-      const res = editingId
-        ? await updateDoctorLocation({
-            locationId:1,
-            doctorUserId,
-            hospitalName:"",
-            address: data?.addressLine1,
-          })
-        : await createDoctorLocation({
-            doctorUserId,
-            hospitalName: "",
-            address: data?.addressLine1,
-            lang: "en",
-          });
-
-      if (res?.success) {
-        setFormStatus({
-          type: "success",
-          message: editingId
-            ? "Location updated successfully!"
-            : "New location added successfully!",
-        });
-
-        await fetchLocations();
-        handleCancelEdit();
-      } else {
-        setFormStatus({
-          type: "error",
-          message: res?.message || "Something went wrong.",
-        });
-      }
-    } catch (error) {
-      setFormStatus({ type: "error", message: "A network error occurred." });
-    }
-  };
-
-  const onEditClick = (loc: Location) => {
-    console.log("loc",loc);
-    
-    setFormStatus(null);
-    setEditingId(loc?.locationId);
-    setValue("locationName", loc.locationName || "");
-    setValue("addressLine1", loc.addressLine1 || "");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const handleCancelEdit = () => {
+  const onSubmit: SubmitHandler<LocationFormValues> = async (formData) => {
+    await mutation.mutateAsync({
+      locationId: editingId ?? undefined,
+      doctorUserId: doctorUserId,
+      locationName: formData.locationName,
+      addressLine1: formData.addressLine1,
+      city: formData.city,
+      postalCode: formData.postalCode,
+      addressLine2: "", 
+      country: "Bangladesh",
+      state: "Dhaka",
+      longitude: 0,
+      latitude: 0,
+    });
     setEditingId(null);
-    reset({ locationName: "", addressLine1: "" });
+    reset();
   };
 
-  // Delete Logic
-  const confirmDelete = async () => {
-    if (!locationToDelete) return;
-    setIsDeleting(true);
-    setDeleteStatus(null);
-    try {
-      const res = await deleteDoctorLocation(locationToDelete, doctorUserId);
-      if (res?.success) {
-        setLocations((prev) =>
-          prev.filter((l) => l.locationId !== locationToDelete),
-        );
-        setDeleteStatus({
-          type: "success",
-          message: "Location deleted successfully.",
-        });
-        setTimeout(() => setDeleteStatus(null), 4000);
-      } else {
-        setDeleteStatus({
-          type: "error",
-          message: "Failed to delete location.",
-        });
-      }
-    } catch (error) {
-      setDeleteStatus({ type: "error", message: "Error deleting location." });
-    } finally {
-      setIsDeleting(false);
-      setLocationToDelete(null);
-    }
-  };
+  if (isLoading) return <div className="py-10 text-center"><Loader2 className="mx-auto animate-spin" /></div>;
 
   return (
-    <div className="pb-10">
-      {/* --- FORM SECTION --- */}
-      <div
-        className={cn(
-          "rounded-xl transition-all duration-300 mb-8",
-          editingId ? "bg-primary/5 ring-1 ring-primary/10" : "bg-muted/30",
-        )}
-      >
-        <Typography
-          size="sm"
-          weight="medium"
-          color="foreground"
-          className="mb-2"
-        >
-          {t("availability.deafult_location")}
-        </Typography>
+    <div className="space-y-6 max-w-2xl">
+      {/* form */}
+      <div className={cn("p-6 rounded-xl border transition-all", editingId ? "bg-primary/5 border-primary/30" : "bg-muted/20 border-border")}>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="space-y-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            {/* Location Name */}
             <div className="space-y-1">
-              <Input
-                {...register("locationName")}
-                placeholder={t("availability.hospital_name_search")}
-                className="max-w-112.5"
-              />
-              {errors.locationName && (
-                <p className="text-[10px] text-destructive font-medium">
-                  {errors.locationName.message}
-                </p>
-              )}
+              <label className="text-xs font-semibold ml-1">Hospital Name *</label>
+              <Input {...register("locationName")} placeholder="e.g. Apollo Hospital" className="bg-background" />
+              {errors.locationName && <p className="text-[10px] text-destructive">{errors.locationName.message}</p>}
             </div>
+
+            {/* Address Line 1 */}
             <div className="space-y-1">
-              <Input
-                {...register("addressLine1")}
-                placeholder={t("availability.hospital_location_search")}
-                className="max-w-112.5"
-              />
-              {errors.addressLine1 && (
-                <p className="text-[10px] text-destructive font-medium">
-                  {errors.addressLine1.message}
-                </p>
-              )}
+              <label className="text-xs font-semibold ml-1">Address *</label>
+              <Input {...register("addressLine1")} placeholder="Street or Area" className="bg-background" />
+              {errors.addressLine1 && <p className="text-[10px] text-destructive">{errors.addressLine1.message}</p>}
             </div>
+
+            {/* City */}
+            <div className="space-y-1">
+              <label className="text-xs font-semibold ml-1">City *</label>
+              <Input {...register("city")} placeholder="e.g. Dhaka" className="bg-background" />
+              {errors.city && <p className="text-[10px] text-destructive">{errors.city.message}</p>}
+            </div>
+
+            {/* Postal Code */}
+            <div className="space-y-1">
+              <label className="text-xs font-semibold ml-1">Postal Code *</label>
+              <Input {...register("postalCode")} placeholder="e.g. 1212" className="bg-background" />
+              {errors.postalCode && <p className="text-[10px] text-destructive">{errors.postalCode.message}</p>}
+            </div>
+
           </div>
 
-          <div className="flex flex-col gap-3">
-            <div className="flex gap-2">
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="min-w-48.75"
-              >
-                {isSubmitting ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : editingId ? (
-                  "Update Location"
-                ) : (
-                  "Add Default Location"
-                )}
-              </Button>
-              {editingId && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleCancelEdit}
-                >
-                  Cancel
-                </Button>
-              )}
-            </div>
-
-            {formStatus && (
-              <div
-                className={cn(
-                  "flex items-center gap-2 text-sm font-medium p-2 rounded-md transition-all animate-in fade-in slide-in-from-top-1",
-                  formStatus.type === "success"
-                    ? "text-primary bg-background"
-                    : "text-destructive bg-destructive/5",
-                )}
-              >
-                {formStatus.type === "success" ? (
-                  <CheckCircle2 className="size-4" />
-                ) : (
-                  <AlertCircle className="size-4" />
-                )}
-                {formStatus.message}
-              </div>
-            )}
+          <div className="flex items-center gap-3 pt-2">
+            <Button type="submit" disabled={mutation.isPending}>
+              {mutation.isPending && <Loader2 className="animate-spin size-4 mr-2" />}
+              {editingId ? "Update Location" : "Save Location"}
+            </Button>
+            {editingId && <Button variant="outline" type="button" onClick={() => { setEditingId(null); reset(); }}>Cancel</Button>}
+            {mutation.isSuccess && <span className="text-secondary text-sm flex items-center gap-1"><CheckCircle2 size={14} /> Success!</span>}
           </div>
         </form>
       </div>
 
-      {/* --- LIST SECTION --- */}
-      <div className="space-y-4">
-        {deleteStatus && (
-          <div
-            className={cn(
-              "p-3 rounded-lg text-sm flex items-center gap-2 animate-pulse",
-              deleteStatus.type === "success"
-                ? "bg-background text-secondary"
-                : "bg-background text-destructive",
-            )}
-          >
-            {deleteStatus.message}
+      <div className="space-y-3">
+        {deleteMutation.isSuccess && (
+          <div className="text-secondary p-3 rounded-lg text-sm flex items-center gap-2">
+            <CheckCircle2 size={16} /> Deleted successfully.
           </div>
         )}
 
-        {isInitialLoading ? (
-          <div className="py-20 flex flex-col items-center">
-            <Loader2 className="size-8 animate-spin text-primary" />
-          </div>
-        ) : locations.length > 0 ? (
-          locations.map((loc) => (
-            <div
-              key={loc.locationId}
-              className={cn(
-                "flex items-center justify-between p-4 border rounded-xl transition-all",
-                editingId === loc.locationId
-                  ? "border-primary bg-primary/5 shadow-sm"
-                  : "bg-card hover:bg-muted/10",
-              )}
-            >
-              <div className="flex gap-4 items-start">
-                <div className="mt-0.5 p-2 rounded-lg bg-muted text-muted-foreground">
-                  <MapPin className="size-4" />
-                </div>
-                <div>
-                  <p className="font-bold text-sm leading-none">
-                    {loc.locationName}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-1.5">
-                    {loc.addressLine1}
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-1">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="size-8 rounded-full"
-                  onClick={() => onEditClick(loc)}
-                >
-                  <Edit3 className="size-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="size-8 rounded-full text-destructive hover:bg-destructive/10"
-                  onClick={() => setLocationToDelete(loc.locationId)}
-                >
-                  <Trash2 className="size-4" />
-                </Button>
+        {locations?.map((loc: Location) => (
+          <div key={loc.locationId} className="flex items-center justify-between p-4 border rounded-xl bg-card hover:shadow-sm transition-all">
+            <div className="flex gap-4">
+              <div className="p-2 bg-muted rounded-lg h-fit text-muted-foreground"><MapPin size={20} /></div>
+              <div>
+                <p className="font-bold text-sm">{loc.locationName}</p>
+                <p className="text-xs text-muted-foreground">{loc.addressLine1}, {loc?.city} - {loc.postalCode}</p>
               </div>
             </div>
-          ))
-        ) : (
-          <div className="text-center py-20 border-2 border-dashed rounded-2xl">
-            <MapPin className="size-8 text-muted-foreground/30 mx-auto mb-2" />
-            <p className="text-sm text-muted-foreground">No locations found.</p>
+            <div className="flex gap-1">
+              <Button variant="ghost" size="icon" onClick={() => {
+                setEditingId(loc.locationId);
+                setValue("locationName", loc.locationName);
+                setValue("addressLine1", loc.addressLine1);
+                setValue("city", loc.city || "");
+                setValue("postalCode", loc.postalCode || "");
+              }}><Edit3 size={16} /></Button>
+              <Button variant="ghost" size="icon" className="text-destructive" onClick={() => setDeleteId(loc.locationId)}><Trash2 size={16} /></Button>
+            </div>
           </div>
-        )}
+        ))}
       </div>
 
-      {/* --- DELETE DIALOG --- */}
-      <Dialog
-        open={locationToDelete !== null}
-        onOpenChange={(open) => !open && setLocationToDelete(null)}
-      >
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Confirm Deletion</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to remove this location? This action cannot
-              be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="gap-2 sm:gap-0">
-            <Button
-              variant="outline"
-              onClick={() => setLocationToDelete(null)}
-              disabled={isDeleting}
-            >
-              No, Keep it
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={confirmDelete}
-              disabled={isDeleting}
-            >
-              {isDeleting ? (
-                <Loader2 className="mr-2 size-4 animate-spin" />
-              ) : (
-                "Yes, Delete"
-              )}
-            </Button>
+      <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Are you sure?</DialogTitle></DialogHeader>
+          <DialogFooter className="flex gap-2 mt-4">
+            <Button variant="outline" onClick={() => setDeleteId(null)}>No</Button>
+            <Button variant="destructive" disabled={deleteMutation.isPending} onClick={async () => {
+                await deleteMutation.mutateAsync(deleteId!);
+                setDeleteId(null);
+              }}>{deleteMutation.isPending ? "Deleting..." : "Yes, Delete"}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

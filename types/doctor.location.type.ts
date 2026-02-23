@@ -7,4 +7,6 @@ export type Location = {
   locationId: number;
   locationName: string;
   addressLine1: string;
+  city: string;
+  postalCode: string;
 };
