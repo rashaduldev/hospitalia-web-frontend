@@ -18,7 +18,7 @@ import { register } from "@/actions/auth.actions";
 import { useI18n } from "@/locales/client";
 import { Typography } from "@/components/ui/Typography";
 import { Spinner } from "@/components/ui/spinner";
-import { useLocalePath } from "@/lib/locale";
+import { RegisterRequestData } from "@/types/user.type";
 
 export default function RegistrationForm({
   isPatient,
@@ -73,42 +73,28 @@ export default function RegistrationForm({
   });
   const specialities = data?.content ?? [];
 
-  const onSubmit = async ({
-    firstName,
-    lastName,
-    gender,
-    email,
-    dateOfBirth,
-    userType,
-    countryCode,
-    mobileNumber,
-    password,
-    designation,
-    specialityId,
-    onmsRegistrationNumber,
-    professionalStatement,
-  }: RegisterFormValues) => {
-    const registerPayload: any = {
-      firstName: firstName,
-      lastName: lastName,
-      gender: gender,
-      email: email,
-      dateOfBirth: dateOfBirth,
-      userType: userType || (isPatient ? "PATIENT" : "DOCTOR"),
-      countryCode: countryCode,
-      mobileNumber: mobileNumber,
-      password: password,
+  const onSubmit = async (data : RegisterFormValues) => {
+    const registerPayload: RegisterRequestData = {
+      firstName: data.firstName,
+      lastName: data.lastName,
+      gender: data.gender,
+      email: data.email,
+      dateOfBirth: data.dateOfBirth,
+      userType: data.userType || (isPatient ? "PATIENT" : "DOCTOR"),
+      countryCode: data.countryCode,
+      mobileNumber: data.mobileNumber,
+      password: data.password,
     };
 
     if (!isPatient) {
       const profInfo: any = {};      
 
-      if (designation) profInfo.designation = designation;
-      if (specialityId) profInfo.specialityId = [Number(specialityId)];
-      if (onmsRegistrationNumber)
-        profInfo.onmsRegistrationNumber = onmsRegistrationNumber;
-      if (professionalStatement)
-        profInfo.professionalStatement = professionalStatement;
+      if (data.designation) profInfo.designation = data.designation;
+      if (data.specialityId) profInfo.specialityId = [Number(data.specialityId)];
+      if (data.onmsRegistrationNumber)
+        profInfo.onmsRegistrationNumber = data.onmsRegistrationNumber;
+      if (data.professionalStatement)
+        profInfo.professionalStatement = data.professionalStatement;
 
       if (Object.keys(profInfo).length > 0) {
         registerPayload.professionalInfoRequest = profInfo;
