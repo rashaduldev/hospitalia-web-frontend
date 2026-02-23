@@ -72,19 +72,26 @@ export default function Header() {
           <span
             className={cn(
               "h-0.5 w-6 bg-card-foreground transition-all duration-300",
-              isOpen && "rotate-45 translate-y-2",
+              {
+                "rotate-45 translate-y-2":isOpen,
+              }
             )}
           />
           <span
             className={cn(
               "h-0.5 w-6 bg-card-foreground transition-all duration-300",
-              isOpen ? "opacity-0" : "opacity-100",
+              {
+                "opacity-0":isOpen,
+                "opacity-100":!isOpen
+              }
             )}
           />
           <span
             className={cn(
               "h-0.5 w-6 bg-card-foreground transition-all duration-300",
-              isOpen && "-rotate-45 -translate-y-2",
+              {
+                "-rotate-45 -translate-y-2":isOpen
+              }
             )}
           />
         </button>
@@ -94,9 +101,10 @@ export default function Header() {
       <div
         className={cn(
           "md:hidden absolute left-0 top-full w-full bg-background transition-all duration-300 ease-in-out",
-          isOpen
-            ? "opacity-100 translate-y-0 visible"
-            : "opacity-0 -translate-y-5 invisible",
+          {
+            "opacity-100 translate-y-0 visible":isOpen,
+            "opacity-0 -translate-y-5 invisible":!isOpen
+          }
         )}
       >
         <nav className="px-6 py-6 border-t">
