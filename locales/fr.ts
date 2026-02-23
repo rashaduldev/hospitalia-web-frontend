@@ -74,14 +74,25 @@ export default {
   },
   table: {
     search: "Rechercher par date, lieu",
+    no_results_for:
+      "Aucun résultat trouvé. Essayez d’ajuster vos critères de recherche.",
     export: "Exporter",
     selected: "sélectionné",
     noData: "Aucun rendez-vous trouvé",
     showing: "Affichage",
     of: "sur",
-    results: "produits",
+    results: "résultats",
     previous: "Précédent",
     next: "Suivant",
+    appointment_details: "Détails du rendez-vous",
+    actions: "Actions",
+    view_details: "Voir les détails",
+    mark_completed: "Marquer comme terminé",
+    cancel: "Annuler",
+    con_cancel: "Confirmer l’annulation",
+    sureText: "Êtes-vous sûr de vouloir annuler le rendez-vous pour",
+    nokeepit: "Non, le garder",
+
     column: {
       duration: "Durée",
       patientName: "Nom du patient",

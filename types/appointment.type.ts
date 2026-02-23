@@ -1,4 +1,7 @@
 export type Appointment = {
+  fees: any;
+  designation: any;
+  doctorName: any;
   id: string;
   doctorUserId: string;
   patientUserId: number;

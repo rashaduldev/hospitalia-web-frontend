@@ -74,6 +74,7 @@ export default {
   },
   table: {
     search: "Search by date, location",
+    no_results_for: "No results found. Try adjusting your search criteria.",
     export: "Export",
     selected: "selected",
     noData: "No appointments found",
@@ -82,6 +83,14 @@ export default {
     results: "products",
     previous: "Previous",
     next: "Next",
+    appointment_details: "Appointment Details",
+    actions: "Actions",
+    view_details: "View Details",
+    mark_completed: "Mark as Completed",
+    cancel: "Cancel",
+    con_cancel: "Confirm Cancellation",
+    sureText: "Are you sure you want to cancel the appointment for",
+    nokeepit: "No, Keep it",
     column: {
       duration: "Time Duration",
       patientName: "Patients Name",

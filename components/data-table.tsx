@@ -5,11 +5,8 @@ import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import {
   DownloadIcon,
-  FileTextIcon,
-  FileSpreadsheetIcon,
   ChevronLeft,
   ChevronRight,
-  MoreHorizontal,
 } from "lucide-react";
 import {
   ColumnDef,
@@ -30,7 +27,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -42,21 +38,29 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useI18n } from "@/locales/client";
+import { format } from "date-fns/format";
+import { Typography } from "./ui/Typography";
 
-interface DataTableProps<TData, TValue> {
+type DataTableProps<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   filename?: string;
   emptyMessage?: string;
-}
+  excludeColumns?: string[];
+};
 
 export function DataTableWithExport<TData, TValue>({
   columns,
   data,
   filename = "export",
   emptyMessage,
+  excludeColumns = [],
 }: DataTableProps<TData, TValue>) {
   const t = useI18n();
+  const filteredColumns = columns.filter((col: any) => {
+    const key = col.accessorKey || col.id;
+    return !excludeColumns.includes(key);
+  });
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -65,7 +69,7 @@ export function DataTableWithExport<TData, TValue>({
 
   const table = useReactTable({
     data,
-    columns,
+    columns: filteredColumns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -75,7 +79,23 @@ export function DataTableWithExport<TData, TValue>({
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: "includesString",
+    globalFilterFn: (row, columnId, filterValue) => {      
+
+      const searchValue = filterValue.toLowerCase();      
+      const location = String((row.original as any)?.locationName ?? "").toLowerCase();
+
+      const dateObj = (row.original as any)?.appointmentDate
+        ? new Date((row.original as any).appointmentDate)
+        : null;
+      const formattedDate = dateObj
+        ? format(dateObj, "dd MMM yyyy").toLowerCase()
+        : "";
+
+      return (
+        location.includes(searchValue) ||
+        formattedDate.includes(searchValue)
+      );
+    },
     state: {
       sorting,
       columnFilters,
@@ -132,7 +152,7 @@ export function DataTableWithExport<TData, TValue>({
           placeholder={`${t("table.search")}...`}
           value={globalFilter ?? ""}
           onChange={(event) => setGlobalFilter(String(event.target.value))}
-          className="max-w-sm"
+          className="max-w-[20rem]"
         />
         <div className="flex items-center space-x-2">
           {table.getSelectedRowModel().rows.length > 0 && (
@@ -155,7 +175,7 @@ export function DataTableWithExport<TData, TValue>({
       </div>
 
       {/* Table */}
-      <div className="rounded-md border bg-white">
+      <div className="rounded-md border bg-background">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -193,10 +213,18 @@ export function DataTableWithExport<TData, TValue>({
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
+                  colSpan={filteredColumns.length}
+                  className="h-32 text-center"
                 >
-                  {emptyMessage || t("table.noData")}
+                  <div className="flex flex-col items-center justify-center space-y-2">
+                    <Typography size="sm" weight="medium" color="foreground">
+                      {globalFilter
+                        ? t("table.no_results_for" as any, {
+                            query: globalFilter,
+                          })
+                        : emptyMessage || t("table.noData")}
+                    </Typography>
+                  </div>
                 </TableCell>
               </TableRow>
             )}
