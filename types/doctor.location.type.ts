@@ -8,5 +8,13 @@ export type Location = {
   locationName: string;
   addressLine1: string;
   city: string;
-  postalCode: string;
+  postalCode: number;
+};
+export type UpdateLocationParams = {
+  locationId: number;
+  locationName: string;  
+  addressLine1: string;  
+  city: string;
+  postalCode: number;
+  doctorUserId: number;
 };

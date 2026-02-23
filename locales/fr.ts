@@ -176,7 +176,9 @@ export default {
     title: "Lieux et créneaux horaires par défaut",
     description: "Lieux et créneaux horaires par défaut",
     deafult_location: "Lieux par défaut",
-    hospital_name_search: "Entrez le nom de l'hôpital/de la clinique",
-    hospital_location_search: "Entrez le nom de l'hôpital/de la clinique",
+    hospital_name_search: "Entrez le nom de l’hôpital/de la clinique",
+    hospital_location_search: "Entrez l’adresse de l’hôpital/de la clinique",
+    postal_code_placeh: "Ex : 1207",
+    city_placeh: "Entrez votre ville",
   },
 };
