@@ -8,32 +8,27 @@ import { revalidatePath } from "next/cache";
 export const getDoctorAvailability = async ({
   doctorUserId,
   lang,
-}:{
-  doctorUserId: number,
-  lang: string,
+}: {
+  doctorUserId: number;
+  lang: string;
 }) => {
   const token = await getAccessToken();
-  return await apiClient({
+
+  const res = await apiClient({
     endpoint: `/api/doctors/availability/all/doctorUserId/${doctorUserId}`,
     method: "GET",
     params: { lang },
     headers: { Authorization: `Bearer ${token}` },
   });
+  return res;
 };
-
 
 // Create/Set doctors weekly availability schedule
 export const createDoctorAvailability = async ({
   lang,
   doctorUserId,
-  weeklySchedule: {
-    availabilityStatus,
-    doctorLocationId,
-    startTime,
-    endTime,
-    timeSlot,
-    dayOfWeek,},
-}:{
+  weeklySchedule,
+}: {
   lang: string;
   doctorUserId: number;
   weeklySchedule: {
@@ -42,37 +37,30 @@ export const createDoctorAvailability = async ({
     startTime: string;
     endTime: string;
     timeSlot: string;
-    dayOfWeek: string;}
+    dayOfWeek: string;
+  }[];
 }) => {
-    const token = await getAccessToken();
-    const res = await apiClient({
-      endpoint: `/api/doctors/availability/create`,
-      method: "POST",
-      body: {
-        doctorUserId,
-        weeklySchedule: {
-        availabilityStatus,
-        doctorLocationId,
-        startTime,
-        endTime,
-        timeSlot,
-        dayOfWeek,}
-      },
-      params:{lang},
-      headers: { Authorization: `Bearer ${token}` },
-    });
+  const token = await getAccessToken();
 
-    revalidatePath("/availability");
-    return res;
+  const res = await apiClient({
+    endpoint: `/api/doctors/availability/create`,
+    method: "POST",
+    body: {
+      doctorUserId,
+      weeklySchedule,
+    },
+    params: { lang },
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  revalidatePath("/availability");
+  return res;
 };
 
 // Delete an availability slot
-export const deleteAvailabilitySlot = async ({
-  id
-}:{
-  id: number
-}) => {
+export const deleteAvailabilitySlot = async ({ id }: { id: number }) => {
   const token = await getAccessToken();
+
   const res = await apiClient({
     endpoint: `/api/doctors/availability/${id}`,
     method: "DELETE",

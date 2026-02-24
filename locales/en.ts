@@ -193,4 +193,9 @@ export default {
     return_home: "Return Home",
     error_code: "Error Code",
   },
+  schedule:{
+    title: "Select Consultation Schedule",
+    description: "Select the days you want to set availability for",
+    select_day: "Select the Day",
+  }
 };

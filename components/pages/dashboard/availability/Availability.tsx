@@ -1,15 +1,17 @@
-"use client";
 import { DynamicHeading } from "@/components/common/DynamicHeading";
-import { useI18n } from "@/locales/client";
 import { DefaultLocationManager } from "./DefaultLocationManager";
+import AvailabilityScheduleForm from "./AvailabilityScheduleForm";
+import { getCurrentLocale, getI18n } from "@/locales/server";
 
-export default function Availability({ user }: { user: any }) {
-  const t = useI18n();
+export default async function Availability({ user }: { user: any }) {
+  const t =await getI18n();
 
   const UserId = user?.id;
+  const lang = await getCurrentLocale();
 
   return (
-    <div className="pace-y-0 border rounded-sm p-4 md:p-6">
+    <div>
+      <div className="pace-y-0 border rounded-sm p-4 md:p-6">
       <DynamicHeading
         title={t("availability.title")}
         description={t("availability.description")}
@@ -21,7 +23,14 @@ export default function Availability({ user }: { user: any }) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <DefaultLocationManager doctorUserId={UserId} />
       </div>
-      
+    </div>
+     <div>
+        <AvailabilityScheduleForm
+        lang={lang}
+        doctorUserId={UserId}
+        existingAvailability={user?.data}
+      />
+      </div>
     </div>
   );
 }
