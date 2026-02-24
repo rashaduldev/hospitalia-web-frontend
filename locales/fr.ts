@@ -195,4 +195,9 @@ export default {
     return_home: "Retour à l’accueil",
     error_code: "Code d’erreur",
   },
+  schedule: {
+    title: "Sélectionner le planning de consultation",
+    description: "Sélectionnez les jours pour lesquels vous souhaitez définir la disponibilité",
+    select_day: "Sélectionner le jour",
+  },
 };
