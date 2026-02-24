@@ -30,6 +30,7 @@ export async function apiClient<Response = any, Request = any>({
 
   const res = await fetch(url, {
     method,
+    cache:"no-store",
     headers: {
       "Content-Type": "application/json",
       ...headers,

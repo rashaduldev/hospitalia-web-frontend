@@ -18,7 +18,7 @@ function removeLocale(pathname: string) {
   return pathname.replace(/^\/(en|fr)/, "") || "/";
 }
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const purePath = removeLocale(pathname);
 

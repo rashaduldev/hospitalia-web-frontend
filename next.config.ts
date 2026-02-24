@@ -20,7 +20,7 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     serverActions: {
-      allowedOrigins: ["http://localhost:3000"],
+      allowedOrigins: ["http://localhost:3000","https://hospitalia-api.dhrubok.xyz"],
     },
     serverComponentsHmrCache: true,
     // viewTransition: true,
