@@ -39,7 +39,7 @@ import { Typography } from "@/components/ui/Typography";
 export function DefaultLocationManager({
   doctorUserId,
 }: {
-  doctorUserId: string;
+  doctorUserId: number;
 }) {
   const t = useI18n();
   const [editingId, setEditingId] = useState<number | null>(null);

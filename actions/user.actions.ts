@@ -3,7 +3,7 @@
 import { apiClient } from "@/lib/api";
 import { getAccessToken } from "./auth";
 
-export async function getCurrentUser(lang?: string) {
+export async function getCurrentUser(lang: string) {
   const token = await getAccessToken();
 
   if (!token) return null;
@@ -14,7 +14,7 @@ export async function getCurrentUser(lang?: string) {
     headers: {
       Authorization: `Bearer ${token}`,
     },
-    params: lang ? { lang } : undefined,
+    params: {lang},
   });
 
   return res.payload;
