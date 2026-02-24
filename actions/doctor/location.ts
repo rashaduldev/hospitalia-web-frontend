@@ -8,26 +8,31 @@ import { UpdateLocationParams } from "@/types/doctor.location.type";
 
 // Get all locations for a doctor
 export const getDoctorLocations = async ({
+  lang,
   doctorUserId,
 }: {
-  doctorUserId: string | number;
+  lang: string,
+  doctorUserId: number;
 }) => {
   const token = await getAccessToken();
   return await apiClient({
     endpoint: `/api/doctors/location/get/${doctorUserId}`,
     method: "GET",
+    params:{lang},
     headers: { Authorization: `Bearer ${token}` },
   });
 };
 
 // Create a new default location
 export const createDoctorLocation = async ({
+  lang,
   locationName,
   addressLine1,
   city,
   postalCode,
   doctorUserId,
 }: {
+  lang: string,
   locationName: string;
   addressLine1: string;
   city: string;
@@ -35,7 +40,7 @@ export const createDoctorLocation = async ({
   doctorUserId: number;
 }) => {
   const token = await getAccessToken();
-  return await apiClient({
+  const res= await apiClient({
     endpoint: `/api/doctors/location/create`,
     method: "POST",
     body: {
@@ -45,19 +50,27 @@ export const createDoctorLocation = async ({
       postalCode,
       doctorUserId,
     },
+    params: {lang},
     headers: { Authorization: `Bearer ${token}` },
   });
+  return res;
 };
 
 // Delete a location
-export const deleteDoctorLocation = async (
+export const deleteDoctorLocation = async ({
+  lang,
+  locationId,
+  doctorUserId,
+}:{
+  lang: string,
   locationId: number,
-  doctorUserId: string | number,
-) => {
+  doctorUserId: number,
+}) => {
   const token = await getAccessToken();
   const res = await apiClient({
     endpoint: `/api/doctors/location/delete/locationId/${locationId}/doctorUserId/${doctorUserId}`,
     method: "DELETE",
+    params:{lang},
     headers: { Authorization: `Bearer ${token}` },
   });
   revalidatePath("/availability");
@@ -66,6 +79,7 @@ export const deleteDoctorLocation = async (
 
 // Update a location UpdateLocationParams
 export const updateDoctorLocation = async ({
+  lang,
   locationId,
   city,
   postalCode,
@@ -73,6 +87,7 @@ export const updateDoctorLocation = async ({
   locationName,
   addressLine1,
 }: UpdateLocationParams) => {
+
   const token = await getAccessToken();
 
   const res = await apiClient({
@@ -86,6 +101,7 @@ export const updateDoctorLocation = async ({
       locationName,
       addressLine1,
     },
+    params: {lang},
     headers: { Authorization: `Bearer ${token}` },
   });
 

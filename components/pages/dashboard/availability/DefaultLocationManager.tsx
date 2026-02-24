@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
@@ -35,10 +34,13 @@ import {
 } from "@/actions/doctor/location";
 import { useI18n } from "@/locales/client";
 import { Typography } from "@/components/ui/Typography";
+import { ControlledInput } from "@/components/common/FormUIControllers/ControlledInput";
 
 export function DefaultLocationManager({
+  lang,
   doctorUserId,
 }: {
+  lang: string,
   doctorUserId: number;
 }) {
   const t = useI18n();
@@ -47,11 +49,10 @@ export function DefaultLocationManager({
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const queryClient = useQueryClient();
   const {
-    register,
     handleSubmit,
     reset,
     setValue,
-    formState: { errors },
+    control,
   } = useForm<LocationFormValues>({
     resolver: zodResolver(locationSchema) as any,
     defaultValues: {
@@ -62,7 +63,10 @@ export function DefaultLocationManager({
   });
   const { data: response, isLoading } = useQuery({
     queryKey: ["doctor-locations", doctorUserId],
-    queryFn: () => getDoctorLocations({ doctorUserId }),
+    queryFn: () => getDoctorLocations({
+      lang,
+      doctorUserId
+    }),
   });
 
   const locations = response?.payload || [];
@@ -80,6 +84,7 @@ export function DefaultLocationManager({
         } as UpdateLocationParams);
       }
       return createDoctorLocation({
+        lang,
         locationName: data.locationName,
         addressLine1: data.addressLine1,
         city: data.city,
@@ -110,7 +115,11 @@ export function DefaultLocationManager({
   // --- Delete Mutation ---
   const deleteMutation = useMutation({
     mutationFn: (locationId: number) =>
-      deleteDoctorLocation(locationId, doctorUserId),
+      deleteDoctorLocation({
+        lang,
+        locationId,
+        doctorUserId
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["doctor-locations", doctorUserId],
@@ -139,53 +148,30 @@ export function DefaultLocationManager({
           {t("availability.deafult_location")}
         </Typography>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Hospital Name */}
-          <Input
-            {...register("locationName")}
+
+          <ControlledInput
+            name="locationName"
             placeholder={t("availability.hospital_name_search")}
-            className="bg-background"
+            control={control}
           />
-          {errors.locationName && (
-            <p className="text-[10px] text-destructive">
-              {errors.locationName.message}
-            </p>
-          )}
 
-          {/* Address Line 1 */}
-          <Input
-            {...register("addressLine1")}
+          <ControlledInput
+            name="addressLine1"
             placeholder={t("availability.hospital_location_search")}
-            className="bg-background"
+            control={control}
           />
-          {errors.addressLine1 && (
-            <p className="text-[10px] text-destructive">
-              {errors.addressLine1.message}
-            </p>
-          )}
 
-          {/* City */}
-          <Input
-            {...register("city")}
+          <ControlledInput
+            name="city"
             placeholder={t("availability.city_placeh")}
-            className="bg-background"
+            control={control}
           />
-          {errors.city && (
-            <p className="text-[10px] text-destructive">
-              {errors.city.message}
-            </p>
-          )}
 
-          {/* Postal Code */}
-          <Input
-            {...register("postalCode")}
+          <ControlledInput
+            name="postalCode"
             placeholder={t("availability.postal_code_placeh")}
-            className="bg-background"
+            control={control}
           />
-          {errors.postalCode && (
-            <p className="text-[10px] text-destructive">
-              {errors.postalCode.message}
-            </p>
-          )}
         </div>
 
         <Button className="px-5" type="submit" disabled={mutation.isPending}>

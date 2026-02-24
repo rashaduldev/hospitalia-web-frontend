@@ -4,8 +4,8 @@ import { DynamicHeading } from "@/components/common/DynamicHeading";
 import { useI18n } from "@/locales/client";
 import { DefaultLocationManager } from "./DefaultLocationManager";
 
-export default function Availability({ userId }: { userId: number }) {
-  
+export default function Availability({ userId,lang }: { lang: string, userId: number }) {
+
   const t = useI18n();
 
   return (
@@ -19,7 +19,7 @@ export default function Availability({ userId }: { userId: number }) {
       />
       {/* Default Locations and Time Slots */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <DefaultLocationManager doctorUserId={userId} />
+        <DefaultLocationManager doctorUserId={userId} lang={lang} />
       </div>
     </div>
   );
