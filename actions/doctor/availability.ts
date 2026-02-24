@@ -1,0 +1,83 @@
+"use server";
+
+import { apiClient } from "@/lib/api";
+import { getAccessToken } from "../auth";
+import { revalidatePath } from "next/cache";
+
+// Get all weekly availability
+export const getDoctorAvailability = async ({
+  doctorUserId,
+  lang,
+}:{
+  doctorUserId: number,
+  lang: string,
+}) => {
+  const token = await getAccessToken();
+  return await apiClient({
+    endpoint: `/api/doctors/availability/all/doctorUserId/${doctorUserId}`,
+    method: "GET",
+    params: { lang },
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
+
+// Create/Set doctors weekly availability schedule
+export const createDoctorAvailability = async ({
+  lang,
+  doctorUserId,
+  weeklySchedule: {
+    availabilityStatus,
+    doctorLocationId,
+    startTime,
+    endTime,
+    timeSlot,
+    dayOfWeek,},
+}:{
+  lang: string;
+  doctorUserId: number;
+  weeklySchedule: {
+    availabilityStatus: string;
+    doctorLocationId: number;
+    startTime: string;
+    endTime: string;
+    timeSlot: string;
+    dayOfWeek: string;}
+}) => {
+    const token = await getAccessToken();
+    const res = await apiClient({
+      endpoint: `/api/doctors/availability/create`,
+      method: "POST",
+      body: {
+        doctorUserId,
+        weeklySchedule: {
+        availabilityStatus,
+        doctorLocationId,
+        startTime,
+        endTime,
+        timeSlot,
+        dayOfWeek,}
+      },
+      params:{lang},
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    revalidatePath("/availability");
+    return res;
+};
+
+// Delete an availability slot
+export const deleteAvailabilitySlot = async ({
+  id
+}:{
+  id: number
+}) => {
+  const token = await getAccessToken();
+  const res = await apiClient({
+    endpoint: `/api/doctors/availability/${id}`,
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  revalidatePath("/doctor/availability");
+  return res;
+};
