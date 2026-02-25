@@ -30,27 +30,42 @@ jobs:
 
 
       ###########################################
-      # SDK + Tool Setup (Reusable Pattern)
+      # SDK + Tool Setup
       ###########################################
 
       - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
-
-
+      
+      
       - name: Setup PNPM
         uses: pnpm/action-setup@v4
         with:
           version: 9
-
-
+          run_install: false
+      
+      
+      - name: Get PNPM Store Directory
+        id: pnpm-cache
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+      
+      
+      - name: Setup PNPM Cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+      
+      
       - name: Verify SDK Installation
         run: |
           echo "Node:"
           node -v
-
+      
           echo "PNPM:"
           pnpm --version
 
