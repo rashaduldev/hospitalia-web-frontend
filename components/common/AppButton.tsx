@@ -1,12 +1,12 @@
 "use client";
 
-import * as React from "react";
 import { Loader2 } from "lucide-react";
 import { Button, type buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { VariantProps } from "class-variance-authority";
+import React, { forwardRef } from "react";
 
-type AppButtonProps = React.ComponentPropsWithoutRef<"button"> & 
+type AppButtonProps = React.ComponentPropsWithoutRef<"button"> &
   VariantProps<typeof buttonVariants> & {
     isLoading?: boolean;
     loadingText?: string;
@@ -15,7 +15,7 @@ type AppButtonProps = React.ComponentPropsWithoutRef<"button"> &
     asChild?: boolean;
   };
 
-const AppButton = React.forwardRef<HTMLButtonElement, AppButtonProps>(
+const AppButton = forwardRef<HTMLButtonElement, AppButtonProps>(
   (
     {
       className,
@@ -29,7 +29,7 @@ const AppButton = React.forwardRef<HTMLButtonElement, AppButtonProps>(
       disabled,
       ...props
     },
-    ref
+    ref,
   ) => {
     return (
       <Button
@@ -39,19 +39,19 @@ const AppButton = React.forwardRef<HTMLButtonElement, AppButtonProps>(
         disabled={isLoading || disabled}
         className={cn(
           "relative gap-2 transition-all active:scale-[0.97]",
-          className 
+          className,
         )}
         {...props}
       >
         {isLoading && (
-          <Loader2 
+          <Loader2
             className={cn(
-              "h-4 w-4 animate-spin", 
-              loadingText ? "relative" : "absolute inset-0 m-auto"
-            )} 
+              "h-4 w-4 animate-spin",
+              loadingText ? "relative" : "absolute inset-0 m-auto",
+            )}
           />
         )}
-        
+
         {isLoading ? (
           loadingText || <span className="opacity-0">{children}</span>
         ) : (
@@ -73,9 +73,9 @@ const AppButton = React.forwardRef<HTMLButtonElement, AppButtonProps>(
         )}
       </Button>
     );
-  }
+  },
 );
 
 AppButton.displayName = "AppButton";
 
-export { AppButton };
+export default AppButton;

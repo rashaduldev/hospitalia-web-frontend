@@ -3,7 +3,6 @@
 import { apiClient } from "@/lib/api";
 import { getAccessToken } from "../auth";
 import { revalidatePath } from "next/cache";
-import { LocationFormValues } from "@/schema/doctor.location.schema";
 import { UpdateLocationParams } from "@/types/doctor.location.type";
 
 // Get all locations for a doctor
@@ -18,7 +17,7 @@ export const getDoctorLocations = async ({
   return await apiClient({
     endpoint: `/api/doctors/location/get/${doctorUserId}`,
     method: "GET",
-    params:{lang},
+    params: {lang},
     headers: { Authorization: `Bearer ${token}` },
   });
 };
@@ -70,7 +69,7 @@ export const deleteDoctorLocation = async ({
   const res = await apiClient({
     endpoint: `/api/doctors/location/delete/locationId/${locationId}/doctorUserId/${doctorUserId}`,
     method: "DELETE",
-    params:{lang},
+    params: {lang},
     headers: { Authorization: `Bearer ${token}` },
   });
   revalidatePath("/availability");

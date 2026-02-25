@@ -4,16 +4,8 @@ import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  Loader2,
-  CheckCircle2,
-  Trash,
-  Pencil,
-  Save,
-  X,
-} from "lucide-react";
+import { Loader2, CheckCircle2, Trash, Pencil, Save, X } from "lucide-react";
 
-import { AppButton } from "@/components/common/AppButton";
 import {
   Dialog,
   DialogContent,
@@ -36,6 +28,7 @@ import {
 import { useI18n } from "@/locales/client";
 import { Typography } from "@/components/ui/Typography";
 import { ControlledInput } from "@/components/common/FormUIControllers/ControlledInput";
+import AppButton from "@/components/common/AppButton";
 
 export function DefaultLocationManager({
   lang,
