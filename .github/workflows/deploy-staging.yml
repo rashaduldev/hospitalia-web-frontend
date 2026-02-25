@@ -10,7 +10,12 @@ env:
   NODE_VERSION: '22'
   APP_NAME: 'hospitalia-web'
 
+
 jobs:
+
+  ###########################################
+  # BUILD JOB
+  ###########################################
 
   build:
     name: Build Application
@@ -23,74 +28,64 @@ jobs:
 
     steps:
 
+      ###########################################
+      # Checkout (Reusable)
+      ###########################################
+
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
 
+
       ###########################################
-      # SDK + Tool Setup
+      # SDK Setup (Reusable Pattern)
       ###########################################
 
       - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-      
-      
-      - name: Enable Corepack
+          cache: npm
+
+
+
+      - name: Verify Node installation
         run: |
-          corepack enable
-          corepack prepare pnpm@9 --activate
-      
-      
-      - name: Get PNPM Store Directory
-        id: pnpm-cache
-        run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-      
-      
-      - name: Setup PNPM Cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.pnpm-store
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
-      
-      
-      - name: Verify SDK Installation
-        run: |
-          echo "Node:"
           node -v
-      
-          echo "Corepack:"
-          corepack --version
+          npm -v
+
+
+
+      ###########################################
+      # Install Dependencies
+      ###########################################
+
+      - name: Install Dependencies
+        run: |
+          echo "📦 Installing dependencies..."
+          npm ci
+
 
 
       ###########################################
       # Build
       ###########################################
 
-      - name: Install Dependencies
-        run: |
-          echo "📦 Installing dependencies..."
-          pnpm install --frozen-lockfile
-
-
       - name: Build Application
         run: |
           echo "🔨 Building Next.js project..."
 
-          pnpm build
+          npm run build
 
           echo "📦 Checking build output:"
           ls -la .next
 
 
+
       ###########################################
-      # Validation (Same style as Backend)
+      # Validation (Backend-style)
       ###########################################
 
       - name: Verify Build Output
@@ -131,7 +126,7 @@ jobs:
 
 
       ###########################################
-      # Artifact Creation (Reusable Logic)
+      # Artifact Creation
       ###########################################
 
       - name: Create Deployment Artifact
@@ -153,7 +148,7 @@ jobs:
             .next \
             public \
             package.json \
-            pnpm-lock.yaml \
+            package-lock.json \
             next.config.* \
             ecosystem.config.* \
             .env.production 2>/dev/null || true
@@ -167,7 +162,7 @@ jobs:
 
 
       ###########################################
-      # Artifact Upload (Reusable)
+      # Upload Artifact
       ###########################################
 
       - name: Upload artifact
@@ -180,21 +175,20 @@ jobs:
 
 
 
-  #################################################
-  # DEPLOY JOB (Mirrors Backend Workflow)
-  #################################################
+  ###########################################
+  # DEPLOY JOB
+  ###########################################
 
   deploy:
     name: Deploy to VPS
-    runs-on: ubuntu-latest
 
+    runs-on: ubuntu-latest
     needs: build
 
     if: github.ref == 'refs/heads/staging' || github.event_name == 'workflow_dispatch'
 
 
     steps:
-
 
       ###########################################
       # Download Artifact
@@ -209,7 +203,7 @@ jobs:
 
 
       ###########################################
-      # Verify Artifact (Reusable)
+      # Verify Artifact
       ###########################################
 
       - name: Verify downloaded artifact
@@ -230,7 +224,7 @@ jobs:
 
 
       ###########################################
-      # SSH Setup (Reusable EXACT logic)
+      # SSH Setup (Exact Backend Reuse)
       ###########################################
 
       - name: Setup SSH
@@ -253,7 +247,7 @@ jobs:
 
 
       ###########################################
-      # Copy Artifact (Reusable EXACT style)
+      # Copy Artifact (Backend-style)
       ###########################################
 
       - name: Copy artifact to VPS
@@ -280,7 +274,7 @@ jobs:
 
 
       ###########################################
-      # Cleanup (Reusable)
+      # Cleanup
       ###########################################
 
       - name: Cleanup SSH key
@@ -290,7 +284,7 @@ jobs:
 
 
       ###########################################
-      # Deployment Summary (Reusable EXACT style)
+      # Deployment Summary
       ###########################################
 
       - name: Deployment Summary
