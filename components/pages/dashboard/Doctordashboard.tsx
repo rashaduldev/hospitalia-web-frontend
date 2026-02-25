@@ -11,7 +11,7 @@ import { appointmentColumns } from "@/components/common/DataTableColumns";
 export default async function DoctorDashboardPage() {
   const t = await getI18n();
   const lang = await getCurrentLocale();
-  const CurrentUser = await getCurrentUser();
+  const CurrentUser = await getCurrentUser({lang});
 
   const doctorId = CurrentUser?.id;
 
@@ -33,7 +33,7 @@ export default async function DoctorDashboardPage() {
   });
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-10 mt-5">
       <div>
         <DynamicHeading
           title={t("appoinment.today")}

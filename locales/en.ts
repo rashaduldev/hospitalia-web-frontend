@@ -170,9 +170,25 @@ export default {
     no_today: "There are no today's appointments.",
     no_upcoming: "There are no upcoming appointments.",
   },
+  availability: {
+    title: "Default Locations and Time Slots",
+    description: "Default Locations and Time Slots",
+    deafult_location: "Default Locations",
+    hospital_name_search: "Enter Hospital/Clinic Name",
+    hospital_location_search: "Enter Hospital/Clinic Address",
+    postal_code_placeh: "Ex: 1207",
+    city_placeh: "Enter your city",
+    delete_title: "Are you sure?",
+    delete_description:
+      "This location will be permanently deleted. This cannot be undone. Are you sure you want to delete?",
+    btn_no: "No",
+    btn_deleting: "Deleting...",
+    btn_yes: "Yes, Delete",
+  },
   unauthorized: {
     title: "Access Denied",
-    description: "You do not have the required permissions to access this dashboard area. Please contact administration if you believe this is an error.",
+    description:
+      "You do not have the required permissions to access this dashboard area. Please contact administration if you believe this is an error.",
     go_back: "Go Back",
     return_home: "Return Home",
     error_code: "Error Code",

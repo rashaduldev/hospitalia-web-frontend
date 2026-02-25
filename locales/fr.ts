@@ -172,9 +172,25 @@ export default {
     no_today: "Il n'y a aucun rendez-vous aujourd'hui.",
     no_upcoming: "Il n'y a aucun rendez-vous à venir.",
   },
+  availability: {
+    title: "Lieux et créneaux horaires par défaut",
+    description: "Lieux et créneaux horaires par défaut",
+    deafult_location: "Lieux par défaut",
+    hospital_name_search: "Entrez le nom de l’hôpital/de la clinique",
+    hospital_location_search: "Entrez l’adresse de l’hôpital/de la clinique",
+    postal_code_placeh: "Ex : 1207",
+    city_placeh: "Entrez votre ville",
+    delete_title: "Êtes-vous sûr ?",
+    delete_description:
+      "Cet emplacement sera supprimé définitivement. Cette action est irréversible. Êtes-vous sûr de vouloir le supprimer ?",
+    btn_no: "Non",
+    btn_deleting: "Suppression en cours...",
+    btn_yes: "Oui, supprimer",
+  },
   unauthorized: {
     title: "Accès refusé",
-    description:"Vous n’avez pas les autorisations requises pour accéder à cette section du tableau de bord. Veuillez contacter l’administration si vous pensez qu’il s’agit d’une erreur.",
+    description:
+      "Vous n’avez pas les autorisations requises pour accéder à cette section du tableau de bord. Veuillez contacter l’administration si vous pensez qu’il s’agit d’une erreur.",
     go_back: "Retour",
     return_home: "Retour à l’accueil",
     error_code: "Code d’erreur",
