@@ -11,7 +11,7 @@ import { appointmentColumns } from "@/components/common/DataTableColumns";
 export default async function DoctorDashboardPage() {
   const t = await getI18n();
   const lang = await getCurrentLocale();
-  const CurrentUser = await getCurrentUser(lang);
+  const CurrentUser = await getCurrentUser({lang});
 
   const doctorId = CurrentUser?.id;
 

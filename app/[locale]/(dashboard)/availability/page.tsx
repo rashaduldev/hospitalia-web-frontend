@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 const AvailabilityPage = async () => {
   const lang = await getCurrentLocale();
 
-  const res = await getCurrentUser(lang);
+  const res = await getCurrentUser({lang});
   const role = res?.userType;
 
   if (!res) {

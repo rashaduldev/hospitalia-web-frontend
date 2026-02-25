@@ -4,6 +4,7 @@ import AdminDashboardPage from '@/components/pages/dashboard/AdminDashboardPage'
 import DoctorDashboardPage from '@/components/pages/dashboard/Doctordashboard';
 import HospitalDashboardPage from '@/components/pages/dashboard/HospitalDashboardPage';
 import PatientDashboardPage from '@/components/pages/dashboard/PatientDashboardPage';
+import { getCurrentLocale } from '@/locales/server';
 import { Metadata } from 'next';
 import React from 'react';
 
@@ -13,7 +14,8 @@ export const metadata: Metadata = {
 };
 
 const DaynamicDashboardPage = async () => {
-    const res = await getCurrentUser();
+  const lang = await getCurrentLocale();
+    const res = await getCurrentUser({lang});
     const role = res?.userType;
     
   // Role wise component render
