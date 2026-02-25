@@ -196,4 +196,10 @@ export default {
     description: "Select the days you want to set availability for",
     select_day: "Select the Day",
   },
+  unavailability: {
+    title: "Schedule Exceptions",
+    description: "Select the date you want to be unavailable for",
+    date: "Date",
+    btn: "Set as Unavailable",
+  },
 };
