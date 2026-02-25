@@ -39,11 +39,10 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
       
       
-      - name: Setup PNPM
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-          run_install: false
+      - name: Enable Corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@9 --activate
       
       
       - name: Get PNPM Store Directory
@@ -66,8 +65,8 @@ jobs:
           echo "Node:"
           node -v
       
-          echo "PNPM:"
-          pnpm --version
+          echo "Corepack:"
+          corepack --version
 
 
       ###########################################
