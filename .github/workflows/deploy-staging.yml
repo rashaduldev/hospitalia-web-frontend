@@ -1,0 +1,236 @@
+name: Build and Deploy Hospitalia Web
+
+on:
+  push:
+    branches:
+      - staging
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '22'
+  APP_NAME: 'hospitalia-web'
+
+jobs:
+
+  build:
+    name: Build Frontend
+    runs-on: ubuntu-latest
+
+    outputs:
+      version: ${{ steps.version.outputs.VERSION }}
+      artifact-name: ${{ steps.package.outputs.ARTIFACT_NAME }}
+
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+
+      - name: Verify Environment
+        run: |
+          node -v
+          pnpm -v
+
+
+      - name: Install Dependencies
+        run: |
+          echo "📦 Installing dependencies..."
+          pnpm install --frozen-lockfile
+
+
+      - name: Build Next.js Application
+        run: |
+          echo "🔨 Building Next.js application..."
+          pnpm build
+
+          echo "📦 Build output:"
+          ls -la .next
+
+
+      - name: Verify Build Output
+        run: |
+
+          if [ ! -d ".next" ]; then
+            echo "❌ ERROR: .next directory not found"
+            exit 1
+          fi
+
+          echo "✅ Build verified"
+
+
+
+      - name: Get Version
+        id: version
+        run: |
+
+          VERSION=$(node -p "require('./package.json').version")
+
+          if [ -z "$VERSION" ]; then
+            VERSION="0.0.0"
+          fi
+
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+          echo "📌 Version: $VERSION"
+
+
+
+      - name: Package Artifact
+        id: package
+        run: |
+
+          mkdir -p artifacts
+
+          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+
+          VERSION="${{ steps.version.outputs.VERSION }}"
+
+          ARTIFACT_NAME="${{ env.APP_NAME }}-${VERSION}-${TIMESTAMP}.zip"
+
+
+          echo "📦 Creating deployment package..."
+
+
+          zip -r artifacts/$ARTIFACT_NAME \
+            .next \
+            public \
+            package.json \
+            pnpm-lock.yaml \
+            next.config.* \
+            ecosystem.config.* \
+            .env.production 2>/dev/null || true
+
+
+          echo "ARTIFACT_NAME=$ARTIFACT_NAME" >> $GITHUB_OUTPUT
+
+
+          echo "✅ Artifact created"
+
+          ls -lh artifacts/
+
+
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hospitalia-web-build
+          path: artifacts/*.zip
+          retention-days: 30
+          if-no-files-found: error
+
+
+
+  deploy:
+
+    name: Deploy to VPS
+    runs-on: ubuntu-latest
+
+    needs: build
+
+    if: github.ref == 'refs/heads/staging' || github.event_name == 'workflow_dispatch'
+
+    steps:
+
+
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: hospitalia-web-build
+          path: ./artifact
+
+
+      - name: Verify Artifact
+        run: |
+
+          echo "📦 Downloaded artifacts:"
+          ls -lh artifact/
+
+          COUNT=$(ls artifact/*.zip 2>/dev/null | wc -l)
+
+          if [ "$COUNT" -eq 0 ]; then
+            echo "❌ ERROR: No artifact found"
+            exit 1
+          fi
+
+          echo "✅ Artifact ready"
+
+
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p ${{ secrets.VPS_PORT }} -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+
+
+
+      - name: Test SSH Connection
+        run: |
+          echo "🔐 Testing SSH connection..."
+
+          ssh -i ~/.ssh/deploy_key -p ${{ secrets.VPS_PORT }} \
+          ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} \
+          "echo '✅ SSH connection successful' && whoami && pwd"
+
+
+
+      - name: Copy Artifact to VPS
+        run: |
+
+          FILE=$(ls artifact/*.zip | head -1)
+
+          if [ -z "$FILE" ]; then
+            echo "❌ ERROR: No artifact found"
+            exit 1
+          fi
+
+          echo "📦 Deploying: $(basename $FILE)"
+          echo "📊 Size: $(du -h $FILE | cut -f1)"
+
+
+          scp -i ~/.ssh/deploy_key -P ${{ secrets.VPS_PORT }} \
+          "$FILE" \
+          ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/appl/apps/hospitalia-web/releases/
+
+
+          echo "✅ Artifact copied to VPS"
+
+
+
+      - name: Deployment Summary
+        if: always()
+        run: |
+
+          echo "=================================="
+          echo "Deployment Summary"
+          echo "=================================="
+
+          echo "Status: ${{ job.status }}"
+          echo "Version: ${{ needs.build.outputs.version }}"
+          echo "Artifact: ${{ needs.build.outputs.artifact-name }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+
+          echo "=================================="
+
+
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Artifact uploaded successfully!"
+          else
+            echo "❌ Workflow failed."
+          fi
