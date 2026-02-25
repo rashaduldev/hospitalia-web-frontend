@@ -7,12 +7,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Loader2,
   CheckCircle2,
-  AlertCircle,
   Trash,
   Pencil,
+  Save,
+  X,
 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { AppButton } from "@/components/common/AppButton";
 import {
   Dialog,
   DialogContent,
@@ -48,25 +49,25 @@ export function DefaultLocationManager({
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const queryClient = useQueryClient();
+
   const { handleSubmit, reset, setValue, control } =
     useForm<LocationFormValues>({
       resolver: zodResolver(locationSchema) as any,
-      defaultValues: {
-        locationName: "",
-        addressLine1: "",
-        city: "",
-      },
+      defaultValues: { locationName: "", addressLine1: "", city: "" },
     });
+
   const { data: response, isLoading } = useQuery({
     queryKey: ["doctor-locations", doctorUserId],
-    queryFn: () =>
-      getDoctorLocations({
-        lang,
-        doctorUserId,
-      }),
+    queryFn: () => getDoctorLocations({ lang, doctorUserId }),
   });
 
   const locations = response?.payload || [];
+
+  const chunkedLocations = [];
+  for (let i = 0; i < locations.length; i += 5) {
+    chunkedLocations.push(locations.slice(i, i + 5));
+  }
+
   const mutation = useMutation({
     mutationFn: async (data: LocationFormValues) => {
       const userId = Number(doctorUserId);
@@ -74,20 +75,10 @@ export function DefaultLocationManager({
         return updateDoctorLocation({
           locationId: editingId,
           doctorUserId: userId,
-          locationName: data.locationName,
-          addressLine1: data.addressLine1,
-          city: data.city,
-          postalCode: data.postalCode,
+          ...data,
         } as UpdateLocationParams);
       }
-      return createDoctorLocation({
-        lang,
-        locationName: data.locationName,
-        addressLine1: data.addressLine1,
-        city: data.city,
-        postalCode: data.postalCode,
-        doctorUserId: userId,
-      });
+      return createDoctorLocation({ lang, ...data, doctorUserId: userId });
     },
     onSuccess: () => {
       setSuccessMessage(
@@ -95,32 +86,21 @@ export function DefaultLocationManager({
           ? "Location Updated Successfully"
           : "Default Location Added Successfully",
       );
-
       queryClient.invalidateQueries({
         queryKey: ["doctor-locations", doctorUserId],
       });
-
       setEditingId(null);
       reset();
       setTimeout(() => setSuccessMessage(null), 5000);
     },
   });
-  const chunkedLocations = [];
-  for (let i = 0; i < locations.length; i += 5) {
-    chunkedLocations.push(locations.slice(i, i + 5));
-  }
 
-  const onSubmit: SubmitHandler<LocationFormValues> = (data) => {
+  const onSubmit: SubmitHandler<LocationFormValues> = (data) =>
     mutation.mutate(data);
-  };
-  // --- Delete Mutation ---
+
   const deleteMutation = useMutation({
     mutationFn: (locationId: number) =>
-      deleteDoctorLocation({
-        lang,
-        locationId,
-        doctorUserId,
-      }),
+      deleteDoctorLocation({ lang, locationId, doctorUserId }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["doctor-locations", doctorUserId],
@@ -154,19 +134,16 @@ export function DefaultLocationManager({
             placeholder={t("availability.hospital_name_search")}
             control={control}
           />
-
           <ControlledInput
             name="addressLine1"
             placeholder={t("availability.hospital_location_search")}
             control={control}
           />
-
           <ControlledInput
             name="city"
             placeholder={t("availability.city_placeh")}
             control={control}
           />
-
           <ControlledInput
             name="postalCode"
             placeholder={t("availability.postal_code_placeh")}
@@ -174,35 +151,34 @@ export function DefaultLocationManager({
           />
         </div>
 
-        <Button className="px-5" type="submit" disabled={mutation.isPending}>
-          {mutation.isPending && (
-            <Loader2 className="animate-spin size-4 mr-2" />
-          )}
-          {editingId ? "Update Location" : "Add Default Location"}
-        </Button>
-
-        {editingId && (
-          <Button
-            variant="outline"
-            type="button"
-            className="ml-2"
-            onClick={() => {
-              setEditingId(null);
-              reset();
-            }}
+        <div className="flex gap-2">
+          <AppButton
+            className="px-5 rounded-lg"
+            type="submit"
+            isLoading={mutation.isPending}
+            leftIcon={editingId && <Save size={16} />}
           >
-            Cancel
-          </Button>
-        )}
+            {editingId ? "Update Location" : "Add Default Location"}
+          </AppButton>
+
+          {editingId && (
+            <AppButton
+              variant="outline"
+              type="button"
+              leftIcon={<X size={16} />}
+              onClick={() => {
+                setEditingId(null);
+                reset();
+              }}
+            >
+              Cancel
+            </AppButton>
+          )}
+        </div>
+
         {successMessage && (
-          <span className="text-secondary text-sm flex items-center gap-1">
-            <CheckCircle2 size={14} />
-            {successMessage}
-          </span>
-        )}
-        {mutation.isError && (
-          <span className="text-destructive text-sm flex items-center gap-1">
-            <AlertCircle size={14} /> Failed to save.
+          <span className="text-secondary text-sm flex items-center gap-1 mt-2">
+            <CheckCircle2 size={14} /> {successMessage}
           </span>
         )}
       </form>
@@ -218,7 +194,7 @@ export function DefaultLocationManager({
           {t("availability.deafult_location")}
         </Typography>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-0">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
           {chunkedLocations.map((chunk, columnIndex) => (
             <div key={columnIndex} className="flex flex-col">
               {chunk.map((loc: Location) => (
@@ -226,27 +202,18 @@ export function DefaultLocationManager({
                   key={loc.locationId}
                   className="flex items-center justify-between border-b py-2"
                 >
-                  <div className="flex gap-4">
-                    <div>
-                      <Typography
-                        size="sm"
-                        className="mb-1"
-                        as="p"
-                        color="foreground"
-                      >
-                        {loc.locationName}
-                      </Typography>
-                      <Typography size="xs" as="p" color="muted_foreground">
-                        {loc.addressLine1}
-                      </Typography>
-                    </div>
+                  <div className="flex flex-col gap-1">
+                    <Typography size="sm" color="foreground">
+                      {loc.locationName}
+                    </Typography>
+                    <Typography size="xs" color="muted_foreground">
+                      {loc.addressLine1}
+                    </Typography>
                   </div>
 
                   <div className="flex gap-1">
-                    <Button
+                    <AppButton
                       variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
                       onClick={() => {
                         setEditingId(loc.locationId);
                         setValue("locationName", loc.locationName);
@@ -255,16 +222,14 @@ export function DefaultLocationManager({
                         setValue("postalCode", Number(loc.postalCode));
                       }}
                     >
-                      <Pencil size={14} />
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      size="icon"
-                      className="h-8 w-8 bg-destructive hover:bg-destructive text-white"
+                      <Pencil size={16} />
+                    </AppButton>
+                    <AppButton
+                      className="bg-destructive hover:bg-destructive text-muted"
                       onClick={() => setDeleteId(loc.locationId)}
                     >
-                      <Trash size={14} />
-                    </Button>
+                      <Trash size={16} />
+                    </AppButton>
                   </div>
                 </div>
               ))}
@@ -285,18 +250,17 @@ export function DefaultLocationManager({
             {t("availability.delete_description")}
           </DialogDescription>
           <DialogFooter className="flex gap-2 mt-4">
-            <Button variant="outline" onClick={() => setDeleteId(null)}>
+            <AppButton variant="outline" onClick={() => setDeleteId(null)}>
               {t("availability.btn_no")}
-            </Button>
-            <Button
+            </AppButton>
+            <AppButton
               variant="destructive"
-              disabled={deleteMutation.isPending}
+              isLoading={deleteMutation.isPending}
+              loadingText={t("availability.btn_deleting")}
               onClick={() => deleteMutation.mutate(deleteId!)}
             >
-              {deleteMutation.isPending
-                ? t("availability.btn_deleting")
-                : t("availability.btn_yes")}
-            </Button>
+              {t("availability.btn_yes")}
+            </AppButton>
           </DialogFooter>
         </DialogContent>
       </Dialog>
