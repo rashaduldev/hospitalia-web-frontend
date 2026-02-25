@@ -18,9 +18,7 @@ export default function Availability({ userId,lang }: { lang: string, userId: nu
         className="mb-6"
       />
       {/* Default Locations and Time Slots */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <DefaultLocationManager doctorUserId={userId} lang={lang} />
-      </div>
     </div>
   );
 }
