@@ -30,7 +30,7 @@ jobs:
         run: |
           ssh -i ~/.ssh/deploy_key -p ${{ secrets.VPS_PORT }} \
             ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} \
-            "export GITHUB_TOKEN='${{ secrets.DEPLOY_GITHUB_TOKEN }}' && bash /home/devops/hospitalia-web.sh"
+            "export GITHUB_TOKEN='${{ secrets.DEPLOYMENT_TOKEN }}' && bash /home/devops/hospitalia-web.sh"
 
       - name: Cleanup SSH key
         if: always()
