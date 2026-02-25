@@ -170,7 +170,7 @@ jobs:
         with:
           name: hospitalia-web-build
           path: artifacts/*.zip
-          retention-days: 30
+          retention-days: 3
           if-no-files-found: error
 
 
