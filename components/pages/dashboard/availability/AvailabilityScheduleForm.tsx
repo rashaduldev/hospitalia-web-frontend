@@ -45,11 +45,11 @@ const AVAILABILITY_OPTIONS = [
 export default function AvailabilityScheduleForm({
   doctorUserId,
   lang,
-  existingAvailability = [],
+  // existingAvailability = [],
 }: {
   doctorUserId: number;
   lang: string;
-  existingAvailability: any[];
+  // existingAvailability?: any[];
 }) {
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [formStatus, setFormStatus] = useState<{
@@ -92,12 +92,12 @@ export default function AvailabilityScheduleForm({
     );
   };
 
-  const isDayUnavailableInApi = (day: string) => {
-    return existingAvailability?.some(
-      (item: any) =>
-        item.dayOfWeek === day && item.availabilityStatus === "UNAVAILABLE",
-    );
-  };
+  // const isDayUnavailableInApi = (day: string) => {
+  //   return existingAvailability?.some(
+  //     (item: any) =>
+  //       item.dayOfWeek === day && item.availabilityStatus === "UNAVAILABLE",
+  //   );
+  // };
 
   const onSubmit = async (data: AvailabilityScheduleSchemaFormValues) => {
     setFormStatus(null);
@@ -180,7 +180,7 @@ export default function AvailabilityScheduleForm({
           </Label>
           <div className="flex flex-wrap gap-2">
             {DAYS.map((day) => {
-              const isUnavailable = isDayUnavailableInApi(day);
+              // const isUnavailable = isDayUnavailableInApi(day);
               const isSelected = selectedDays.includes(day);
               return (
                 <button
@@ -190,8 +190,8 @@ export default function AvailabilityScheduleForm({
                   className={cn(
                     "px-7 py-2 rounded-lg border text-sm font-medium transition-all cursor-pointer",
                     {
-                      "bg-destructive border-destructive text-muted":
-                        isUnavailable,
+                      // "bg-destructive border-destructive text-muted":
+                      //   isUnavailable,
                       "bg-secondary-foreground border-secondary-foreground text-foreground":
                         isSelected,
                       "bg-ring/20 border-muted text-foreground": !isSelected,

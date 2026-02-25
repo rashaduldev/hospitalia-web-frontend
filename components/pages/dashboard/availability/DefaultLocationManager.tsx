@@ -4,16 +4,8 @@ import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  Loader2,
-  CheckCircle2,
-  AlertCircle,
-  Trash,
-  Pencil,
-} from "lucide-react";
+import { Loader2, CheckCircle2, Trash, Pencil, Save, X } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
@@ -35,37 +27,40 @@ import {
 } from "@/actions/doctor/location";
 import { useI18n } from "@/locales/client";
 import { Typography } from "@/components/ui/Typography";
+import { ControlledInput } from "@/components/common/FormUIControllers/ControlledInput";
+import AppButton from "@/components/common/AppButton";
 
 export function DefaultLocationManager({
+  lang,
   doctorUserId,
 }: {
-  doctorUserId: string;
+  lang: string;
+  doctorUserId: number;
 }) {
   const t = useI18n();
   const [editingId, setEditingId] = useState<number | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const queryClient = useQueryClient();
-  const {
-    register,
-    handleSubmit,
-    reset,
-    setValue,
-    formState: { errors },
-  } = useForm<LocationFormValues>({
-    resolver: zodResolver(locationSchema) as any,
-    defaultValues: {
-      locationName: "",
-      addressLine1: "",
-      city: "",
-    },
-  });
+
+  const { handleSubmit, reset, setValue, control } =
+    useForm<LocationFormValues>({
+      resolver: zodResolver(locationSchema) as any,
+      defaultValues: { locationName: "", addressLine1: "", city: "" },
+    });
+
   const { data: response, isLoading } = useQuery({
     queryKey: ["doctor-locations", doctorUserId],
-    queryFn: () => getDoctorLocations({ doctorUserId }),
+    queryFn: () => getDoctorLocations({ lang, doctorUserId }),
   });
 
   const locations = response?.payload || [];
+
+  const chunkedLocations = [];
+  for (let i = 0; i < locations.length; i += 5) {
+    chunkedLocations.push(locations.slice(i, i + 5));
+  }
+
   const mutation = useMutation({
     mutationFn: async (data: LocationFormValues) => {
       const userId = Number(doctorUserId);
@@ -73,44 +68,32 @@ export function DefaultLocationManager({
         return updateDoctorLocation({
           locationId: editingId,
           doctorUserId: userId,
-          locationName: data.locationName,
-          addressLine1: data.addressLine1,
-          city: data.city,
-          postalCode: data.postalCode,
+          ...data,
         } as UpdateLocationParams);
       }
-      return createDoctorLocation({
-        locationName: data.locationName,
-        addressLine1: data.addressLine1,
-        city: data.city,
-        postalCode: data.postalCode,
-        doctorUserId: userId,
-      });
+      return createDoctorLocation({ lang, ...data, doctorUserId: userId });
     },
-    onSuccess: (_, variables) => {
+    onSuccess: () => {
       setSuccessMessage(
         editingId
           ? "Location Updated Successfully"
           : "Default Location Added Successfully",
       );
-
       queryClient.invalidateQueries({
         queryKey: ["doctor-locations", doctorUserId],
       });
-
       setEditingId(null);
       reset();
       setTimeout(() => setSuccessMessage(null), 5000);
     },
   });
 
-  const onSubmit: SubmitHandler<LocationFormValues> = (data) => {
+  const onSubmit: SubmitHandler<LocationFormValues> = (data) =>
     mutation.mutate(data);
-  };
-  // --- Delete Mutation ---
+
   const deleteMutation = useMutation({
     mutationFn: (locationId: number) =>
-      deleteDoctorLocation(locationId, doctorUserId),
+      deleteDoctorLocation({ lang, locationId, doctorUserId }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["doctor-locations", doctorUserId],
@@ -127,7 +110,7 @@ export function DefaultLocationManager({
     );
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-6">
       {/* Form Section */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <Typography
@@ -139,84 +122,56 @@ export function DefaultLocationManager({
           {t("availability.deafult_location")}
         </Typography>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Hospital Name */}
-          <Input
-            {...register("locationName")}
+          <ControlledInput
+            name="locationName"
             placeholder={t("availability.hospital_name_search")}
-            className="bg-background"
+            control={control}
           />
-          {errors.locationName && (
-            <p className="text-[10px] text-destructive">
-              {errors.locationName.message}
-            </p>
-          )}
-
-          {/* Address Line 1 */}
-          <Input
-            {...register("addressLine1")}
+          <ControlledInput
+            name="addressLine1"
             placeholder={t("availability.hospital_location_search")}
-            className="bg-background"
+            control={control}
           />
-          {errors.addressLine1 && (
-            <p className="text-[10px] text-destructive">
-              {errors.addressLine1.message}
-            </p>
-          )}
-
-          {/* City */}
-          <Input
-            {...register("city")}
+          <ControlledInput
+            name="city"
             placeholder={t("availability.city_placeh")}
-            className="bg-background"
+            control={control}
           />
-          {errors.city && (
-            <p className="text-[10px] text-destructive">
-              {errors.city.message}
-            </p>
-          )}
-
-          {/* Postal Code */}
-          <Input
-            {...register("postalCode")}
+          <ControlledInput
+            name="postalCode"
             placeholder={t("availability.postal_code_placeh")}
-            className="bg-background"
+            control={control}
           />
-          {errors.postalCode && (
-            <p className="text-[10px] text-destructive">
-              {errors.postalCode.message}
-            </p>
+        </div>
+
+        <div className="flex gap-2">
+          <AppButton
+            className="px-5 rounded-lg"
+            type="submit"
+            isLoading={mutation.isPending}
+            leftIcon={editingId && <Save size={16} />}
+          >
+            {editingId ? "Update Location" : "Add Default Location"}
+          </AppButton>
+
+          {editingId && (
+            <AppButton
+              variant="outline"
+              type="button"
+              leftIcon={<X size={16} />}
+              onClick={() => {
+                setEditingId(null);
+                reset();
+              }}
+            >
+              Cancel
+            </AppButton>
           )}
         </div>
 
-        <Button className="px-5" type="submit" disabled={mutation.isPending}>
-          {mutation.isPending && (
-            <Loader2 className="animate-spin size-4 mr-2" />
-          )}
-          {editingId ? "Update Location" : "Add Default Location"}
-        </Button>
-
-        {editingId && (
-          <Button
-            variant="outline"
-            type="button"
-            className="ml-2"
-            onClick={() => {
-              setEditingId(null);
-              reset();
-            }}
-          >
-            Cancel
-          </Button>
-        )}
         {successMessage && (
-          <span className="text-secondary text-sm flex items-center gap-1">
-            <CheckCircle2 size={14} />
-            {successMessage}
-          </span>
-        )}
-        {mutation.isError && (
-          <span className="text-destructive text-sm flex items-center gap-1">
-            <AlertCircle size={14} /> Failed to save.
+          <span className="text-secondary text-sm flex items-center gap-1 mt-2">
+            <CheckCircle2 size={14} /> {successMessage}
           </span>
         )}
       </form>
@@ -231,51 +186,49 @@ export function DefaultLocationManager({
         >
           {t("availability.deafult_location")}
         </Typography>
-        {locations?.map((loc: Location) => (
-          <div
-            key={loc.locationId}
-            className="flex items-center justify-between border-b"
-          >
-            <div className="flex gap-4 p-2">
-              <div>
-                <Typography
-                  size="sm"
-                  className="mb-1.5"
-                  as="p"
-                  color="foreground"
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
+          {chunkedLocations.map((chunk, columnIndex) => (
+            <div key={columnIndex} className="flex flex-col">
+              {chunk.map((loc: Location) => (
+                <div
+                  key={loc.locationId}
+                  className="flex items-center justify-between border-b py-2"
                 >
-                  {loc.locationName}
-                </Typography>
-                <Typography size="sm" as="p" color="muted_foreground">
-                  {loc.addressLine1}
-                </Typography>
-              </div>
+                  <div className="flex flex-col gap-1">
+                    <Typography size="sm" color="foreground">
+                      {loc.locationName}
+                    </Typography>
+                    <Typography size="xs" color="muted_foreground">
+                      {loc.addressLine1}
+                    </Typography>
+                  </div>
+
+                  <div className="flex gap-1">
+                    <AppButton
+                      variant="ghost"
+                      onClick={() => {
+                        setEditingId(loc.locationId);
+                        setValue("locationName", loc.locationName);
+                        setValue("addressLine1", loc.addressLine1);
+                        setValue("city", loc.city);
+                        setValue("postalCode", Number(loc.postalCode));
+                      }}
+                    >
+                      <Pencil size={16} />
+                    </AppButton>
+                    <AppButton
+                      className="bg-destructive hover:bg-destructive text-muted"
+                      onClick={() => setDeleteId(loc.locationId)}
+                    >
+                      <Trash size={16} />
+                    </AppButton>
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className="flex gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => {
-                  setEditingId(loc.locationId);
-                  setValue("locationName", loc.locationName);
-                  setValue("addressLine1", loc.addressLine1);
-                  setValue("city", loc.city);
-                  setValue("postalCode", Number(loc.postalCode));
-                }}
-              >
-                <Pencil size={16} />
-              </Button>
-              <Button
-                variant="destructive"
-                size="icon"
-                className="bg-destructive hover:bg-destructive text-muted"
-                onClick={() => setDeleteId(loc.locationId)}
-              >
-                <Trash size={18} />
-              </Button>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
       {/* Delete Dialog */}
@@ -290,18 +243,17 @@ export function DefaultLocationManager({
             {t("availability.delete_description")}
           </DialogDescription>
           <DialogFooter className="flex gap-2 mt-4">
-            <Button variant="outline" onClick={() => setDeleteId(null)}>
+            <AppButton variant="outline" onClick={() => setDeleteId(null)}>
               {t("availability.btn_no")}
-            </Button>
-            <Button
+            </AppButton>
+            <AppButton
               variant="destructive"
-              disabled={deleteMutation.isPending}
+              isLoading={deleteMutation.isPending}
+              loadingText={t("availability.btn_deleting")}
               onClick={() => deleteMutation.mutate(deleteId!)}
             >
-              {deleteMutation.isPending
-                ? t("availability.btn_deleting")
-                : t("availability.btn_yes")}
-            </Button>
+              {t("availability.btn_yes")}
+            </AppButton>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -4,13 +4,15 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
 import ErrorHandle from "@/components/common/ErrorHandle";
+import { getCurrentLocale } from "@/locales/server";
 
 export default async function UserLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const res = await getCurrentUser();
+  const lang = await getCurrentLocale();
+  const res = await getCurrentUser({lang});
   if (!res) {
     return (
       <ErrorHandle

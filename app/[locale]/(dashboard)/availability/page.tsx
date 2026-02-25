@@ -1,8 +1,10 @@
-import { getCurrentUser } from '@/actions/user.actions';
-import Unauthorized from '@/components/common/Unauthorized';
-import Availability from '@/components/pages/dashboard/availability/Availability';
-import { Metadata } from 'next';
-import React from 'react';
+import { getCurrentUser } from "@/actions/user.actions";
+import ErrorHandle from "@/components/common/ErrorHandle";
+import Unauthorized from "@/components/common/Unauthorized";
+import Availability from "@/components/pages/dashboard/availability/Availability";
+import { getCurrentLocale } from "@/locales/server";
+import { Metadata } from "next";
+import React from "react";
 
 export const metadata: Metadata = {
   title: "Hospitalia - Availability",
@@ -11,17 +13,27 @@ export const metadata: Metadata = {
 };
 
 const AvailabilityPage = async () => {
-  const res = await getCurrentUser();
+  const lang = await getCurrentLocale();
+
+  const res = await getCurrentUser({ lang });
+  console.log("res", res);
+
   const role = res?.userType;
+
+  if (!res) {
+    return (
+      <ErrorHandle message="Failed to load user information." status={401} />
+    );
+  }
 
   // Role wise component render
   const roleComponents: Record<string, React.ReactNode> = {
-    DOCTOR: <Availability user={res} />,
+    DOCTOR: <Availability userId={res.id} lang={lang} />,
   };
 
   return (
     <div className="dashboard-container">
-      {roleComponents[role as string] || <Unauthorized/>}
+      {roleComponents[role as string] || <Unauthorized />}
     </div>
   );
 };

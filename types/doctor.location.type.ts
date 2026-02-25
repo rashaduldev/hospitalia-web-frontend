@@ -11,6 +11,7 @@ export type Location = {
   postalCode: number;
 };
 export type UpdateLocationParams = {
+  lang: string
   locationId: number;
   locationName: string;  
   addressLine1: string;  

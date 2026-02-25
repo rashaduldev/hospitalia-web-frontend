@@ -1,9 +1,5 @@
-const DashboardNavbar = ({user}:{user:any}) => {    
-  return (
-    <div>
-      DashboardNavbar
-    </div>
-  )
-}
+const DashboardNavbar = ({ user }: { user: any }) => {
+  return <div>DashboardNavbar {user}</div>;
+};
 
-export default DashboardNavbar
+export default DashboardNavbar;
