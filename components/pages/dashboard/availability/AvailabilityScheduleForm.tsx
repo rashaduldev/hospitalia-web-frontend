@@ -13,7 +13,10 @@ import { useI18n } from "@/locales/client";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AvailabilityScheduleSchema, AvailabilityScheduleSchemaFormValues } from "@/schema/doctor.availability.schedule.schema";
+import {
+  AvailabilityScheduleSchema,
+  AvailabilityScheduleSchemaFormValues,
+} from "@/schema/doctor.availability.schedule.schema";
 
 const DAYS = [
   "SUNDAY",
@@ -110,7 +113,8 @@ export default function AvailabilityScheduleForm({
     const finalScheduleArray: any[] = [];
 
     selectedDays.forEach((day) => {
-      const formatTime = (time: string | undefined) => (time ? `${time}:00Z` : "");
+      const formatTime = (time: string | undefined) =>
+        time ? `${time}:00Z` : "";
 
       if (data.loc1.doctorLocationId) {
         finalScheduleArray.push({
@@ -141,8 +145,6 @@ export default function AvailabilityScheduleForm({
         doctorUserId: doctorUserId,
         weeklySchedule: finalScheduleArray,
       });
-      console.log("res",res);
-      
 
       if (!res.success) {
         setError("root", {
@@ -257,7 +259,7 @@ export default function AvailabilityScheduleForm({
           <Typography as="h3" color="foreground" weight="semiBold">
             Add Another Location on the Same Day (Optional)
           </Typography>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <ControlledSelect
               name="loc2.doctorLocationId"
