@@ -13,12 +13,13 @@ env:
 jobs:
 
   build:
-    name: Build Frontend
+    name: Build Application
     runs-on: ubuntu-latest
 
     outputs:
       version: ${{ steps.version.outputs.VERSION }}
       artifact-name: ${{ steps.package.outputs.ARTIFACT_NAME }}
+
 
     steps:
 
@@ -28,10 +29,15 @@ jobs:
           fetch-depth: 0
 
 
+      ###########################################
+      # SDK + Tool Setup (Reusable Pattern)
+      ###########################################
+
       - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
 
 
       - name: Setup PNPM
@@ -40,11 +46,18 @@ jobs:
           version: 9
 
 
-      - name: Verify Environment
+      - name: Verify SDK Installation
         run: |
+          echo "Node:"
           node -v
-          pnpm -v
 
+          echo "PNPM:"
+          pnpm --version
+
+
+      ###########################################
+      # Build
+      ###########################################
 
       - name: Install Dependencies
         run: |
@@ -52,28 +65,42 @@ jobs:
           pnpm install --frozen-lockfile
 
 
-      - name: Build Next.js Application
+      - name: Build Application
         run: |
-          echo "🔨 Building Next.js application..."
+          echo "🔨 Building Next.js project..."
+
           pnpm build
 
-          echo "📦 Build output:"
+          echo "📦 Checking build output:"
           ls -la .next
 
+
+      ###########################################
+      # Validation (Same style as Backend)
+      ###########################################
 
       - name: Verify Build Output
         run: |
 
+          echo "🔍 Verifying Next.js build output..."
+
           if [ ! -d ".next" ]; then
-            echo "❌ ERROR: .next directory not found"
+            echo "❌ ERROR: .next directory does not exist"
             exit 1
           fi
+
+          echo "Contents of .next:"
+          ls -lh .next
 
           echo "✅ Build verified"
 
 
 
-      - name: Get Version
+      ###########################################
+      # Versioning (Reusable)
+      ###########################################
+
+      - name: Get artifact version
         id: version
         run: |
 
@@ -85,11 +112,15 @@ jobs:
 
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
-          echo "📌 Version: $VERSION"
+          echo "📌 Application version: $VERSION"
 
 
 
-      - name: Package Artifact
+      ###########################################
+      # Artifact Creation (Reusable Logic)
+      ###########################################
+
+      - name: Create Deployment Artifact
         id: package
         run: |
 
@@ -100,7 +131,6 @@ jobs:
           VERSION="${{ steps.version.outputs.VERSION }}"
 
           ARTIFACT_NAME="${{ env.APP_NAME }}-${VERSION}-${TIMESTAMP}.zip"
-
 
           echo "📦 Creating deployment package..."
 
@@ -117,14 +147,16 @@ jobs:
 
           echo "ARTIFACT_NAME=$ARTIFACT_NAME" >> $GITHUB_OUTPUT
 
-
-          echo "✅ Artifact created"
-
+          echo "📦 Artifact created:"
           ls -lh artifacts/
 
 
 
-      - name: Upload Artifact
+      ###########################################
+      # Artifact Upload (Reusable)
+      ###########################################
+
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: hospitalia-web-build
@@ -134,8 +166,11 @@ jobs:
 
 
 
-  deploy:
+  #################################################
+  # DEPLOY JOB (Mirrors Backend Workflow)
+  #################################################
 
+  deploy:
     name: Deploy to VPS
     runs-on: ubuntu-latest
 
@@ -143,17 +178,27 @@ jobs:
 
     if: github.ref == 'refs/heads/staging' || github.event_name == 'workflow_dispatch'
 
+
     steps:
 
 
-      - name: Download Artifact
+      ###########################################
+      # Download Artifact
+      ###########################################
+
+      - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: hospitalia-web-build
           path: ./artifact
 
 
-      - name: Verify Artifact
+
+      ###########################################
+      # Verify Artifact (Reusable)
+      ###########################################
+
+      - name: Verify downloaded artifact
         run: |
 
           echo "📦 Downloaded artifacts:"
@@ -166,9 +211,13 @@ jobs:
             exit 1
           fi
 
-          echo "✅ Artifact ready"
+          echo "✅ Artifact ready for deployment"
 
 
+
+      ###########################################
+      # SSH Setup (Reusable EXACT logic)
+      ###########################################
 
       - name: Setup SSH
         run: |
@@ -184,18 +233,22 @@ jobs:
           echo "🔐 Testing SSH connection..."
 
           ssh -i ~/.ssh/deploy_key -p ${{ secrets.VPS_PORT }} \
-          ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} \
-          "echo '✅ SSH connection successful' && whoami && pwd"
+            ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} \
+            "echo '✅ SSH connection successful' && whoami && pwd"
 
 
 
-      - name: Copy Artifact to VPS
+      ###########################################
+      # Copy Artifact (Reusable EXACT style)
+      ###########################################
+
+      - name: Copy artifact to VPS
         run: |
 
           FILE=$(ls artifact/*.zip | head -1)
 
           if [ -z "$FILE" ]; then
-            echo "❌ ERROR: No artifact found"
+            echo "❌ ERROR: No artifact found to deploy"
             exit 1
           fi
 
@@ -204,30 +257,40 @@ jobs:
 
 
           scp -i ~/.ssh/deploy_key -P ${{ secrets.VPS_PORT }} \
-          "$FILE" \
-          ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/appl/apps/hospitalia-web/releases/
+            "$FILE" \
+            ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/appl/apps/hospitalia-web/releases/
 
 
           echo "✅ Artifact copied to VPS"
 
 
 
+      ###########################################
+      # Cleanup (Reusable)
+      ###########################################
+
+      - name: Cleanup SSH key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
+
+
+
+      ###########################################
+      # Deployment Summary (Reusable EXACT style)
+      ###########################################
+
       - name: Deployment Summary
         if: always()
         run: |
-
           echo "=================================="
           echo "Deployment Summary"
           echo "=================================="
-
           echo "Status: ${{ job.status }}"
           echo "Version: ${{ needs.build.outputs.version }}"
           echo "Artifact: ${{ needs.build.outputs.artifact-name }}"
           echo "Branch: ${{ github.ref_name }}"
           echo "Commit: ${{ github.sha }}"
-
           echo "=================================="
-
 
           if [ "${{ job.status }}" == "success" ]; then
             echo "✅ Artifact uploaded successfully!"
