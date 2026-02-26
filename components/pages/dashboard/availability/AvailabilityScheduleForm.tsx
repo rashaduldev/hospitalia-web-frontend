@@ -7,7 +7,7 @@ import { ControlledSelect } from "@/components/common/FormUIControllers/Controll
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Typography } from "@/components/ui/Typography";
-import { useLocations } from "@/hooks/use-locations";
+import { useLocations } from "@/hooks/useLocations";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/locales/client";
 import { useState } from "react";
@@ -17,6 +17,7 @@ import {
   AvailabilityScheduleSchema,
   AvailabilityScheduleSchemaFormValues,
 } from "@/schema/doctor.availability.schedule.schema";
+import AppButton from "@/components/common/AppButton";
 
 const DAYS = [
   "SUNDAY",
@@ -57,7 +58,7 @@ export default function AvailabilityScheduleForm({
     message: string;
   } | null>(null);
 
-  const { data: locations } = useLocations(doctorUserId);
+  const { data: locations } = useLocations({ doctorUserId, lang });
   const t = useI18n();
 
   const {
@@ -183,7 +184,7 @@ export default function AvailabilityScheduleForm({
               // const isUnavailable = isDayUnavailableInApi(day);
               const isSelected = selectedDays.includes(day);
               return (
-                <button
+                <AppButton
                   key={day}
                   type="button"
                   onClick={() => toggleDay(day)}
@@ -192,14 +193,15 @@ export default function AvailabilityScheduleForm({
                     {
                       // "bg-destructive border-destructive text-muted":
                       //   isUnavailable,
-                      "bg-secondary-foreground border-secondary-foreground text-foreground":
+                      "bg-secondary-foreground hover:bg-secondary-foreground border-secondary-foreground text-foreground":
                         isSelected,
-                      "bg-ring/20 border-muted text-foreground": !isSelected,
+                      "bg-ring/20 hover:bg-ring/20 border-muted text-foreground":
+                        !isSelected,
                     },
                   )}
                 >
                   {day.charAt(0) + day.slice(1).toLowerCase()}
-                </button>
+                </AppButton>
               );
             })}
           </div>
