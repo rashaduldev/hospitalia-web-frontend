@@ -3,7 +3,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginFormSchema, LoginFormValues } from "@/schema/ueser.schema";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { CountryAndPhoneInput } from "@/components/common/Country&PhoneInput";
 import { ControlledInput } from "@/components/common/FormUIControllers/ControlledInput";
@@ -14,7 +13,7 @@ import { useRouter } from "next/navigation";
 import { DynamicHeading } from "@/components/common/DynamicHeading";
 import { Typography } from "@/components/ui/Typography";
 import { useI18n } from "@/locales/client";
-import { Spinner } from "@/components/ui/spinner";
+import AppButton from "@/components/common/AppButton";
 
 const LoginForm = ({ isPatient }: { isPatient: boolean }) => {
   const t = useI18n();
@@ -53,7 +52,6 @@ const LoginForm = ({ isPatient }: { isPatient: boolean }) => {
       });
       return;
     }
-    // setCookies(res);
     router.push("/dashboard");
   };
 
@@ -106,12 +104,14 @@ const LoginForm = ({ isPatient }: { isPatient: boolean }) => {
         )}
 
         {/* Submit Button */}
-        <div className="w-full text-left">
-          <Button className="w-full" type="submit" disabled={isSubmitting}>
-            {isSubmitting && <Spinner data-icon="inline-start" />}
-            {isSubmitting ? t("login.loginLoading") : t("login.loginBtn")}
-          </Button>
-        </div>
+        <AppButton
+          className="w-full"
+          type="submit"
+          isLoading={isSubmitting}
+          loadingText={t("login.loginLoading")}
+        >
+          {t("login.loginBtn")}
+        </AppButton>
       </div>
 
       {/* Links */}

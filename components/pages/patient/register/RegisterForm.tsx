@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { CountryAndPhoneInput } from "@/components/common/Country&PhoneInput";
@@ -13,12 +12,12 @@ import { ControlledDateInput } from "@/components/common/FormUIControllers/Contr
 import { register } from "@/actions/auth.actions";
 import { useI18n } from "@/locales/client";
 import { Typography } from "@/components/ui/Typography";
-import { Spinner } from "@/components/ui/spinner";
 import {
   PatientRegisterFormSchema,
   PatientRegisterFormValues,
 } from "@/schema/patient.user.schema";
 import { PatientRegisterRequestData } from "@/types/patient.user.type";
+import AppButton from "@/components/common/AppButton";
 
 export default function PatinetRegistrationForm() {
   const t = useI18n();
@@ -33,7 +32,7 @@ export default function PatinetRegistrationForm() {
     formState: { errors, isSubmitting },
   } = useForm<PatientRegisterFormValues>({
     resolver: zodResolver(
-      PatientRegisterFormSchema((key) => t(key as any) as string),
+      PatientRegisterFormSchema((key) => t(key as any, {}) as string),
     ),
     defaultValues: {
       firstName: "",
@@ -62,10 +61,8 @@ export default function PatinetRegistrationForm() {
       mobileNumber: data.mobileNumber,
       password: data.password,
     };
-    console.log("registerPayload", registerPayload);
 
     const res = await register(registerPayload);
-    console.log("res", res);
 
     if (!res.success) {
       setError("root", {
@@ -186,16 +183,15 @@ export default function PatinetRegistrationForm() {
         </p>
       )}
       <div className="flex flex-col items-center gap-4 mt-6 mb-12">
-        <Button
+        <AppButton
           className="w-full max-w-md"
           type="submit"
-          disabled={isSubmitting || success}
+          isLoading={isSubmitting}
+          loadingText={t("register.creating")}
+          disabled={success}
         >
-          {isSubmitting && <Spinner data-icon="inline-start" />}
-          {isSubmitting
-            ? "Creating account..."
-            : "Register as a Healthcare Provider"}
-        </Button>
+          {t("register.submit")}
+        </AppButton>
 
         <Link
           href="/patient/login"

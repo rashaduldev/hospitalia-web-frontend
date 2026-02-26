@@ -161,6 +161,9 @@ export default {
       specialityRequired: "La spécialité est requise",
 
       passwordNotMatch: "Les mots de passe ne correspondent pas",
+      designation: "La désignation est requise",
+      speciality: "La spécialité est requise",
+      onmsRegistrationNumber: "Le numéro d'inscription ONMS est requis",
     },
   },
   appoinment: {
@@ -197,7 +200,8 @@ export default {
   },
   schedule: {
     title: "Sélectionner le planning de consultation",
-    description: "Sélectionnez les jours pour lesquels vous souhaitez définir la disponibilité",
+    description:
+      "Sélectionnez les jours pour lesquels vous souhaitez définir la disponibilité",
     select_day: "Sélectionner le jour",
   },
 };

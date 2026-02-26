@@ -3,16 +3,11 @@ import RegistrationForm from "@/components/pages/register/RegisterForm";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'Hospitalia | Registration',
-  description: 'Create your Hospitalia account to access hospital services, manage appointments, and connect with healthcare professionals securely.',
-}
-export default async function RegisterPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ userType?: string }>;
-}) {
-  const { userType } = await searchParams;
-  const isPatient = userType === "patient";
+  title: "Hospitalia | Registration",
+  description:
+    "Create your Hospitalia account to access hospital services, manage appointments, and connect with healthcare professionals securely.",
+};
+export default async function RegisterPage() {
   return (
     <div>
       <Header />
@@ -21,7 +16,7 @@ export default async function RegisterPage({
       </h2>
       <div className="min-h-screen bg-muted/40 px-4">
         <div className="container mx-auto">
-          <RegistrationForm isPatient={isPatient} />
+          <RegistrationForm />
         </div>
       </div>
     </div>

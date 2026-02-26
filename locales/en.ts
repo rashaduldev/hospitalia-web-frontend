@@ -158,6 +158,9 @@ export default {
       specialityRequired: "Speciality is required",
 
       passwordNotMatch: "Passwords do not match",
+      designation: "Designation is required",
+      speciality: "Speciality is required",
+      onmsRegistrationNumber: "Onms Registration Number is required",
     },
   },
   appoinment: {
