@@ -201,5 +201,8 @@ export default {
     description: "Select the date you want to be unavailable for",
     date: "Date",
     btn: "Set as Unavailable",
+    success_message: "Date set as unavailable successfully",
+    error_message: "Failed to set unavailability",
+    already_set: "This day is already set as unavailable",
   },
 };
