@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import React, { useState } from "react";
+import { useState, useMemo } from "react";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { format, startOfDay } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
@@ -8,6 +9,7 @@ import { Typography } from "@/components/ui/Typography";
 import {
   createDoctorUnAvailability,
   getDoctorUnAvailability,
+  deleteAvailabilitySlot,
 } from "@/actions/doctor/unavailability";
 import { DynamicHeading } from "@/components/common/DynamicHeading";
 import { useI18n } from "@/locales/client";
@@ -27,24 +29,28 @@ export default function ScheduleManager({
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     new Date(),
   );
-  const { data: existingDatesResponse } = useQuery({
-    queryKey: ["doctor-availability"],
+
+  const { data: existingDatesResponse, isLoading: isFetching } = useQuery({
+    queryKey: ["doctor-availability", doctorUserId],
     queryFn: () => getDoctorUnAvailability({ lang, doctorUserId }),
     enabled: !!doctorUserId,
   });
 
-  const existingDates = existingDatesResponse?.payload?.content || [];
-  console.log("existingDates", existingDates);
-
-  const isDateInDatabase =
-    selectedDate &&
-    existingDates.some(
-      (item: UnavailableDate) =>
+  const existingDates: UnavailableDate[] =
+    existingDatesResponse?.payload?.content || [];
+  const existingSlot = useMemo(() => {
+    if (!selectedDate) return null;
+    return existingDates.find(
+      (item) =>
         format(new Date(item.unavailableDate), "yyyy-MM-dd") ===
         format(selectedDate, "yyyy-MM-dd"),
     );
+  }, [selectedDate, existingDates]);
 
-  const unavailabilityMutation = useMutation({
+  const isDateInDatabase = !!existingSlot;
+
+  // Create Mutation
+  const createMutation = useMutation({
     mutationFn: (date: string) =>
       createDoctorUnAvailability({ lang, doctorUserId, unavailableDate: date }),
     onSuccess: () => {
@@ -52,11 +58,64 @@ export default function ScheduleManager({
     },
   });
 
-  const handleSetUnavailable = () => {
-    if (selectedDate && !isDateInDatabase) {
+  // Delete Mutation
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => deleteAvailabilitySlot({ id }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["doctor-availability"] });
+    },
+  });
+
+  const handleToggleAvailability = () => {
+    if (!selectedDate) return;
+
+    if (isDateInDatabase && existingSlot?.id) {
+      deleteMutation.mutate(existingSlot.id);
+    } else {
       const formattedDate = format(selectedDate, "yyyy-MM-dd");
-      unavailabilityMutation.mutate(formattedDate);
+      createMutation.mutate(formattedDate);
     }
+  };
+
+  const isPending = createMutation.isPending || deleteMutation.isPending;
+
+  const renderMessage = () => {
+    if (isPending) return null;
+
+    if (createMutation.isSuccess) {
+      return (
+        <p className="text-sm text-secondary font-medium">
+          {t("unavailability.success_message") ||
+            "Date set as unavailable successfully"}
+        </p>
+      );
+    }
+    if (deleteMutation.isSuccess) {
+      return (
+        <p className="text-sm text-secondary font-medium">
+          {t("unavailability.remove_success")}
+        </p>
+      );
+    }
+
+    if (createMutation.isError || deleteMutation.isError) {
+      return (
+        <p className="text-sm text-destructive font-medium">
+          {t("unavailability.error_message") || "Something went wrong."}
+        </p>
+      );
+    }
+
+    if (isDateInDatabase) {
+      return (
+        <p className="text-sm text-destructive font-medium">
+          {t("unavailability.already_set") ||
+            "This day is already set as unavailable"}
+        </p>
+      );
+    }
+
+    return null;
   };
 
   return (
@@ -79,45 +138,29 @@ export default function ScheduleManager({
           selected={selectedDate}
           onSelect={(date) => {
             setSelectedDate(date);
-            unavailabilityMutation.reset();
+            createMutation.reset();
+            deleteMutation.reset();
           }}
           disabled={{ before: startOfDay(new Date()) }}
         />
 
-        <div>
-          {unavailabilityMutation.isSuccess ? (
-            <p className="text-sm text-secondary font-medium">
-              {t("unavailability.success_message")}
-            </p>
-          ) : (
-            <>
-              {isDateInDatabase && (
-                <p className="text-sm text-destructive font-medium">
-                  {t("unavailability.already_set") ||
-                    "This day is already set as unavailable"}
-                </p>
-              )}
-
-              {unavailabilityMutation.isError && (
-                <p className="text-sm text-destructive font-medium">
-                  {t("unavailability.error_message")}
-                </p>
-              )}
-            </>
-          )}
-        </div>
+        {/* Message Area */}
+        <div>{renderMessage()}</div>
 
         <AppButton
-          onClick={handleSetUnavailable}
-          className="px-5 rounded-lg bg-destructive/50 hover:bg-destructive/50 max-w-68.25 w-full text-foreground"
+          onClick={handleToggleAvailability}
+          className={`px-5 rounded-lg max-w-68.25 w-full text-foreground transition-all duration-200 ${
+            isDateInDatabase
+              ? "bg-secondary hover:bg-secondary/90"
+              : "bg-destructive/50 hover:bg-destructive/60"
+          }`}
           type="button"
-          isLoading={unavailabilityMutation.isPending}
-          disabled={
-            !selectedDate ||
-            (isDateInDatabase && !unavailabilityMutation.isSuccess)
-          }
+          isLoading={isPending}
+          disabled={!selectedDate || isFetching}
         >
-          {t("unavailability.btn")}
+          {isDateInDatabase
+            ? t("unavailability.undo_btn")
+            : t("unavailability.btn") || "Set Unavailable"}
         </AppButton>
       </section>
     </div>

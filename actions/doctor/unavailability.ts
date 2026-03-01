@@ -46,6 +46,30 @@ export const createDoctorUnAvailability = async ({
   });
   return res;
 };
+// doctors weekly unavailability schedule set
+export const updateDoctorUnAvailability = async ({
+  lang,
+  unavailabilityId,
+  unavailableDate,
+}: {
+  lang: string;
+  unavailabilityId: number;
+  unavailableDate: string;
+}) => {
+  const token = await getAccessToken();
+
+  const res = await apiClient({
+    endpoint: "/api/doctors/unavailability/update",
+    method: "PUT",
+    body: {
+      unavailabilityId,
+      unavailableDate,
+    },
+    params: { lang },
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res;
+};
 
 // Delete an unavailability slot
 export const deleteAvailabilitySlot = async ({ id }: { id: number }) => {
