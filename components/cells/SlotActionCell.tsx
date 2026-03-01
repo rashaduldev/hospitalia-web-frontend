@@ -1,15 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ColumnDef } from "@tanstack/react-table";
-import {
-  Pencil,
-  Trash2,
-  MoreVertical,
-  AlertCircle,
-  Clock,
-  MapPin,
-} from "lucide-react";
+import { Pencil, Trash2, MoreVertical, AlertCircle } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -98,7 +90,7 @@ export const SlotActionCell = ({ slot }: { slot: any }) => {
       <Button
         variant="ghost"
         size="icon"
-        className="h-8 w-8 text-blue-600 hover:bg-blue-50"
+        className="h-8 w-8 text-primary hover:bg-background"
         onClick={() => setIsEditOpen(true)}
       >
         <Pencil className="h-4 w-4" />
@@ -213,10 +205,10 @@ export const SlotActionCell = ({ slot }: { slot: any }) => {
 
       {/* PROFESSIONAL DELETE DIALOG */}
       <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
-        <DialogContent className="sm:max-w-[400px]">
+        <DialogContent className="sm:max-w-100">
           <div className="flex flex-col items-center text-center p-2">
-            <div className="h-14 w-14 rounded-full bg-red-100 flex items-center justify-center mb-4">
-              <AlertCircle className="h-8 w-8 text-red-600" />
+            <div className="h-14 w-14 rounded-full bg-muted flex items-center justify-center mb-4">
+              <AlertCircle className="h-8 w-8 text-destructive" />
             </div>
             <DialogTitle className="text-xl">Are you sure?</DialogTitle>
             <DialogDescription className="mt-2 text-base">

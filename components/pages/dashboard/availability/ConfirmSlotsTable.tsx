@@ -1,10 +1,9 @@
-import { DataTableWithExport } from "@/components/data-table";
-import { DynamicHeading } from "@/components/common/DynamicHeading";
+// ConfirmSlotsTable.tsx (Server Component)
 import { getDoctorAvailability } from "@/actions/doctor/availability";
-import { ConfirmSlotsColumns } from "@/components/common/ConfirmSlotsColumns";
-import { Suspense } from "react";
+import { getDoctorLocations } from "@/actions/doctor/location";
+import { DynamicHeading } from "@/components/common/DynamicHeading";
 import { getI18n } from "@/locales/server";
-import { TableSkeleton } from "@/components/common/TableSkeleton";
+import ConfirmSlotsTableClient from "./ConfirmSlotsTableClient";
 
 const ConfirmSlotsTable = async ({
   lang,
@@ -14,10 +13,15 @@ const ConfirmSlotsTable = async ({
   doctorUserId: number;
 }) => {
   const t = await getI18n();
+  const [availabilityRes, locationsRes] = await Promise.all([
+    getDoctorAvailability({ lang, doctorUserId }),
+    getDoctorLocations({ lang, doctorUserId }),
+  ]);
+  console.log("locationsRes", locationsRes);
 
-  const data = await getDoctorAvailability({ lang, doctorUserId });
-
-  const slots = data?.payload?.content || [];
+  const slots = availabilityRes?.payload?.content || [];
+  const locations = locationsRes?.payload || [];
+  console.log("locations", locations);
   return (
     <div className="my-8">
       <div className="border rounded-sm p-6 space-y-6">
@@ -27,9 +31,9 @@ const ConfirmSlotsTable = async ({
           titleProps={{ size: "2xl", weight: "bold", color: "secondary" }}
           descriptionProps={{ size: "sm" }}
         />
-        <Suspense fallback={<TableSkeleton columnCount={5} />}>
-          <DataTableWithExport columns={ConfirmSlotsColumns} data={slots} />
-        </Suspense>
+
+        {/* Pass raw data to the Client Component */}
+        <ConfirmSlotsTableClient slots={slots} locations={locations} />
       </div>
     </div>
   );
