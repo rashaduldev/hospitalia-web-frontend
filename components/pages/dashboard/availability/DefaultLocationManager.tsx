@@ -47,7 +47,12 @@ export function DefaultLocationManager({
   const { handleSubmit, reset, setValue, control } =
     useForm<LocationFormValues>({
       resolver: zodResolver(locationSchema) as any,
-      defaultValues: { locationName: "", addressLine1: "", city: "" },
+      defaultValues: {
+        locationName: "",
+        addressLine1: "",
+        city: "",
+        postalCode: 0,
+      },
     });
 
   const { data: response, isLoading } = useQuery({
@@ -85,7 +90,6 @@ export function DefaultLocationManager({
       });
       setEditingId(null);
       reset();
-      setTimeout(() => setSuccessMessage(null), 5000);
     },
   });
 
@@ -214,20 +218,42 @@ export function DefaultLocationManager({
                 {chunk.map((loc: Location) => (
                   <div
                     key={loc.locationId}
-                    className="flex items-center justify-between border-b py-2"
+                    className="flex items-start justify-between border-b py-3 gap-4"
                   >
-                    <div className="flex flex-col gap-1">
-                      <Typography size="sm" color="foreground">
+                    {/* Text Container: flex-1 takes space, min-w-0 allows shrinking */}
+                    <div className="flex flex-col gap-1 flex-1 min-w-0">
+                      <Typography
+                        size="sm"
+                        color="foreground"
+                        className="font-medium break-words leading-tight"
+                      >
                         {loc.locationName}
                       </Typography>
-                      <Typography size="xs" color="muted_foreground">
+
+                      <Typography
+                        size="xs"
+                        color="muted_foreground"
+                        className="break-words whitespace-normal leading-relaxed"
+                      >
                         {loc.addressLine1}
+                      </Typography>
+
+                      {/* Optional: if you want to show city/postal code clearly */}
+                      <Typography
+                        size="xs"
+                        color="muted_foreground"
+                        className="opacity-80"
+                      >
+                        {loc.city} {loc.postalCode ? `- ${loc.postalCode}` : ""}
                       </Typography>
                     </div>
 
-                    <div className="flex gap-1">
+                    {/* Buttons: shrink-0 prevents the buttons from getting squeezed */}
+                    <div className="flex gap-1 shrink-0 items-center mt-1">
                       <AppButton
                         variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0"
                         onClick={() => {
                           setEditingId(loc.locationId);
                           setValue("locationName", loc.locationName);
@@ -239,7 +265,8 @@ export function DefaultLocationManager({
                         <Pencil size={16} />
                       </AppButton>
                       <AppButton
-                        className="bg-destructive hover:bg-destructive text-muted"
+                        size="sm"
+                        className="h-8 w-8 p-0 bg-destructive hover:bg-destructive/90 text-white"
                         onClick={() => setDeleteId(loc.locationId)}
                       >
                         <Trash size={16} />

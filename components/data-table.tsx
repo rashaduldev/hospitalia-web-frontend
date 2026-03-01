@@ -230,7 +230,7 @@ export function DataTableWithExport<TData, TValue>({
       </div>
 
       {/* Pagination Design (Matching Image) */}
-      <div className="flex items-center justify-between px-2 py-4">
+      <div className="flex flex-col md:flex-row gap-3 md:gap-0 items-center justify-between px-2 py-4">
         <div className="text-sm text-muted-foreground">
           {t("table.showing")} {startRow}-{endRow} {t("table.of")} {totalRows}{" "}
           {t("table.results")}

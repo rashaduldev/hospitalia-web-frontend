@@ -165,7 +165,7 @@ export default function AvailabilityScheduleForm({
   };
 
   return (
-    <div className="mt-12.5 border rounded-lg p-6">
+    <div className="mt-12.5 border rounded-lg p-3 md:p-6">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <DynamicHeading
           title={t("schedule.title")}
@@ -207,14 +207,12 @@ export default function AvailabilityScheduleForm({
 
         {/* --- Location 1 --- */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="grid grid-cols-2 col-span-2 gap-4">
-            <ControlledSelect
-              name="loc1.availabilityStatus"
-              label="Availability Status *"
-              control={control}
-              options={AVAILABILITY_OPTIONS}
-            />
-          </div>
+          <ControlledSelect
+            name="loc1.availabilityStatus"
+            label="Availability Status *"
+            control={control}
+            options={AVAILABILITY_OPTIONS}
+          />
 
           <ControlledSelect
             name="loc1.doctorLocationId"
