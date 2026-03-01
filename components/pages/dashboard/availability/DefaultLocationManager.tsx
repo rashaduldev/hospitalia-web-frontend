@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2, CheckCircle2, Trash, Pencil, Save, X } from "lucide-react";
+import { CheckCircle2, Trash, Pencil, Save, X } from "lucide-react";
 
 import {
   Dialog,
@@ -29,6 +29,7 @@ import { useI18n } from "@/locales/client";
 import { Typography } from "@/components/ui/Typography";
 import { ControlledInput } from "@/components/common/FormUIControllers/ControlledInput";
 import AppButton from "@/components/common/AppButton";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function DefaultLocationManager({
   lang,
@@ -101,13 +102,6 @@ export function DefaultLocationManager({
       setDeleteId(null);
     },
   });
-
-  if (isLoading)
-    return (
-      <div className="py-10 text-center">
-        <Loader2 className="mx-auto animate-spin" />
-      </div>
-    );
 
   return (
     <div className="space-y-6">
@@ -186,49 +180,77 @@ export function DefaultLocationManager({
         >
           {t("availability.deafult_location")}
         </Typography>
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
+            {[...Array(2)].map((_, columnIndex) => (
+              <div key={columnIndex} className="flex flex-col">
+                {[...Array(4)].map((_, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between py-1"
+                  >
+                    {/* Left text area */}
+                    <div className="flex flex-col gap-1 w-full pr-4">
+                      <Skeleton className="h-4 w-3/4 bg-foreground/20" />
+                      <Skeleton className="h-3 w-2/3 bg-foreground/20" />
+                      <Skeleton className="h-3 w-1/2 bg-foreground/20" />
+                      <Skeleton className="h-3 w-1/3 bg-foreground/20" />
+                    </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
-          {chunkedLocations.map((chunk, columnIndex) => (
-            <div key={columnIndex} className="flex flex-col">
-              {chunk.map((loc: Location) => (
-                <div
-                  key={loc.locationId}
-                  className="flex items-center justify-between border-b py-2"
-                >
-                  <div className="flex flex-col gap-1">
-                    <Typography size="sm" color="foreground">
-                      {loc.locationName}
-                    </Typography>
-                    <Typography size="xs" color="muted_foreground">
-                      {loc.addressLine1}
-                    </Typography>
+                    {/* Right action buttons */}
+                    <div className="flex gap-1">
+                      <Skeleton className="h-8 w-8 rounded-md bg-foreground/20" />
+                      <Skeleton className="h-8 w-8 rounded-md bg-foreground/20" />
+                    </div>
                   </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
+            {chunkedLocations.map((chunk, columnIndex) => (
+              <div key={columnIndex} className="flex flex-col">
+                {chunk.map((loc: Location) => (
+                  <div
+                    key={loc.locationId}
+                    className="flex items-center justify-between border-b py-2"
+                  >
+                    <div className="flex flex-col gap-1">
+                      <Typography size="sm" color="foreground">
+                        {loc.locationName}
+                      </Typography>
+                      <Typography size="xs" color="muted_foreground">
+                        {loc.addressLine1}
+                      </Typography>
+                    </div>
 
-                  <div className="flex gap-1">
-                    <AppButton
-                      variant="ghost"
-                      onClick={() => {
-                        setEditingId(loc.locationId);
-                        setValue("locationName", loc.locationName);
-                        setValue("addressLine1", loc.addressLine1);
-                        setValue("city", loc.city);
-                        setValue("postalCode", Number(loc.postalCode));
-                      }}
-                    >
-                      <Pencil size={16} />
-                    </AppButton>
-                    <AppButton
-                      className="bg-destructive hover:bg-destructive text-muted"
-                      onClick={() => setDeleteId(loc.locationId)}
-                    >
-                      <Trash size={16} />
-                    </AppButton>
+                    <div className="flex gap-1">
+                      <AppButton
+                        variant="ghost"
+                        onClick={() => {
+                          setEditingId(loc.locationId);
+                          setValue("locationName", loc.locationName);
+                          setValue("addressLine1", loc.addressLine1);
+                          setValue("city", loc.city);
+                          setValue("postalCode", Number(loc.postalCode));
+                        }}
+                      >
+                        <Pencil size={16} />
+                      </AppButton>
+                      <AppButton
+                        className="bg-destructive hover:bg-destructive text-muted"
+                        onClick={() => setDeleteId(loc.locationId)}
+                      >
+                        <Trash size={16} />
+                      </AppButton>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Delete Dialog */}
