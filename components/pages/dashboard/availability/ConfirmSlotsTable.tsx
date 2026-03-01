@@ -1,9 +1,9 @@
-// ConfirmSlotsTable.tsx (Server Component)
-import { getDoctorAvailability } from "@/actions/doctor/availability";
-import { getDoctorLocations } from "@/actions/doctor/location";
+import { DataTableWithExport } from "@/components/data-table";
 import { DynamicHeading } from "@/components/common/DynamicHeading";
+import { getDoctorAvailability } from "@/actions/doctor/availability";
+import ConfirmSlotsColumns from "@/components/common/ConfirmSlotsColumns";
+import { Suspense } from "react";
 import { getI18n } from "@/locales/server";
-import ConfirmSlotsTableClient from "./ConfirmSlotsTableClient";
 
 const ConfirmSlotsTable = async ({
   lang,
@@ -13,17 +13,12 @@ const ConfirmSlotsTable = async ({
   doctorUserId: number;
 }) => {
   const t = await getI18n();
-  const [availabilityRes, locationsRes] = await Promise.all([
-    getDoctorAvailability({ lang, doctorUserId }),
-    getDoctorLocations({ lang, doctorUserId }),
-  ]);
-  console.log("locationsRes", locationsRes);
 
-  const slots = availabilityRes?.payload?.content || [];
-  const locations = locationsRes?.payload || [];
-  console.log("locations", locations);
+  const data = await getDoctorAvailability({ lang, doctorUserId });
+
+  const slots = data?.payload?.content || [];
   return (
-    <div className="my-8">
+    <div className="mt-8">
       <div className="border rounded-sm p-6 space-y-6">
         <DynamicHeading
           title={t("unavailability.confirmed_slots")}
@@ -31,9 +26,9 @@ const ConfirmSlotsTable = async ({
           titleProps={{ size: "2xl", weight: "bold", color: "secondary" }}
           descriptionProps={{ size: "sm" }}
         />
-
-        {/* Pass raw data to the Client Component */}
-        <ConfirmSlotsTableClient slots={slots} locations={locations} />
+        <Suspense fallback={<p>loading...</p>}>
+          <DataTableWithExport columns={ConfirmSlotsColumns} data={slots} />
+        </Suspense>
       </div>
     </div>
   );

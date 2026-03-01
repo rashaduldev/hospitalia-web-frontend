@@ -42,7 +42,6 @@ type Props = {
 };
 
 export const AppointmentActionCell = ({ appointment }: Props) => {
-  console.log("Appointment data:", appointment);
 
   const t = useI18n();
   const [isViewOpen, setIsViewOpen] = useState(false);

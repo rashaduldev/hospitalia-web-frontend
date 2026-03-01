@@ -1,20 +1,17 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { parse, format } from "date-fns";
-import { Clock } from "lucide-react";
+import { Clock, MapPin } from "lucide-react";
 import { SlotActionCell } from "../cells/SlotActionCell";
 import { Checkbox } from "../ui/checkbox";
+import { parse, format } from "date-fns";
 
-export const getConfirmSlotsColumns = (locations: any[]): ColumnDef<any>[] => [
-  {
+ const ConfirmSlotsColumns: ColumnDef<any>[] = [
+    {
     id: "select",
     header: ({ table }) => (
       <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
+        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
       />
@@ -26,8 +23,6 @@ export const getConfirmSlotsColumns = (locations: any[]): ColumnDef<any>[] => [
         aria-label="Select row"
       />
     ),
-    enableSorting: false,
-    enableHiding: false,
   },
   {
     accessorKey: "lastModifiedDate",
@@ -36,9 +31,7 @@ export const getConfirmSlotsColumns = (locations: any[]): ColumnDef<any>[] => [
       const dateStr = row.getValue("lastModifiedDate") as string;
       try {
         const parsedDate = parse(dateStr, "dd-MM-yyyy HH:mm:ss", new Date());
-        return (
-          <div className="text-foreground">{format(parsedDate, "do MMMM")}</div>
-        );
+        return <div className="text-foreground">{format(parsedDate, "do MMMM")}</div>;
       } catch {
         return <div className="text-foreground">{dateStr}</div>;
       }
@@ -47,45 +40,43 @@ export const getConfirmSlotsColumns = (locations: any[]): ColumnDef<any>[] => [
   {
     accessorKey: "doctorLocationId",
     header: "Location",
-    cell: ({ row }) => {
-      const id = row.getValue("doctorLocationId");
-      console.log("locations id", id);
-
-      const foundLocation = locations.find((l) => l.locationId === id);
-      console.log("foundLocation", foundLocation);
-
-      const locationName = foundLocation?.locationName || `Clinic ${id}`;
-
-      return (
-        <div className="flex items-center gap-2">
-          <span
-            className="truncate max-w-37.5 font-medium"
-            title={locationName}
-          >
-            {locationName}
-          </span>
-        </div>
-      );
-    },
+    cell: ({ row }) => (
+      <div className="flex items-center gap-2">
+        <span className="text-xs">Clinic {row.getValue("doctorLocationId")}</span>
+      </div>
+    ),
   },
   {
-    header: "Time Duration",
-    cell: ({ row }) => {
-      const start = row.original.startTime?.replace(":00Z", "");
-      const end = row.original.endTime?.replace(":00Z", "");
-      return (
-        <div className="flex items-center gap-2 font-medium">
-          <Clock className="h-3.5 w-3.5 text-primary" />
-          {start} - {end}
-        </div>
-      );
-    },
+  header: "Time Duration",
+  cell: ({ row }) => {
+    const formatTo12Hour = (time: string) => {
+      if (!time) return "";
+
+      const cleaned = time.replace("Z", ""); 
+      const [hour, minute] = cleaned.split(":");
+
+      const date = new Date();
+      date.setHours(Number(hour));
+      date.setMinutes(Number(minute));
+
+      return format(date, "hh:mm a"); 
+    };
+
+    const start = formatTo12Hour(row.original.startTime);
+    const end = formatTo12Hour(row.original.endTime);
+
+    return (
+      <div className="flex items-center gap-2">
+        {start} - {end}
+      </div>
+    );
   },
+},
   {
     accessorKey: "timeSlot",
     header: "Time Slot",
     cell: ({ row }) => (
-      <span className="bg-muted px-2 py-1 rounded text-xs font-semibold">
+      <span className="px-2 py-1 rounded text-sm">
         {row.getValue("timeSlot")} Mins
       </span>
     ),
@@ -96,3 +87,5 @@ export const getConfirmSlotsColumns = (locations: any[]): ColumnDef<any>[] => [
     cell: ({ row }) => <SlotActionCell slot={row.original} />,
   },
 ];
+
+export default ConfirmSlotsColumns;

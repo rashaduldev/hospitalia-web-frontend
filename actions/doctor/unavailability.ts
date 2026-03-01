@@ -48,11 +48,9 @@ export const createDoctorUnAvailability = async ({
 };
 // doctors weekly unavailability schedule set
 export const updateDoctorUnAvailability = async ({
-  lang,
   unavailabilityId,
   unavailableDate,
 }: {
-  lang: string;
   unavailabilityId: number;
   unavailableDate: string;
 }) => {
@@ -65,7 +63,6 @@ export const updateDoctorUnAvailability = async ({
       unavailabilityId,
       unavailableDate,
     },
-    params: { lang },
     headers: { Authorization: `Bearer ${token}` },
   });
   return res;
