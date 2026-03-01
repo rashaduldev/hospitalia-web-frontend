@@ -207,12 +207,14 @@ export default function AvailabilityScheduleForm({
 
         {/* --- Location 1 --- */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <ControlledSelect
-            name="loc1.availabilityStatus"
-            label="Availability Status *"
-            control={control}
-            options={AVAILABILITY_OPTIONS}
-          />
+          <div className="grid grid-cols-1 col-span-1 md:grid-cols-2 md:col-span-2">
+            <ControlledSelect
+              name="loc1.availabilityStatus"
+              label="Availability Status *"
+              control={control}
+              options={AVAILABILITY_OPTIONS}
+            />
+          </div>
 
           <ControlledSelect
             name="loc1.doctorLocationId"

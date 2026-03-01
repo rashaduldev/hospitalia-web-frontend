@@ -3,8 +3,31 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Clock, MapPin } from "lucide-react";
 import { SlotActionCell } from "../cells/SlotActionCell";
+import { Checkbox } from "../ui/checkbox";
 
 export const ConfirmSlotsColumns: ColumnDef<any>[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
   {
     accessorKey: "dayOfWeek",
     header: "Day",

@@ -4,6 +4,7 @@ import { getDoctorAvailability } from "@/actions/doctor/availability";
 import { ConfirmSlotsColumns } from "@/components/common/ConfirmSlotsColumns";
 import { Suspense } from "react";
 import { getI18n } from "@/locales/server";
+import { TableSkeleton } from "@/components/common/TableSkeleton";
 
 const ConfirmSlotsTable = async ({
   lang,
@@ -18,7 +19,7 @@ const ConfirmSlotsTable = async ({
 
   const slots = data?.payload?.content || [];
   return (
-    <div className="mt-8">
+    <div className="my-8">
       <div className="border rounded-sm p-6 space-y-6">
         <DynamicHeading
           title={t("unavailability.confirmed_slots")}
@@ -26,7 +27,7 @@ const ConfirmSlotsTable = async ({
           titleProps={{ size: "2xl", weight: "bold", color: "secondary" }}
           descriptionProps={{ size: "sm" }}
         />
-        <Suspense fallback={<p>loading...</p>}>
+        <Suspense fallback={<TableSkeleton columnCount={5} />}>
           <DataTableWithExport columns={ConfirmSlotsColumns} data={slots} />
         </Suspense>
       </div>

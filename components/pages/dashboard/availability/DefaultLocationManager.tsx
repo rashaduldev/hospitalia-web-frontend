@@ -225,7 +225,7 @@ export function DefaultLocationManager({
                       <Typography
                         size="sm"
                         color="foreground"
-                        className="font-medium break-words leading-tight"
+                        className="font-medium wrap-break-word leading-tight"
                       >
                         {loc.locationName}
                       </Typography>
@@ -233,7 +233,7 @@ export function DefaultLocationManager({
                       <Typography
                         size="xs"
                         color="muted_foreground"
-                        className="break-words whitespace-normal leading-relaxed"
+                        className="wrap-break-word whitespace-normal leading-relaxed"
                       >
                         {loc.addressLine1}
                       </Typography>
