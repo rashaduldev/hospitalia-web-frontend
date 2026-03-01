@@ -151,7 +151,7 @@ export default function ScheduleManager({
           onClick={handleToggleAvailability}
           className={`px-5 rounded-lg max-w-68.25 w-full text-foreground transition-all duration-200 ${
             isDateInDatabase
-              ? "bg-secondary hover:bg-secondary/90"
+              ? "bg-primary hover:bg-primary/90 text-muted"
               : "bg-destructive/50 hover:bg-destructive/60"
           }`}
           type="button"

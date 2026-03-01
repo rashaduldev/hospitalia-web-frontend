@@ -4,23 +4,28 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   // trailingSlash: true,
   compress: true,
+  cacheComponents: true,
 
   compiler: {
-    // removeConsole: process.env.NODE_ENV === "production",
+    removeConsole: false,
   },
   images: {
     dangerouslyAllowLocalIP: process.env.NODE_ENV === "development",
-    remotePatterns: [
-    ],
+    remotePatterns: [],
   },
   logging: {
     fetches: {
       fullUrl: true,
+      hmrRefreshes: true,
     },
   },
+  allowedDevOrigins: ["localhost:3000", "hospitalia-api.dhrubok.xyz"],
   experimental: {
     serverActions: {
-      allowedOrigins: ["http://localhost:3000","https://hospitalia-api.dhrubok.xyz"],
+      allowedOrigins: [
+        "http://localhost:3000",
+        "https://hospitalia-api.dhrubok.xyz",
+      ],
     },
     serverComponentsHmrCache: true,
     // viewTransition: true,

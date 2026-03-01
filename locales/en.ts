@@ -209,5 +209,7 @@ export default {
     set_available_btn: "Set as Available",
     remove_success: "Date is now available again.",
     undo_btn: "Make Available",
+    confirmed_slots: "Confirmed Slots",
+    confirmed_slots_des: "All your confirmed time slots",
   },
 };
