@@ -5,10 +5,10 @@ import { useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface PaginationProps {
+type PaginationProps = {
   totalRows: number;
   itemsPerPage?: number;
-}
+};
 
 export default function Pagination({
   totalRows,
