@@ -42,13 +42,17 @@ export const ControlledSelect: FC<ControlledSelectProps> = ({
       name={name}
       control={control}
       render={({ field, fieldState }) => (
-        <div className="space-y-1">
+        <div className="space-y-0">
           <div className="flex items-center gap-1">
-            {label && <Label>{label}</Label>}
-            {required && (
-              <Typography size="sm" color="destructive">
-                {required}
-              </Typography>
+            {label && (
+              <Label className="mb-1">
+                {label}
+                {required && (
+                  <Typography size="sm" color="destructive">
+                    {required}
+                  </Typography>
+                )}
+              </Label>
             )}
           </div>
 

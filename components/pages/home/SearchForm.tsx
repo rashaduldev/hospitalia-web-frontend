@@ -3,7 +3,6 @@
 
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -18,25 +17,8 @@ import AppButton from "@/components/common/AppButton";
 import { ControlledSelect } from "@/components/common/FormUIControllers/ControlledSelect";
 import { ControlledInput } from "@/components/common/FormUIControllers/ControlledInput";
 import { DynamicHeading } from "@/components/common/DynamicHeading";
-
-export const schema = z.object({
-  type: z.string(),
-  city: z.string().min(1, "City is required"),
-  searchKeyword: z.string().min(1, "Search keyword is required"),
-});
-
-export type FormValues = z.infer<typeof schema>;
-
-export type SearchFormProps = {
-  formWidth?: string;
-  headingTitle?: string;
-  headingSubtitle?: string;
-  cityOptions?: { label: string; value: string }[];
-  lang: string;
-  className: string;
-  onSubmitPropAction?: (data: FormValues) => Promise<void>;
-  initialValues?: Partial<FormValues>;
-};
+import { Searchschema } from "@/schema/search.schema";
+import { SearchFormProps, SearchFormValues } from "@/types/search.type";
 
 const CITY_OPTIONS_DEFAULT = [
   { label: "All", value: "all" },
@@ -50,13 +32,13 @@ export const SearchForm = ({
   headingSubtitle,
   className,
   cityOptions = CITY_OPTIONS_DEFAULT,
-  onSubmitPropAction,
+  onSubmitAction,
   initialValues,
 }: SearchFormProps) => {
   const router = useRouter();
 
-  const { control, handleSubmit, setValue, watch } = useForm<FormValues>({
-    resolver: zodResolver(schema),
+  const { control, handleSubmit, setValue, watch } = useForm<SearchFormValues>({
+    resolver: zodResolver(Searchschema),
     defaultValues: {
       type: initialValues?.type || "doctor",
       city: initialValues?.city || "all",
@@ -66,16 +48,10 @@ export const SearchForm = ({
 
   const currentType = watch("type");
 
-  const handleFormSubmit = async (data: FormValues) => {
-    if (onSubmitPropAction) {
-      onSubmitPropAction(data);
+  const handleFormSubmit = async (data: SearchFormValues) => {
+    if (onSubmitAction) {
+      onSubmitAction(data);
     } else {
-      //   const query = new URLSearchParams({
-      //     keyword: data.searchKeyword,
-      //     city: data.city,
-      //     type: data.type,
-      //   }).toString();
-
       router.push(`/search`);
     }
   };
@@ -83,7 +59,7 @@ export const SearchForm = ({
   return (
     <form
       onSubmit={handleSubmit(handleFormSubmit)}
-      className={`rounded-[10px] p-4 sm:p-6 ${formWidth} ${className}`}
+      className={`rounded-[10px] p-4 sm:p-6 ${formWidth} ${className || ""}`}
     >
       {headingTitle && (
         <DynamicHeading
@@ -95,6 +71,7 @@ export const SearchForm = ({
         />
       )}
 
+      {/* Type Selection */}
       <RadioGroup
         value={currentType}
         className="flex mb-4 gap-4"
@@ -119,6 +96,7 @@ export const SearchForm = ({
       <div className="mb-4 w-full">
         <ControlledSelect
           name="city"
+          required="*"
           control={control}
           options={cityOptions}
           label="Select City"
@@ -126,13 +104,11 @@ export const SearchForm = ({
       </div>
 
       <div className="mb-4">
-        <Label className="mb-2 block">
-          Search <span className="text-destructive">*</span>
-        </Label>
+        <Label className="mb-2 block">Search</Label>
         <ControlledInput
           name="searchKeyword"
           control={control}
-          placeholder="Search here..."
+          placeholder="Search Here"
         />
       </div>
 
@@ -142,9 +118,9 @@ export const SearchForm = ({
         <AppButton
           type="submit"
           variant="secondary"
-          className="w-full sm:w-fit text-white bg-primary"
+          className="w-full sm:w-fit text-muted"
         >
-          Search Now
+          Search
         </AppButton>
       </div>
     </form>

@@ -1,87 +1,116 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
 import { globalSearch } from "@/actions/global.search";
-import { FormValues, SearchForm } from "@/components/pages/home/SearchForm";
+import { getAllHospital } from "@/actions/hospital/hospitaldata";
+import { getAllDoctor } from "@/actions/doctor/doctordata";
+import { Typography } from "@/components/ui/Typography";
 import Header from "@/components/pages/home/Header";
+import Link from "next/link";
+import SearchFormWrapper from "../../../components/pages/search/SearchFormWrapper";
+import { getCurrentLocale } from "@/locales/server";
+import { Metadata } from "next";
 
-export default function SearchPage({
-  params: { lang },
-}: {
-  params: { lang: string };
-}) {
-  const searchParams = useSearchParams();
-  const [results, setResults] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+export const metadata: Metadata = {
+  title: "Hospitalia - Search",
+  description:
+    "This is the Hopitalia Search Page, Here Search Doctor and Hospital name",
+};
 
-  const initialValues = {
-    searchKeyword: searchParams.get("keyword") || "",
-    city: searchParams.get("city") || "all",
-    type: searchParams.get("type") || "doctor",
-  };
+type SearchPageProps = {
+  params: Promise<{ lang: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+};
 
-  const handleSearch = async (data: FormValues) => {
-    setLoading(true);
-    try {
-      const response = await globalSearch({
-        lang,
-        searchKeyword: data.searchKeyword,
-        city: data.city,
-        type: data.type,
-      });
-      setResults(response?.data || []);
-    } catch (error) {
-      console.error("Search failed", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+const SearchPage = async ({ searchParams }: SearchPageProps) => {
+  const lang = await getCurrentLocale();
+  const sParams = await searchParams;
 
-  useEffect(() => {
-    if (initialValues.searchKeyword) {
-      handleSearch(initialValues as FormValues);
-    }
-  }, []);
+  const query = (sParams.query as string) || "";
+  const type = (sParams.type as string) || "doctor";
+  const city = (sParams.city as string) || "all";
+
+  let results;
+  if (query.trim() !== "") {
+    results = await globalSearch({ lang, searchKeyword: query });
+  } else if (type === "doctor") {
+    results = await getAllDoctor({ lang });
+  } else {
+    results = await getAllHospital({ lang });
+  }
+
+  const displayData = results?.payload?.content || [];
 
   return (
-    <div>
+    <div className="bg-background min-h-screen">
       <Header />
-      <div className="max-w-5xl mx-auto py-10">
-        {/* Sidebar Search Form */}
-        <aside className="w-full bg-popover px-6 py-3 rounded-sm">
-          <SearchForm
+      <div className="max-w-5xl mx-auto py-10 px-4">
+        <div className="w-full bg-popover px-6 py-3 rounded-sm">
+          <SearchFormWrapper
             lang={lang}
-            headingTitle="Get Appointment"
-            headingSubtitle="Nice to see you again!"
-            onSubmitProp={handleSearch}
-            initialValues={initialValues}
-            formWidth="w-full"
+            initialValues={{ searchKeyword: query, type: type as any, city }}
           />
-        </aside>
+        </div>
 
-        {/* Results Section */}
-        <main className="bg-popover p-18 mt-8 rounded-sm">
-          <h2 className="text-2xl font-bold mb-4">Search Results</h2>
+        <main className="p-8 mt-8 rounded-sm bg-popover min-h-100">
+          <div className="flex justify-between items-center mb-4">
+            <Typography as="h3" size="2xl" weight="bold" color="foreground">
+              {query
+                ? `Results for: ${query}`
+                : `${displayData.length} ${type}s Found`}
+            </Typography>
+          </div>
           <hr className="mb-6" />
 
-          {loading ? (
-            <p>Loading results...</p>
-          ) : results.length > 0 ? (
+          {displayData.length > 0 ? (
             <div className="grid gap-4">
-              {results.map((item, index) => (
-                <div key={index} className="p-4 border rounded shadow-sm">
-                  {item.name || "Result Item"} - {item.category}
-                </div>
-              ))}
+              {displayData.map((item: any, index: number) => {
+                const title = item.firstName
+                  ? `${item.firstName} ${item.lastName}`
+                  : item.hospitalName || "Unnamed Result";
+
+                const subtitle =
+                  item.professionalInfoResponse?.specialities?.[0]?.name ||
+                  item.category ||
+                  type;
+
+                return (
+                  <Link
+                    href={`/doctor/${item?.userId}`}
+                    key={item.userId || index}
+                    className="py-1 border-b hover:bg-accent/50 transition-colors"
+                  >
+                    <Typography size="xl" weight="medium" color="foreground">
+                      {title}
+                    </Typography>
+                    <div className="flex items-center mt-1">
+                      <Typography
+                        size="sm"
+                        color="muted_foreground"
+                        className="mr-1"
+                      >
+                        {subtitle},
+                      </Typography>
+                      {item.professionalInfoResponse?.designation && (
+                        <Typography size="sm" color="muted_foreground">
+                          {item.professionalInfoResponse.designation}
+                        </Typography>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           ) : (
-            <p className="text-muted-foreground">
-              No results found for your search.
-            </p>
+            <div className="text-muted-foreground text-center py-20">
+              <Typography size="lg" weight="semiBold" color="foreground">
+                No results found.
+              </Typography>
+              <Typography size="sm" color="foreground">
+                Try adjusting your filters or search keywords.
+              </Typography>
+            </div>
           )}
         </main>
       </div>
     </div>
   );
-}
+};
+export default SearchPage;
