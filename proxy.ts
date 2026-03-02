@@ -9,6 +9,7 @@ const I18nMiddleware = createI18nMiddleware({
 
 const PUBLIC_ROUTES = [
   "/",
+  "/search",
   "/login",
   "/register",
   "/forgot-password",
