@@ -7,6 +7,7 @@ import Link from "next/link";
 import SearchFormWrapper from "../../../components/pages/search/SearchFormWrapper";
 import { getCurrentLocale } from "@/locales/server";
 import { Metadata } from "next";
+import Pagination from "@/components/common/Pagination";
 
 export const metadata: Metadata = {
   title: "Hospitalia - Search",
@@ -97,6 +98,7 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
                   </Link>
                 );
               })}
+              <Pagination totalRows={displayData.length} itemsPerPage={10} />
             </div>
           ) : (
             <div className="text-muted-foreground text-center py-20">
