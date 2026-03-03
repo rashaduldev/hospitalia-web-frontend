@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Appointment } from "@/types/appointment.type";
 import { format } from "date-fns";
 import {
-  Pencil,
   Eye,
   Trash,
   CheckCircle2,
@@ -27,9 +26,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/Typography";
-
-// import { deleteAppointment } from "@/actions/appointment";
-import { toast } from "sonner";
 import { useI18n } from "@/locales/client";
 import {
   Dialog,
@@ -39,7 +35,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
-import { Badge } from "../ui/badge";
 import { DetailItem } from "./DetailItemHelper";
 
 type Props = {
@@ -191,7 +186,7 @@ export const AppointmentActionCell = ({ appointment }: Props) => {
                   <FileText className="w-3 h-3" /> Notes
                 </div>
                 <p className="text-sm text-chart-5 italic">
-                  "{appointment.notes}"
+                  &quot;{appointment.notes}&quot;
                 </p>
               </div>
             )}

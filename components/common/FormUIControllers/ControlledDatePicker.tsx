@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Typography } from "@/components/ui/Typography";
 
 export const ControlledDatePicker: FC<{
   name: string;

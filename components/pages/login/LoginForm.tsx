@@ -10,7 +10,7 @@ import { ControlledInput } from "@/components/common/FormUIControllers/Controlle
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { login } from "@/actions/auth.actions";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { DynamicHeading } from "@/components/common/DynamicHeading";
 import { Typography } from "@/components/ui/Typography";
 import { useI18n } from "@/locales/client";
@@ -18,7 +18,6 @@ import { Spinner } from "@/components/ui/spinner";
 
 const LoginForm = ({ isPatient }: { isPatient: boolean }) => {
   const t = useI18n();
-  const params = useParams();
   const [showPassword, setShowPassword] = useState(false);
   const {
     handleSubmit,
@@ -42,9 +41,9 @@ const LoginForm = ({ isPatient }: { isPatient: boolean }) => {
     password,
   }: LoginFormValues) => {
     const res = await login({
-        countryCode,
-        phoneNumber,
-        password,
+      countryCode,
+      phoneNumber,
+      password,
     });
 
     if (!res.success) {
@@ -59,87 +58,87 @@ const LoginForm = ({ isPatient }: { isPatient: boolean }) => {
   };
 
   return (
-      <form onSubmit={handleSubmit(onSubmit)}>
-        {/* Dynamic Title & Description */}
-        <DynamicHeading
-          title={t("login.title")}
-          description={t("login.description")}
-          titleProps={{ size: "2xl", weight: "semiBold", color: "foreground" }}
-          className="mb-6"
+    <form onSubmit={handleSubmit(onSubmit)}>
+      {/* Dynamic Title & Description */}
+      <DynamicHeading
+        title={t("login.title")}
+        description={t("login.description")}
+        titleProps={{ size: "2xl", weight: "semiBold", color: "foreground" }}
+        className="mb-6"
+      />
+
+      <div className="space-y-4">
+        {/* Country and Phone */}
+        <CountryAndPhoneInput
+          control={control}
+          countrycode="countryCode"
+          mobileNumber="phoneNumber"
+          label={t("login.phoneLabel")}
+          errors={errors}
         />
 
-        <div className="space-y-4">
-          {/* Country and Phone */}
-          <CountryAndPhoneInput
+        {/* Password */}
+        <div className="relative">
+          <ControlledInput
+            name="password"
+            label={t("login.passwordLabel")}
+            type={showPassword ? "text" : "password"}
             control={control}
-            countrycode="countryCode"
-            mobileNumber="phoneNumber"
-            label={t("login.phoneLabel")}
-            errors={errors}
+            placeholder="••••••••"
           />
-
-          {/* Password */}
-          <div className="relative">
-            <ControlledInput
-              name="password"
-              label={t("login.passwordLabel")}
-              type={showPassword ? "text" : "password"}
-              control={control}
-              placeholder="••••••••"
-            />
-            <div
-              onClick={() => setShowPassword((p) => !p)}
-              className="absolute cursor-pointer top-7 right-3"
-            >
-              {showPassword ? (
-                <EyeOff className="w-4 h-4 text-muted-foreground" />
-              ) : (
-                <Eye className="w-4 h-4 text-muted-foreground" />
-              )}
-            </div>
-          </div>
-
-          {/* Server Error message */}
-          {errors.root && (
-            <Typography size="xs" color="destructive" weight="semiBold">
-              {errors.root.message}
-            </Typography>
-          )}
-
-          {/* Submit Button */}
-          <div className="w-full text-left">
-            <Button className="w-full" type="submit" disabled={isSubmitting}>
-              {isSubmitting && <Spinner data-icon="inline-start" />}
-              {isSubmitting ? t("login.loginLoading") : t("login.loginBtn")}
-            </Button>
+          <div
+            onClick={() => setShowPassword((p) => !p)}
+            className="absolute cursor-pointer top-7 right-3"
+          >
+            {showPassword ? (
+              <EyeOff className="w-4 h-4 text-muted-foreground" />
+            ) : (
+              <Eye className="w-4 h-4 text-muted-foreground" />
+            )}
           </div>
         </div>
 
-        {/* Links */}
-        <div className="mt-8 space-y-4 flex flex-col gap-2">
-          <Link href={isPatient ? "/register?userType=patient" : "/register"}>
-            <Typography
-              size="sm"
-              weight="medium"
-              color="secondary"
-              className="hover:underline"
-            >
-              {t("login.noAccount")}
-            </Typography>
-          </Link>
+        {/* Server Error message */}
+        {errors.root && (
+          <Typography size="xs" color="destructive" weight="semiBold">
+            {errors.root.message}
+          </Typography>
+        )}
 
-          <Link href="/forgot-password">
-            <Typography
-              size="sm"
-              weight="medium"
-              color="primary"
-              className="hover:underline"
-            >
-              {t("login.forgotPassword")}
-            </Typography>
-          </Link>
+        {/* Submit Button */}
+        <div className="w-full text-left">
+          <Button className="w-full" type="submit" disabled={isSubmitting}>
+            {isSubmitting && <Spinner data-icon="inline-start" />}
+            {isSubmitting ? t("login.loginLoading") : t("login.loginBtn")}
+          </Button>
         </div>
-      </form>
+      </div>
+
+      {/* Links */}
+      <div className="mt-8 space-y-4 flex flex-col gap-2">
+        <Link href={isPatient ? "/register?userType=patient" : "/register"}>
+          <Typography
+            size="sm"
+            weight="medium"
+            color="secondary"
+            className="hover:underline"
+          >
+            {t("login.noAccount")}
+          </Typography>
+        </Link>
+
+        <Link href="/forgot-password">
+          <Typography
+            size="sm"
+            weight="medium"
+            color="primary"
+            className="hover:underline"
+          >
+            {t("login.forgotPassword")}
+          </Typography>
+        </Link>
+      </div>
+    </form>
   );
 };
 

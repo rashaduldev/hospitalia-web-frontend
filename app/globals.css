@@ -44,25 +44,25 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
-  --color-ghost-foreground: var(--ghost-foreground)
+  --color-ghost-foreground: var(--ghost-foreground);
 }
 
 :root {
-  --font-plus-jakarta-sans:font-plus-jakarta-sans;
-  --font-plus-jakarta-sans:font-inter;
+  --font-plus-jakarta-sans: font-plus-jakarta-sans;
+  --font-plus-jakarta-sans: font-inter;
   --radius: 0.625rem;
-  --background: #FFFFFF;
+  --background: #ffffff;
   --foreground: #020618;
-  --card: #FDFDFD;
+  --card: #fdfdfd;
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: #155DFC;
-  --primary-foreground: #0027C2;
-  --secondary: #61D397;
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: #FFFFFF;
-  --muted-foreground: #62748E;
+  --primary: #155dfc;
+  --primary-foreground: #0027c2;
+  --secondary: #61d397;
+  --secondary-foreground: #8effb0;
+  --muted: #ffffff;
+  --muted-foreground: #62748e;
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
@@ -86,20 +86,20 @@
 }
 
 .dark {
-  --font-plus-jakarta-sans:font-plus-jakarta-sans;
-  --font-plus-jakarta-sans:font-inter;
+  --font-plus-jakarta-sans: font-plus-jakarta-sans;
+  --font-plus-jakarta-sans: font-inter;
   --background: oklch(0.145 0 0);
   --foreground: #020618;
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: #0027C2;
+  --primary: #0027c2;
   --primary-foreground: oklch(0.205 0 0);
-  --secondary: #61D397;
-  --secondary-foreground: oklch(0.985 0 0);
+  --secondary: #61d397;
+  --secondary-foreground: #8effb0;
   --muted: oklch(0.269 0 0);
-  --muted-foreground: #62748E;
+  --muted-foreground: #62748e;
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
@@ -129,24 +129,30 @@
   body {
     font-family: var(--font-inter);
     @apply bg-background text-foreground;
-  } 
-  h1,h2,h3,h4,h5,h6{
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-plus-jakarta-sans);
-    @apply font-bold
+    @apply font-bold;
   }
-  .section-container{
-    @apply container mx-auto px-4 sm:px-6 md:px-12
+  .section-container {
+    @apply container mx-auto px-4 sm:px-6 md:px-12;
   }
-  h2{
-    @apply text-primary text-2xl sm:text-4xl leading-10
+  h2 {
+    @apply text-primary text-2xl sm:text-4xl leading-10;
   }
-  .h3{
-    @apply text-5xl md:text-[64px] font-extrabold leading-9 text-secondary mb-4
+  .h3 {
+    @apply text-5xl md:text-[64px] font-extrabold leading-9 text-secondary mb-4;
   }
-  .h4{
-    @apply text-3xl leading-9 text-foreground
+  .h4 {
+    @apply text-3xl leading-9 text-foreground;
   }
-  .p,p{
-    @apply text-muted-foreground text-sm sm:text-base
+  .p,
+  p {
+    @apply text-muted-foreground text-sm sm:text-base;
   }
 }

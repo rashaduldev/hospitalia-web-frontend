@@ -3,11 +3,7 @@
 import { useState } from "react";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
-import {
-  DownloadIcon,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { DownloadIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -67,6 +63,7 @@ export function DataTableWithExport<TData, TValue>({
   const [rowSelection, setRowSelection] = useState({});
   const [globalFilter, setGlobalFilter] = useState("");
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
     columns: filteredColumns,
@@ -79,10 +76,11 @@ export function DataTableWithExport<TData, TValue>({
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: (row, columnId, filterValue) => {      
-
-      const searchValue = filterValue.toLowerCase();      
-      const location = String((row.original as any)?.locationName ?? "").toLowerCase();
+    globalFilterFn: (row, filterValue) => {
+      const searchValue = filterValue.toLowerCase();
+      const location = String(
+        (row.original as any)?.locationName ?? "",
+      ).toLowerCase();
 
       const dateObj = (row.original as any)?.appointmentDate
         ? new Date((row.original as any).appointmentDate)
@@ -92,8 +90,7 @@ export function DataTableWithExport<TData, TValue>({
         : "";
 
       return (
-        location.includes(searchValue) ||
-        formattedDate.includes(searchValue)
+        location.includes(searchValue) || formattedDate.includes(searchValue)
       );
     },
     state: {

@@ -1,4 +1,3 @@
-import { Typography } from "@/components/ui/Typography";
 import { Loader2 } from "lucide-react";
 
 export default function GlobalLoading() {

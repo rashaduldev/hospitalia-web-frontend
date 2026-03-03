@@ -10,16 +10,15 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
-import { Typography } from "@/components/ui/Typography";
 
-type ControlledDateInputProps ={
+type ControlledDateInputProps = {
   name: string;
   label: string;
   control: Control<any>;
   placeholder?: string;
   className?: string;
   error?: string;
-}
+};
 
 export const ControlledDateInput: React.FC<ControlledDateInputProps> = ({
   name,
@@ -27,7 +26,6 @@ export const ControlledDateInput: React.FC<ControlledDateInputProps> = ({
   control,
   placeholder = "Select date",
   className = "",
-  error,
 }) => {
   const [open, setOpen] = useState(false);
 

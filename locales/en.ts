@@ -1,5 +1,3 @@
-import { title } from "process";
-
 export default {
   nav: {
     home: "Home",
@@ -192,5 +190,10 @@ export default {
     go_back: "Go Back",
     return_home: "Return Home",
     error_code: "Error Code",
+  },
+  schedule: {
+    title: "Select Consultation Schedule",
+    description: "Select the days you want to set availability for",
+    select_day: "Select the Day",
   },
 };
