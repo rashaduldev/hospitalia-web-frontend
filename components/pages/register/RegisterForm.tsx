@@ -18,7 +18,7 @@ import { register } from "@/actions/auth.actions";
 import { useI18n } from "@/locales/client";
 import { Typography } from "@/components/ui/Typography";
 import { Spinner } from "@/components/ui/spinner";
-import { RegisterRequestData } from "@/types/user.type";
+import { UserType } from "@/types/user.type";
 
 export default function RegistrationForm({
   isPatient,
@@ -73,8 +73,8 @@ export default function RegistrationForm({
   });
   const specialities = data?.content ?? [];
 
-  const onSubmit = async (data : RegisterFormValues) => {
-    const registerPayload: RegisterRequestData = {
+  const onSubmit = async (data: RegisterFormValues) => {
+    const registerPayload: UserType = {
       firstName: data.firstName,
       lastName: data.lastName,
       gender: data.gender,
@@ -87,10 +87,11 @@ export default function RegistrationForm({
     };
 
     if (!isPatient) {
-      const profInfo: any = {};      
+      const profInfo: any = {};
 
       if (data.designation) profInfo.designation = data.designation;
-      if (data.specialityId) profInfo.specialityId = [Number(data.specialityId)];
+      if (data.specialityId)
+        profInfo.specialityId = [Number(data.specialityId)];
       if (data.onmsRegistrationNumber)
         profInfo.onmsRegistrationNumber = data.onmsRegistrationNumber;
       if (data.professionalStatement)

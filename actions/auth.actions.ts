@@ -4,7 +4,7 @@ import { apiClient } from "@/lib/api";
 import {
   LoginRequestData,
   LoginResponseData,
-  RegisterRequestData,
+  UserType,
 } from "@/types/user.type";
 import { cookies } from "next/headers";
 
@@ -17,7 +17,7 @@ export const setAuthCookies = async (
 
   if (accessToken) {
     cookieStore.set("accessToken", accessToken, {
-      httpOnly: process.env.NODE_ENV === 'production',
+      httpOnly: process.env.NODE_ENV === "production",
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       path: "/",
@@ -27,7 +27,7 @@ export const setAuthCookies = async (
 
   if (refreshToken) {
     cookieStore.set("refreshToken", refreshToken, {
-      httpOnly: process.env.NODE_ENV === 'production',
+      httpOnly: process.env.NODE_ENV === "production",
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       path: "/",
@@ -44,7 +44,7 @@ export const deleteAuthCookies = async () => {
 };
 
 // Register
-export const register = async (body: RegisterRequestData, lang?: string) => {
+export const register = async (body: UserType, lang?: string) => {
   return apiClient({
     endpoint: "/api/auth/sign-up",
     method: "POST",

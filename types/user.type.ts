@@ -29,8 +29,7 @@ export interface Paginated<T> {
   total: number;
 }
 
-
-export type RegisterRequestData = {
+export type UserType = {
   firstName: string;
   lastName?: string;
   gender: string;
@@ -40,6 +39,7 @@ export type RegisterRequestData = {
   countryCode?: string;
   mobileNumber: string;
   password: string;
+  userId?: string;
 
   professionalInfoRequest?: {
     designation: string;
@@ -68,10 +68,9 @@ export type User = {
   userType: string;
 };
 
-
-export type LoginResponseData ={
+export type LoginResponseData = {
   accessToken?: string;
   refreshToken?: string;
   userId?: number;
   user?: User;
-}
+};

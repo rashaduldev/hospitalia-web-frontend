@@ -3,78 +3,144 @@ import Header from "@/components/pages/home/Header";
 import { getCurrentLocale } from "@/locales/server";
 import { Typography } from "@/components/ui/Typography";
 import { notFound } from "next/navigation";
+import doctorMale from "../../../../public/assets/doctor_male.jpg";
+import doctorFemale from "../../../../public/assets/doctor_female.jpg";
+import Image from "next/image";
+import { MapPin, UserPlus } from "lucide-react";
+import { getDoctorLocations } from "@/actions/doctor/location";
+import DoctorBooking from "@/components/pages/doctor-booking/DoctorBooking";
+import { Location } from "@/types/doctor.location.type";
+import { Speciality } from "@/types/speciality.type";
+import { UserType } from "@/types/user.type";
 
 type Props = {
   params: Promise<{ userId: string }>;
 };
 
 const DoctorBookingPage = async ({ params }: Props) => {
-  console.log("params", await params);
-
   const lang = await getCurrentLocale();
   const { userId } = await params;
   const doctorData = await getAllDoctor({ lang });
   const doctors = doctorData?.payload?.content || [];
-  console.log("doctors", doctors);
 
-  const doctor = doctors.find((doc: any) => doc.userId.toString() === userId);
+  const doctor = doctors.find(
+    (doc: UserType) => doc?.userId?.toString() === userId,
+  );
   console.log("doctor", doctor);
+
+  const doctorUserId = doctor.userId;
+  const doctorLocations = await getDoctorLocations({ lang, doctorUserId });
+  console.log("doctorLocation", doctorLocations);
 
   if (!doctor) {
     return notFound();
   }
+  const profileImage = doctor?.profileImage
+    ? doctor.profileImage
+    : doctor?.gender === "MALE"
+      ? doctorMale
+      : doctorFemale;
+
+  const locationOptions =
+    doctorLocations?.payload?.map((item: Location) => ({
+      label: item.locationName,
+      value: String(item.locationId),
+    })) || [];
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 max-w-6xl mx-auto p-8">
-        <div>
-          <Typography as="h1" size="3xl" weight="bold">
-            {doctor.firstName} {doctor.lastName}
-          </Typography>
-        </div>
-        <div></div>
-      </div>
-
-      <main className="max-w-4xl mx-auto py-12 px-4">
-        <div className="bg-popover p-8 rounded-lg shadow-sm border">
-          <div className="flex flex-col md:flex-row gap-8">
-            {/* Left Side: Basic Info */}
-            <div className="flex-1">
-              <Typography as="h1" size="3xl" weight="bold">
-                Dr. {doctor.firstName} {doctor.lastName}
-              </Typography>
-
-              <Typography color="primary" weight="medium" className="mt-1">
-                {doctor.professionalInfoResponse?.specialities?.[0]?.name ||
-                  "Specialist"}
-              </Typography>
-
-              <div className="mt-4 space-y-2">
-                <p className="text-sm text-muted-foreground">
-                  <span className="font-semibold">Designation:</span>{" "}
-                  {doctor.professionalInfoResponse?.designation}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  <span className="font-semibold">Reg No:</span>{" "}
-                  {doctor.professionalInfoResponse?.onmsregistrationNumber}
-                </p>
+      <div className="grid grid-cols-1 md:grid-cols-2 max-w-6xl mx-auto p-8 gap-4">
+        <div className="text-center border px-9 py-7 rounded-lg">
+          {/* doctor profile info */}
+          <div className="space-y-3 border-b pb-6">
+            <Image
+              className="rounded-full mx-auto"
+              src={profileImage}
+              alt="Doctor Profile Image"
+              height={148}
+              width={148}
+            />
+            <Typography as="h2" size="xl" weight="semiBold">
+              {doctor.firstName} {doctor.lastName}
+            </Typography>
+            <Typography as="h3" size="xs" color="muted_foreground">
+              {doctor.professionalInfoResponse?.designation}
+            </Typography>
+            <Typography as="h3" size="xs" color="muted_foreground">
+              {doctor.professionalInfoResponse?.specialities?.length &&
+                doctor.professionalInfoResponse.specialities
+                  .map((item: Speciality) => item.name)
+                  .join(", ")}
+            </Typography>
+          </div>
+          {/* Specialist  */}
+          <div className="text-center py-6 border-b">
+            <div className="flex items-center justify-center gap-2.5 mb-6">
+              <div className="p-2.5 bg-primary/10 rounded-lg">
+                <UserPlus size={24} className="text-primary h-6 w-6" />
               </div>
-
-              <div className="mt-6">
-                <Typography as="h4" weight="semiBold" size="lg">
-                  About
-                </Typography>
-                <p className="text-sm mt-2 leading-relaxed">
-                  {doctor.professionalInfoResponse?.professionalStatement ||
-                    "No statement available."}
-                </p>
-              </div>
+              <Typography size="xl" weight="semiBold">
+                Specialist in
+              </Typography>
+            </div>
+            <div className="space-y-1">
+              <Typography as="h3" size="xs" color="muted_foreground">
+                {doctor.professionalInfoResponse?.specialities?.length &&
+                  doctor.professionalInfoResponse.specialities
+                    .map((item: Speciality) => item.name)
+                    .join(", ")}
+              </Typography>
+              <Typography as="h3" size="xs" color="muted_foreground">
+                {doctor.professionalInfoResponse?.departments}
+              </Typography>
             </div>
           </div>
+          {/* Chambers */}
+          <div className="text-center py-6 space-y-6">
+            <div className="flex items-center justify-center gap-2.5">
+              <div className="p-2.5 bg-primary/10 rounded-lg">
+                <MapPin size={24} className="text-primary h-6 w-6" />
+              </div>
+              <Typography size="xl" weight="semiBold">
+                Chambers
+              </Typography>
+            </div>
+            <div className="space-y-1">
+              <Typography
+                as="h3"
+                size="xs"
+                color="muted_foreground"
+                className="wrap-break-word"
+              >
+                {doctorLocations &&
+                  doctorLocations.payload
+                    .map((item: Location) => item.locationName)
+                    .join(", ")}
+              </Typography>
+            </div>
+            <div className="flex items-center gap-4 justify-center">
+              <Typography className="py-2 rounded-sm bg-secondary text-muted text-sm px-2">
+                New Patient: 25,000 CFA
+              </Typography>
+              <Typography className="py-2 rounded-sm bg-primary text-muted text-sm px-2">
+                Returning Patient: 10,000 CFA
+              </Typography>
+            </div>
+            <Typography
+              color="foreground"
+              className="py-2 bg-primary/20 px-10 rounded-sm leading-4 text-[0.625rem]"
+            >
+              AVAILABLE ON REQUEST: Confirmation of availability may need
+              further processing of your request with the doctor.
+            </Typography>
+          </div>
         </div>
-      </main>
+        <div className="border rounded-lg p-6 text-center space-y-4">
+          <DoctorBooking locationOptions={locationOptions} />
+        </div>
+      </div>
     </div>
   );
 };
