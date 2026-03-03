@@ -15,7 +15,9 @@ export const metadata: Metadata = {
 const AvailabilityPage = async () => {
   const lang = await getCurrentLocale();
 
-  const res = await getCurrentUser({lang});
+  const res = await getCurrentUser({ lang });
+  console.log("res", res);
+
   const role = res?.userType;
 
   if (!res) {
@@ -26,7 +28,7 @@ const AvailabilityPage = async () => {
 
   // Role wise component render
   const roleComponents: Record<string, React.ReactNode> = {
-    DOCTOR: <Availability userId={res?.id} lang={lang} />,
+    DOCTOR: <Availability userId={res.id} lang={lang} />,
   };
 
   return (

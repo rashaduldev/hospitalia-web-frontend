@@ -1,12 +1,9 @@
 "use client";
 
-import { Controller } from "react-hook-form";
 import Image from "next/image";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PhoneInputProps } from "@/types/user.type";
 import { useQuery } from "@tanstack/react-query";
-import { Typography } from "../ui/Typography";
 import { ControlledSelect } from "./FormUIControllers/ControlledSelect";
 import { ControlledInput } from "./FormUIControllers/ControlledInput";
 
@@ -48,7 +45,6 @@ export function CountryAndPhoneInput<T extends Record<string, any>>({
   countrycode,
   mobileNumber,
   label = "Phone Number",
-  errors,
 }: PhoneInputProps<T>) {
   const { data: countries = [], isLoading } = useQuery({
     queryKey: ["countries"],
@@ -91,7 +87,7 @@ export function CountryAndPhoneInput<T extends Record<string, any>>({
         </div>
 
         {/* Phone Number */}
-       <ControlledInput
+        <ControlledInput
           name={mobileNumber}
           control={control}
           placeholder="Enter your number"

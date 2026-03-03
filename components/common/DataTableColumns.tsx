@@ -4,22 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Appointment } from "@/types/appointment.type";
 import { format } from "date-fns";
-import {
-  Pencil,
-  Eye,
-  Trash,
-  CheckCircle2,
-  MoreVertical,
-} from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+import { Pencil } from "lucide-react";
 import { Typography } from "@/components/ui/Typography";
 import { useI18n } from "@/locales/client";
 import { AppointmentActionCell } from "../cells/AppointmentActionCell";
@@ -62,7 +47,6 @@ export const appointmentColumns: ColumnDef<Appointment>[] = [
       const date = new Date(row.getValue("appointmentDate"));
       return (
         <div className="font-medium text-nowrap">
-          
           <Typography as="span" size="sm" color="foreground" weight="medium">
             {format(date, "dd MMM yyyy")}{" "}
           </Typography>
@@ -72,7 +56,7 @@ export const appointmentColumns: ColumnDef<Appointment>[] = [
   },
   {
     accessorKey: "location",
-     header: () => (
+    header: () => (
       <Typography size="sm" weight="medium" color="foreground">
         <TranslatedHeader labelKey="column.location" />
       </Typography>
@@ -87,7 +71,7 @@ export const appointmentColumns: ColumnDef<Appointment>[] = [
   },
   {
     accessorKey: "patientName",
-     header: () => (
+    header: () => (
       <Typography size="sm" weight="medium" color="foreground">
         <TranslatedHeader labelKey="column.patientName" />
       </Typography>
@@ -116,7 +100,8 @@ export const appointmentColumns: ColumnDef<Appointment>[] = [
 
       return (
         <Typography as="span" size="sm" color="foreground" weight="medium">
-          {formatTime(row.original.startTime)} - {formatTime(row.original.endTime)}
+          {formatTime(row.original.startTime)} -{" "}
+          {formatTime(row.original.endTime)}
         </Typography>
       );
     },

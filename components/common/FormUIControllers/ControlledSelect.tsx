@@ -20,7 +20,7 @@ type ControlledSelectProps ={
   name: string;
   label: string;
   control: Control<any>;
-  placeholder: string;
+  placeholder?: string;
   options: OptionType[];
   className?: string;
   renderOption?: (opt: OptionType) => React.ReactNode;
