@@ -2,16 +2,17 @@ import { getAllDoctor } from "@/actions/doctor/doctordata";
 import Header from "@/components/pages/home/Header";
 import { getCurrentLocale } from "@/locales/server";
 import { Typography } from "@/components/ui/Typography";
-import { notFound } from "next/navigation";
 import doctorMale from "../../../../public/assets/doctor_male.jpg";
 import doctorFemale from "../../../../public/assets/doctor_female.jpg";
 import Image from "next/image";
 import { MapPin, UserPlus } from "lucide-react";
 import { getDoctorLocations } from "@/actions/doctor/location";
-import DoctorBooking from "@/components/pages/doctor-booking/DoctorBooking";
 import { Location } from "@/types/doctor.location.type";
 import { Speciality } from "@/types/speciality.type";
 import { UserType } from "@/types/user.type";
+import DoctorBooking from "@/components/pages/doctor-booking/DoctorBooking";
+import { getDoctorAvailability } from "@/actions/doctor/availability";
+import { getDoctorUnAvailability } from "@/actions/doctor/unavailability";
 
 type Props = {
   params: Promise<{ userId: string }>;
@@ -26,15 +27,15 @@ const DoctorBookingPage = async ({ params }: Props) => {
   const doctor = doctors.find(
     (doc: UserType) => doc?.userId?.toString() === userId,
   );
-  console.log("doctor", doctor);
-
   const doctorUserId = doctor.userId;
   const doctorLocations = await getDoctorLocations({ lang, doctorUserId });
-  console.log("doctorLocation", doctorLocations);
 
-  if (!doctor) {
-    return notFound();
-  }
+  const doctorAvailable = await getDoctorAvailability({ lang, doctorUserId });
+  const doctorUnAvailable = await getDoctorUnAvailability({
+    lang,
+    doctorUserId,
+  });
+
   const profileImage = doctor?.profileImage
     ? doctor.profileImage
     : doctor?.gender === "MALE"
@@ -51,8 +52,8 @@ const DoctorBookingPage = async ({ params }: Props) => {
     <div className="min-h-screen bg-background">
       <Header />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 max-w-6xl mx-auto p-8 gap-4">
-        <div className="text-center border px-9 py-7 rounded-lg">
+      <div className="flex flex-col md:flex-row items-start max-w-6xl mx-auto p-8 gap-4">
+        <div className="text-center border px-9 py-7 rounded-lg flex-1">
           {/* doctor profile info */}
           <div className="space-y-3 border-b pb-6">
             <Image
@@ -120,7 +121,7 @@ const DoctorBookingPage = async ({ params }: Props) => {
                     .join(", ")}
               </Typography>
             </div>
-            <div className="flex items-center gap-4 justify-center">
+            <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 justify-center">
               <Typography className="py-2 rounded-sm bg-secondary text-muted text-sm px-2">
                 New Patient: 25,000 CFA
               </Typography>
@@ -137,8 +138,12 @@ const DoctorBookingPage = async ({ params }: Props) => {
             </Typography>
           </div>
         </div>
-        <div className="border rounded-lg p-6 text-center space-y-4">
-          <DoctorBooking locationOptions={locationOptions} />
+        <div className="border rounded-lg p-6 text-center space-y-4 flex-1">
+          <DoctorBooking
+            locationOptions={locationOptions}
+            doctorAvailable={doctorAvailable?.payload?.content}
+            doctorUnAvailable={doctorUnAvailable?.payload?.content}
+          />
         </div>
       </div>
     </div>
