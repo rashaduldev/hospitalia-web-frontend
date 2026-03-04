@@ -11,8 +11,9 @@ import { Location } from "@/types/doctor.location.type";
 import { Speciality } from "@/types/speciality.type";
 import { UserType } from "@/types/user.type";
 import DoctorBooking from "@/components/pages/doctor-booking/DoctorBooking";
-import { getDoctorAvailability } from "@/actions/doctor/availability";
 import { getDoctorUnAvailability } from "@/actions/doctor/unavailability";
+import { getCurrentUser } from "@/actions/user.actions";
+import { getAccessToken } from "@/actions/auth";
 
 type Props = {
   params: Promise<{ userId: string }>;
@@ -21,6 +22,9 @@ type Props = {
 const DoctorBookingPage = async ({ params }: Props) => {
   const lang = await getCurrentLocale();
   const { userId } = await params;
+  const currentUser = await getCurrentUser({ lang });
+  const token = await getAccessToken();
+
   const doctorData = await getAllDoctor({ lang });
   const doctors = doctorData?.payload?.content || [];
 
@@ -29,8 +33,6 @@ const DoctorBookingPage = async ({ params }: Props) => {
   );
   const doctorUserId = doctor.userId;
   const doctorLocations = await getDoctorLocations({ lang, doctorUserId });
-
-  const doctorAvailable = await getDoctorAvailability({ lang, doctorUserId });
   const doctorUnAvailable = await getDoctorUnAvailability({
     lang,
     doctorUserId,
@@ -45,7 +47,7 @@ const DoctorBookingPage = async ({ params }: Props) => {
   const locationOptions =
     doctorLocations?.payload?.map((item: Location) => ({
       label: item.locationName,
-      value: String(item.locationId),
+      value: item.locationId,
     })) || [];
 
   return (
@@ -140,8 +142,11 @@ const DoctorBookingPage = async ({ params }: Props) => {
         </div>
         <div className="border rounded-lg p-6 text-center space-y-4 flex-1">
           <DoctorBooking
+            lang={lang}
+            token={token}
+            currentUserId={currentUser?.id}
+            doctorUserId={doctorUserId}
             locationOptions={locationOptions}
-            doctorAvailable={doctorAvailable?.payload?.content}
             doctorUnAvailable={doctorUnAvailable?.payload?.content}
           />
         </div>

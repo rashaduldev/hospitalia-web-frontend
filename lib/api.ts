@@ -5,7 +5,7 @@ export type ApiClientOptions<Request = any> = {
   method?: "GET" | "POST" | "PUT" | "DELETE";
   body?: Request;
   params?: Record<string, string | number | boolean>;
-  headers?: Record<string, string>;
+  headers?: HeadersInit;
 };
 
 export async function apiClient<Response = any, Request = any>({
@@ -30,7 +30,7 @@ export async function apiClient<Response = any, Request = any>({
 
   const res = await fetch(url, {
     method,
-    cache:"no-store",
+    cache: "no-store",
     headers: {
       "Content-Type": "application/json",
       ...headers,
