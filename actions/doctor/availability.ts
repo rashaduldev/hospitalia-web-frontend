@@ -43,7 +43,7 @@ export const createDoctorAvailability = async ({
   const token = await getAccessToken();
 
   const res = await apiClient({
-    endpoint: `/api/doctors/availability/create`,
+    endpoint: "/api/doctors/availability/create",
     method: "POST",
     body: {
       doctorUserId,
