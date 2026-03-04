@@ -84,7 +84,7 @@ const LoginForm = ({ isPatient }: { isPatient: boolean }) => {
             control={control}
             placeholder="••••••••"
           />
-          <div
+          <button
             onClick={() => setShowPassword((p) => !p)}
             className="absolute cursor-pointer top-7 right-3"
           >
@@ -93,7 +93,7 @@ const LoginForm = ({ isPatient }: { isPatient: boolean }) => {
             ) : (
               <Eye className="w-4 h-4 text-muted-foreground" />
             )}
-          </div>
+          </button>
         </div>
 
         {/* Server Error message */}

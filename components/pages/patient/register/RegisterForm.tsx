@@ -144,7 +144,7 @@ export default function PatinetRegistrationForm() {
               control={control}
               placeholder="••••••••"
             />
-            <div
+            <button
               onClick={() => setShowPassword((p) => !p)}
               className="absolute cursor-pointer top-7 right-3"
             >
@@ -153,7 +153,7 @@ export default function PatinetRegistrationForm() {
               ) : (
                 <Eye className="w-4 h-4 text-muted-foreground" />
               )}
-            </div>
+            </button>
           </div>
 
           <div className="relative">
@@ -164,7 +164,7 @@ export default function PatinetRegistrationForm() {
               control={control}
               placeholder="••••••••"
             />
-            <div
+            <button
               onClick={() => setShowConfirmPassword((p) => !p)}
               className="absolute cursor-pointer top-7 right-3"
             >
@@ -173,7 +173,7 @@ export default function PatinetRegistrationForm() {
               ) : (
                 <Eye className="w-4 h-4 text-muted-foreground" />
               )}
-            </div>
+            </button>
           </div>
         </div>
       </div>
