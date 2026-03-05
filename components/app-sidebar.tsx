@@ -1,9 +1,8 @@
 "use client";
 
-import * as React from "react";
 import Link from "next/link";
 import DashboardLogo from "@/public/icons/dashLogo";
-import { CircleUserRound } from "lucide-react";
+import { CircleUserRound, LogOut } from "lucide-react";
 import { NavDocuments } from "./nav-documents";
 import { ROUTES, Role } from "@/lib/constants";
 import {
@@ -13,14 +12,16 @@ import {
   SidebarHeader,
   SidebarMenu,
 } from "./ui/sidebar";
+import { useMemo } from "react";
+import { handleLogout } from "@/actions/auth.actions";
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   userRole: Role;
+  lang: string;
 }
 
-export function AppSidebar({ userRole, ...props }: AppSidebarProps) {
-
-  const formattedRoleLinks = React.useMemo(() => {
+export function AppSidebar({ lang, userRole, ...props }: AppSidebarProps) {
+  const formattedRoleLinks = useMemo(() => {
     const links = ROUTES[userRole] || [];
     return links.map((item) => ({
       ...item,
@@ -28,7 +29,7 @@ export function AppSidebar({ userRole, ...props }: AppSidebarProps) {
     }));
   }, [userRole]);
 
-  const formattedCommonLinks = React.useMemo(() => {
+  const formattedCommonLinks = useMemo(() => {
     return ROUTES.COMMON.map((item) => ({
       ...item,
       icon: <item.icon className="size-4" />,
@@ -61,6 +62,13 @@ export function AppSidebar({ userRole, ...props }: AppSidebarProps) {
         <div className="mt-auto pb-4 border-t pt-4">
           <NavDocuments items={formattedCommonLinks} />
         </div>
+        <button
+          onClick={() => handleLogout({ lang })}
+          className="flex items-center gap-2 text-sm p-1 cursor-pointer hover:bg-muted-foreground/8 rounded-md"
+        >
+          <LogOut />
+          Sign Out
+        </button>
       </SidebarContent>
 
       <SidebarFooter />

@@ -12,7 +12,7 @@ export default async function UserLayout({
   children: React.ReactNode;
 }) {
   const lang = await getCurrentLocale();
-  const res = await getCurrentUser({lang});
+  const res = await getCurrentUser({ lang });
   if (!res) {
     return (
       <ErrorHandle
@@ -20,7 +20,7 @@ export default async function UserLayout({
         status={res?.statusCode}
       />
     );
-  }  
+  }
 
   return (
     <div>
@@ -33,7 +33,7 @@ export default async function UserLayout({
             } as React.CSSProperties
           }
         >
-          <AppSidebar variant="inset" userRole={res?.userType} />
+          <AppSidebar variant="inset" userRole={res?.userType} lang={lang} />
           <SidebarInset>
             <SiteHeader user={res} />
             <div className="flex flex-1 flex-col">
