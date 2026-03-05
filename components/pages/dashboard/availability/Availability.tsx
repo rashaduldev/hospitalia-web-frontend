@@ -1,9 +1,11 @@
 "use client";
 
 import { DynamicHeading } from "@/components/common/DynamicHeading";
-import { DefaultLocationManager } from "./DefaultLocationManager";
 import AvailabilityScheduleForm from "./AvailabilityScheduleForm";
 import { useI18n } from "@/locales/client";
+import ScheduleManager from "./ScheduleManager";
+import { DefaultLocationManager } from "./DefaultLocationManager";
+// import ConfirmSlotsTable from "./ConfirmSlotsTable";
 
 export default function Availability({
   userId,
@@ -34,6 +36,8 @@ export default function Availability({
           // existingAvailability={user?.data}
         />
       </div>
+      <ScheduleManager lang={lang} doctorUserId={userId} />
+      {/* <ConfirmSlotsTable lang={lang} doctorUserId={userId} /> */}
     </div>
   );
 }

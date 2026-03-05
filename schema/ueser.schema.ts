@@ -15,67 +15,54 @@ export const loginFormSchema = (t: (key: string) => string) =>
 export type LoginFormValues = z.infer<ReturnType<typeof loginFormSchema>>;
 
 // Doctor Registration schema
-export const RegisterFormSchema = (
-  t: (key: string) => string,
-  isPatient: boolean,
-) =>
-  z
-    .object({
-      firstName: z.string().min(2, t("register.errors.firstNameMin")),
-      lastName: z.string().optional(),
-      gender: z.enum(["MALE", "FEMALE"], {
-        message: t("register.errors.genderRequired"),
-      }),
-      email: z
-        .string()
-        .email(t("register.errors.invalidEmail"))
-        .optional()
-        .or(z.literal("")),
-      dateOfBirth: z.string().optional().or(z.literal("")),
+export const RegisterFormSchema = (t: (key: string) => string) =>
+  z.object({
+    firstName: z
+      .string()
+      .min(1, t("register.errors.firstNameRequired"))
+      .min(2, t("register.errors.firstNameMin"))
+      .max(50, t("register.errors.firstNameMax")),
+    lastName: z.string().max(50, t("register.errors.lastNameMax")).optional(),
+    gender: z.enum(["MALE", "FEMALE"], {
+      message: t("register.errors.genderRequired"),
+    }),
+    email: z
+      .string()
+      .min(1, t("register.errors.emailRequired"))
+      .max(50, t("register.errors.emailMax"))
+      .email(t("register.errors.invalidEmail")),
 
-      userType: z.enum(["DOCTOR", "HOSPITAL", "SECRETARY", "PATIENT"], {
-        message: t("register.errors.userTypeRequired"),
-      }),
+    dateOfBirth: z.string().optional().or(z.literal("")),
 
-      countryCode: z.string().nonempty(t("register.errors.countryRequired")),
-      mobileNumber: z
-        .string()
-        .nonempty(t("register.errors.phoneRequired"))
-        .min(4, t("register.errors.phoneShort"))
-        .max(15, t("register.errors.phoneLong")),
+    userType: z.enum(["DOCTOR", "HOSPITAL"], {
+      message: t("register.errors.userTypeRequired"),
+    }),
 
-      password: z.string().min(8, t("register.errors.passwordMin")),
-      confirmPassword: z
-        .string()
-        .min(1, t("register.errors.confirmPasswordRequired")),
+    countryCode: z.string().min(1, t("register.errors.countryRequired")),
+    mobileNumber: z
+      .string()
+      .min(1, t("register.errors.phoneRequired"))
+      .min(4, t("register.errors.phoneShort"))
+      .max(15, t("register.errors.phoneLong")),
 
-      // Professional fields
-      designation: z.string().optional(),
-      specialityId: z.string().optional(),
-      onmsRegistrationNumber: z.string().optional(),
-      professionalStatement: z.string().optional(),
-    })
-    .refine((data) => data.password === data.confirmPassword, {
-      message: t("register.errors.passwordNotMatch"),
-      path: ["confirmPassword"],
-    })
-    .superRefine((data, ctx) => {
-      if (!isPatient) {
-        if (!data.designation || data.designation.length < 2) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: t("register.errors.designationRequired"),
-            path: ["designation"],
-          });
-        }
-        if (!data.specialityId) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: t("register.errors.specialityRequired"),
-            path: ["specialityId"],
-          });
-        }
-      }
-    });
+    password: z
+      .string()
+      .min(8, t("register.errors.passwordMin"))
+      .max(32, t("register.errors.passwordMax"))
+      .regex(/[A-Z]/, t("register.errors.passwordUppercase"))
+      .regex(/[0-9]/, t("register.errors.passwordNumber"))
+      .regex(/[^a-zA-Z0-9]/, t("register.errors.passwordSpecial")),
+    confirmPassword: z
+      .string()
+      .min(1, t("register.errors.confirmPasswordRequired")),
+
+    // Professional fields
+    designation: z.string().min(2, t("register.errors.designation")),
+    specialityId: z.string().min(1, t("register.errors.speciality")),
+    onmsRegistrationNumber: z
+      .string()
+      .min(2, t("register.errors.onmsRegistrationNumber")),
+    professionalStatement: z.string().optional(),
+  });
 
 export type RegisterFormValues = z.infer<ReturnType<typeof RegisterFormSchema>>;

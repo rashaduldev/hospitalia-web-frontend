@@ -63,15 +63,27 @@ export function DefaultLocationManager({
 
   const mutation = useMutation({
     mutationFn: async (data: LocationFormValues) => {
-      const userId = Number(doctorUserId);
+      console.log("data", data);
+
       if (editingId) {
         return updateDoctorLocation({
+          lang,
           locationId: editingId,
-          doctorUserId: userId,
-          ...data,
+          city: data.city,
+          postalCode: data.postalCode,
+          doctorUserId,
+          locationName: data.locationName,
+          addressLine1: data.addressLine1,
         } as UpdateLocationParams);
       }
-      return createDoctorLocation({ lang, ...data, doctorUserId: userId });
+      return createDoctorLocation({
+        lang,
+        locationName: data.locationName,
+        addressLine1: data.addressLine1,
+        city: data.city,
+        postalCode: data.postalCode,
+        doctorUserId,
+      });
     },
     onSuccess: () => {
       setSuccessMessage(
@@ -212,7 +224,7 @@ export function DefaultLocationManager({
                         setValue("locationName", loc.locationName);
                         setValue("addressLine1", loc.addressLine1);
                         setValue("city", loc.city);
-                        setValue("postalCode", Number(loc.postalCode));
+                        setValue("postalCode", loc.postalCode);
                       }}
                     >
                       <Pencil size={16} />

@@ -16,7 +16,6 @@ const AvailabilityPage = async () => {
   const lang = await getCurrentLocale();
 
   const res = await getCurrentUser({ lang });
-  console.log("res", res);
 
   const role = res?.userType;
 

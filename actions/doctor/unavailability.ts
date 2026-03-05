@@ -2,20 +2,19 @@
 
 import { apiClient } from "@/lib/api";
 import { getAccessToken } from "../auth";
-import { revalidatePath } from "next/cache";
 
-// Get all weekly availability
-export const getDoctorAvailability = async ({
-  doctorUserId,
+// Get all weekly unavailability
+export const getDoctorUnAvailability = async ({
   lang,
+  doctorUserId,
 }: {
-  doctorUserId: number;
   lang: string;
+  doctorUserId: number;
 }) => {
   const token = await getAccessToken();
 
   const res = await apiClient({
-    endpoint: `/api/doctors/availability/all/doctorUserId/${doctorUserId}`,
+    endpoint: `/api/doctors/unavailability/all/doctorUserId/${doctorUserId}`,
     method: "GET",
     params: { lang },
     headers: { Authorization: `Bearer ${token}` },
@@ -23,49 +22,39 @@ export const getDoctorAvailability = async ({
   return res;
 };
 
-// Create/Set doctors weekly availability schedule
-export const createDoctorAvailability = async ({
+// doctors weekly unavailability schedule set
+export const createDoctorUnAvailability = async ({
   lang,
   doctorUserId,
-  weeklySchedule,
+  unavailableDate,
 }: {
   lang: string;
   doctorUserId: number;
-  weeklySchedule: {
-    availabilityStatus: string;
-    doctorLocationId: number;
-    startTime: string;
-    endTime: string;
-    timeSlot: string;
-    dayOfWeek: string;
-  }[];
+  unavailableDate: string;
 }) => {
   const token = await getAccessToken();
 
   const res = await apiClient({
-    endpoint: "/api/doctors/availability/create",
+    endpoint: "/api/doctors/unavailability/set",
     method: "POST",
     body: {
       doctorUserId,
-      weeklySchedule,
+      unavailableDate,
     },
     params: { lang },
     headers: { Authorization: `Bearer ${token}` },
   });
-
-  revalidatePath("/availability");
   return res;
 };
 
-// Delete an availability slot
+// Delete an unavailability slot
 export const deleteAvailabilitySlot = async ({ id }: { id: number }) => {
   const token = await getAccessToken();
 
   const res = await apiClient({
-    endpoint: `/api/doctors/availability/${id}`,
+    endpoint: `/api/doctors/unavailability/${id}`,
     method: "DELETE",
     headers: { Authorization: `Bearer ${token}` },
   });
-  revalidatePath("/doctor/availability");
   return res;
 };
