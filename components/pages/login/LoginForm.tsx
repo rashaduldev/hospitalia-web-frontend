@@ -69,6 +69,7 @@ const LoginForm = ({ isPatient }: { isPatient: boolean }) => {
         {/* Country and Phone */}
         <CountryAndPhoneInput
           control={control}
+          required="*"
           countrycode="countryCode"
           mobileNumber="phoneNumber"
           label={t("login.phoneLabel")}
@@ -79,6 +80,7 @@ const LoginForm = ({ isPatient }: { isPatient: boolean }) => {
         <div className="relative">
           <ControlledInput
             name="password"
+            required="*"
             label={t("login.passwordLabel")}
             type={showPassword ? "text" : "password"}
             control={control}

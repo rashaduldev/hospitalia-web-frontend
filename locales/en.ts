@@ -146,12 +146,16 @@ export default {
       invalidEmail: "Invalid email address",
       userTypeRequired: "User type is required",
       emailRequired: "Email is required",
+      emailMax: "First name must be at max 80 characters",
       countryRequired: "Country code is required",
       phoneRequired: "Mobile number is required",
       phoneShort: "Mobile number is too short",
       phoneLong: "Mobile number is too long",
-
       passwordMin: "Password must be at least 8 characters",
+      passwordMax: "Password must be at max 32 characters",
+      passwordUppercase: "Password must contain at least one uppercase letter",
+      passwordNumber: "Password must contain at least one number",
+      passwordSpecial: "Password must contain at least one special character",
       passwordStrength:
         "Password must contain uppercase, lowercase, number and special character",
 
