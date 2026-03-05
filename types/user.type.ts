@@ -17,11 +17,11 @@ export type Country = {
 };
 
 export type ApiResponse<T> = {
-  error: any;
   success: boolean;
   message: string;
   payload: T | null;
   status: number;
+  error?: string | null;
 };
 
 export interface Paginated<T> {

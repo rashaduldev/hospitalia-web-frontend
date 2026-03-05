@@ -24,8 +24,6 @@ export function useLocations({
     queryKey,
     queryFn: async () => {
       const res = await getDoctorLocations({ lang, doctorUserId });
-      console.log("API Response:", res);
-      console.log("Payload:", res.payload);
       if (res.error) throw new Error(res.error);
       return res.payload || [];
     },

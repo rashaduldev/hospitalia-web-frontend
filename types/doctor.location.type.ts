@@ -8,7 +8,7 @@ export type Location = {
   locationName: string;
   addressLine1: string;
   city: string;
-  postalCode: number;
+  postalCode: string;
 };
 export type UpdateLocationParams = {
   lang: string;
