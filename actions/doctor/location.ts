@@ -10,14 +10,14 @@ export const getDoctorLocations = async ({
   lang,
   doctorUserId,
 }: {
-  lang: string,
+  lang: string;
   doctorUserId: number;
 }) => {
   const token = await getAccessToken();
   return await apiClient({
     endpoint: `/api/doctors/location/get/${doctorUserId}`,
     method: "GET",
-    params: {lang},
+    params: { lang },
     headers: { Authorization: `Bearer ${token}` },
   });
 };
@@ -31,7 +31,7 @@ export const createDoctorLocation = async ({
   postalCode,
   doctorUserId,
 }: {
-  lang: string,
+  lang: string;
   locationName: string;
   addressLine1: string;
   city: string;
@@ -39,7 +39,7 @@ export const createDoctorLocation = async ({
   doctorUserId: number;
 }) => {
   const token = await getAccessToken();
-  const res= await apiClient({
+  const res = await apiClient({
     endpoint: "/api/doctors/location/create",
     method: "POST",
     body: {
@@ -49,7 +49,7 @@ export const createDoctorLocation = async ({
       postalCode,
       doctorUserId,
     },
-    params: {lang},
+    params: { lang },
     headers: { Authorization: `Bearer ${token}` },
   });
   return res;
@@ -60,16 +60,16 @@ export const deleteDoctorLocation = async ({
   lang,
   locationId,
   doctorUserId,
-}:{
-  lang: string,
-  locationId: number,
-  doctorUserId: number,
+}: {
+  lang: string;
+  locationId: number;
+  doctorUserId: number;
 }) => {
   const token = await getAccessToken();
   const res = await apiClient({
     endpoint: `/api/doctors/location/delete/locationId/${locationId}/doctorUserId/${doctorUserId}`,
     method: "DELETE",
-    params: {lang},
+    params: { lang },
     headers: { Authorization: `Bearer ${token}` },
   });
   revalidatePath("/availability");
@@ -86,7 +86,6 @@ export const updateDoctorLocation = async ({
   locationName,
   addressLine1,
 }: UpdateLocationParams) => {
-
   const token = await getAccessToken();
 
   const res = await apiClient({
@@ -100,7 +99,7 @@ export const updateDoctorLocation = async ({
       locationName,
       addressLine1,
     },
-    params: {lang},
+    params: { lang },
     headers: { Authorization: `Bearer ${token}` },
   });
 

@@ -5,7 +5,6 @@ import {
   updateDoctorLocation,
   deleteDoctorLocation,
 } from "@/actions/doctor/location";
-import { toast } from "sonner";
 
 export function useLocations({
   lang,
@@ -51,7 +50,6 @@ export function useLocations({
     },
     onError: (_, context) => {
       queryClient.setQueryData(queryKey, context?.previousLocations);
-      toast.error("Failed to save location");
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey }),
   });
@@ -72,7 +70,6 @@ export function useLocations({
     },
     onError: (err, _, context) => {
       queryClient.setQueryData(queryKey, context?.previousLocations);
-      toast.error("Could not delete location");
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey }),
   });
