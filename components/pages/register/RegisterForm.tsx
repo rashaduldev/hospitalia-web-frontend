@@ -112,6 +112,7 @@ export default function PatinetRegistrationForm() {
           {/* First Name */}
           <ControlledInput
             name="firstName"
+            required="*"
             label={t("register.firstName")}
             control={control}
             placeholder="Enter your first name"
@@ -128,6 +129,7 @@ export default function PatinetRegistrationForm() {
           {/* Gender */}
           <ControlledSelect
             name="gender"
+            required="*"
             label={t("register.gender")}
             control={control}
             placeholder="Choose your gender"
@@ -145,6 +147,7 @@ export default function PatinetRegistrationForm() {
           {/* User Type */}
           <ControlledSelect
             name="userType"
+            required="*"
             label={t("register.userType")}
             control={control}
             placeholder="Select user type"
@@ -163,6 +166,7 @@ export default function PatinetRegistrationForm() {
           {/* Email */}
           <ControlledInput
             name="email"
+            required="*"
             label={t("register.email")}
             type="email"
             control={control}
@@ -175,10 +179,12 @@ export default function PatinetRegistrationForm() {
             label={t("register.dateOfBirth")}
             control={control}
             error={errors.dateOfBirth?.message}
+            disableFuture
           />
 
           {/* CountryCode with phone */}
           <CountryAndPhoneInput
+            required="*"
             control={control}
             countrycode="countryCode"
             mobileNumber="mobileNumber"
@@ -190,6 +196,7 @@ export default function PatinetRegistrationForm() {
           <div className="relative">
             <ControlledInput
               name="password"
+              required="*"
               label={t("register.password")}
               type={showPassword ? "text" : "password"}
               control={control}
@@ -211,6 +218,7 @@ export default function PatinetRegistrationForm() {
           <div className="relative">
             <ControlledInput
               name="confirmPassword"
+              required="*"
               label={t("register.confirmPassword")}
               type={showConfirmPassword ? "text" : "password"}
               control={control}
@@ -240,6 +248,7 @@ export default function PatinetRegistrationForm() {
           {/* Designation */}
           <ControlledInput
             name="designation"
+            required="*"
             label={t("register.designation")}
             control={control}
             placeholder="Enter your title/designation"
@@ -248,6 +257,7 @@ export default function PatinetRegistrationForm() {
           {/* Speciality */}
           <ControlledSelect
             name="specialityId"
+            required="*"
             label="Speciality"
             control={control}
             placeholder="Select speciality"
@@ -259,6 +269,7 @@ export default function PatinetRegistrationForm() {
           {/* ONMS Registration Number */}
           <ControlledInput
             name="onmsRegistrationNumber"
+            required="*"
             label={t("register.onms")}
             control={control}
             placeholder="Enter your registration number"

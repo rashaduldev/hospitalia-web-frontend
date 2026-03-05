@@ -3,6 +3,7 @@ import { Control, FieldErrors, FieldValues, Path } from "react-hook-form";
 export type PhoneInputProps<T extends FieldValues> = {
   control: Control<T>;
   countrycode: Path<T>;
+  required?: string;
   mobileNumber: Path<T>;
   label?: string;
   errors?: FieldErrors<T>;

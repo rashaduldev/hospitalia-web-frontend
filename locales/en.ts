@@ -110,7 +110,7 @@ export default {
     lastName: "Last Name",
     gender: "Gender",
     userType: "User Type",
-    email: "Email (Optional)",
+    email: "Email",
     dateOfBirth: "Date of Birth",
     phone: "Phone",
 
@@ -119,7 +119,7 @@ export default {
 
     designation: "Title / Designation",
     speciality: "Speciality",
-    onms: "ONMS Registration Number (Optional)",
+    onms: "ONMS Registration Number",
     statement: "Professional Statement",
 
     submit: "Register as a Healthcare Provider",
@@ -138,11 +138,14 @@ export default {
     },
 
     errors: {
+      firstNameRequired: "First name is required",
       firstNameMin: "First name must be at least 2 characters",
+      firstNameMax: "First name must be at max 50 characters",
+      lastNameMax: "Last name must be at max 50 characters",
       genderRequired: "Gender is required",
       invalidEmail: "Invalid email address",
       userTypeRequired: "User type is required",
-
+      emailRequired: "Email is required",
       countryRequired: "Country code is required",
       phoneRequired: "Mobile number is required",
       phoneShort: "Mobile number is too short",

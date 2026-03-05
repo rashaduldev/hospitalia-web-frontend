@@ -17,16 +17,19 @@ export type LoginFormValues = z.infer<ReturnType<typeof loginFormSchema>>;
 // Doctor Registration schema
 export const RegisterFormSchema = (t: (key: string) => string) =>
   z.object({
-    firstName: z.string().min(2, t("register.errors.firstNameMin")),
-    lastName: z.string().optional(),
+    firstName: z
+      .string()
+      .min(1, t("register.errors.firstNameRequired"))
+      .min(2, t("register.errors.firstNameMin"))
+      .max(50, t("register.errors.firstNameMax")),
+    lastName: z.string().max(50, t("register.errors.lastNameMax")).optional(),
     gender: z.enum(["MALE", "FEMALE"], {
       message: t("register.errors.genderRequired"),
     }),
     email: z
       .string()
-      .email(t("register.errors.invalidEmail"))
-      .optional()
-      .or(z.literal("")),
+      .min(1, t("register.errors.emailRequired"))
+      .email(t("register.errors.invalidEmail")),
     dateOfBirth: z.string().optional().or(z.literal("")),
 
     userType: z.enum(["DOCTOR", "HOSPITAL"], {
@@ -47,7 +50,7 @@ export const RegisterFormSchema = (t: (key: string) => string) =>
 
     // Professional fields
     designation: z.string().min(2, t("register.errors.designation")),
-    specialityId: z.string().min(1, t("register.errors.designation")),
+    specialityId: z.string().min(1, t("register.errors.speciality")),
     onmsRegistrationNumber: z
       .string()
       .min(2, t("register.errors.onmsRegistrationNumber")),
