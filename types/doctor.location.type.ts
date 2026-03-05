@@ -25,13 +25,13 @@ export type DoctorLocation = {
   doctorUserId: number;
   locationName: string;
   addressLine1: string;
-  addressLine2?: string | null;
+  addressLine2?: string;
   city: string;
-  state?: string | null;
-  country?: string | null;
+  state?: string;
+  country?: string;
   postalCode: string;
-  latitude?: number | null;
-  longitude?: number | null;
+  latitude?: number;
+  longitude?: number;
 };
 
 export interface DoctorUnavailability {
