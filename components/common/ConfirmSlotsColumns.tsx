@@ -41,7 +41,7 @@ export const ConfirmSlotsColumns: ColumnDef<any>[] = [
     accessorKey: "timeSlot",
     header: "Time Slot",
     cell: ({ row }) => (
-      <span className="bg-slate-100 px-2 py-1 rounded text-xs font-semibold">
+      <span className="bg-background px-2 py-1 rounded text-xs font-semibold">
         {row.getValue("timeSlot")} Mins
       </span>
     ),
