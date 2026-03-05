@@ -1,21 +1,21 @@
 "use server";
 
 import { apiClient } from "@/lib/api";
-import { getAccessToken } from "./auth";
 
-export async function globalSearch({ lang, searchKeyword }: { lang: string,searchKeyword: string }) {
-  const token = await getAccessToken();
-
-  if (!token) return null;
-
+export async function globalSearch({
+  lang,
+  searchType,
+  searchKeyword,
+}: {
+  lang: string;
+  searchType: string;
+  searchKeyword: string;
+}) {
   const res = await apiClient({
-    endpoint: `api/global-search/search?searchKeyword=${searchKeyword}`,
+    endpoint: "/api/global-search/search",
     method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    params: { lang },
+    params: { lang, searchType, searchKeyword },
   });
 
-  return res.payload;
+  return res;
 }

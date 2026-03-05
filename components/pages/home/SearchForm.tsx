@@ -14,34 +14,25 @@ import {
   FieldTitle,
 } from "@/components/ui/field";
 import AppButton from "@/components/common/AppButton";
-import { ControlledSelect } from "@/components/common/FormUIControllers/ControlledSelect";
 import { ControlledInput } from "@/components/common/FormUIControllers/ControlledInput";
 import { DynamicHeading } from "@/components/common/DynamicHeading";
-import { Searchschema } from "@/schema/search.schema";
 import { SearchFormProps, SearchFormValues } from "@/types/search.type";
-
-const CITY_OPTIONS_DEFAULT = [
-  { label: "All", value: "all" },
-  { label: "Dhaka", value: "dhaka" },
-  { label: "Chittagong", value: "chittagong" },
-];
+import { searchSchema } from "@/schema/search.schema";
 
 export const SearchForm = ({
   formWidth = "w-[90%] sm:w-105 lg:w-121",
   headingTitle,
   headingSubtitle,
   className,
-  cityOptions = CITY_OPTIONS_DEFAULT,
   onSubmitAction,
   initialValues,
 }: SearchFormProps) => {
   const router = useRouter();
 
   const { control, handleSubmit, setValue, watch } = useForm<SearchFormValues>({
-    resolver: zodResolver(Searchschema),
+    resolver: zodResolver(searchSchema),
     defaultValues: {
       type: initialValues?.type || "doctor",
-      city: initialValues?.city || "all",
       searchKeyword: initialValues?.searchKeyword || "",
     },
   });
@@ -52,7 +43,12 @@ export const SearchForm = ({
     if (onSubmitAction) {
       onSubmitAction(data);
     } else {
-      router.push(`/search`);
+      // Build search params and navigate
+      const params = new URLSearchParams();
+      params.set("query", data.searchKeyword);
+      params.set("type", data.type.toUpperCase()); // Matching your API expectation
+
+      router.push(`/search?${params.toString()}`);
     }
   };
 
@@ -74,8 +70,8 @@ export const SearchForm = ({
       {/* Type Selection */}
       <RadioGroup
         value={currentType}
-        className="flex mb-4 gap-4"
-        onValueChange={(val) => setValue("type", val)}
+        className="flex mb-6 gap-4"
+        onValueChange={(val) => setValue("type", val as "doctor" | "hospital")}
       >
         {["doctor", "hospital"].map((item) => (
           <FieldLabel
@@ -93,32 +89,22 @@ export const SearchForm = ({
         ))}
       </RadioGroup>
 
-      <div className="mb-4 w-full">
-        <ControlledSelect
-          name="city"
-          required="*"
-          control={control}
-          options={cityOptions}
-          label="Select City"
-        />
-      </div>
-
       <div className="mb-4">
         <Label className="mb-2 block">Search</Label>
         <ControlledInput
           name="searchKeyword"
           control={control}
-          placeholder="Search Here"
+          placeholder={`Search ${currentType} by name...`}
         />
       </div>
 
-      <hr className="my-4" />
+      <hr className="my-6" />
 
       <div className="flex justify-center">
         <AppButton
           type="submit"
           variant="secondary"
-          className="w-full sm:w-fit text-muted"
+          className="w-full sm:w-fit text-muted px-10"
         >
           Search
         </AppButton>
@@ -126,3 +112,5 @@ export const SearchForm = ({
     </form>
   );
 };
+
+export default SearchForm;
