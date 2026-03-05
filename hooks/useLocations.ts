@@ -5,6 +5,10 @@ import {
   updateDoctorLocation,
   deleteDoctorLocation,
 } from "@/actions/doctor/location";
+import {
+  DoctorLocation,
+  DoctorUnavailability,
+} from "@/types/doctor.location.type";
 
 export function useLocations({
   lang,
@@ -20,6 +24,8 @@ export function useLocations({
     queryKey,
     queryFn: async () => {
       const res = await getDoctorLocations({ lang, doctorUserId });
+      console.log("API Response:", res);
+      console.log("Payload:", res.payload);
       if (res.error) throw new Error(res.error);
       return res.payload || [];
     },
@@ -28,14 +34,30 @@ export function useLocations({
 
   // 2. Create/Update Mutation with Optimistic Updates
   const saveMutation = useMutation({
-    mutationFn: (payload: any) =>
-      payload.locationId
-        ? updateDoctorLocation(payload)
-        : createDoctorLocation(payload),
+    mutationFn: (payload: DoctorLocation) => {
+      return payload.locationId
+        ? updateDoctorLocation({
+            lang,
+            locationId: payload.locationId,
+            city: payload.city,
+            postalCode: payload.postalCode,
+            doctorUserId: payload.doctorUserId,
+            locationName: payload.locationName,
+            addressLine1: payload.addressLine1,
+          })
+        : createDoctorLocation({
+            lang,
+            locationName: payload.locationName,
+            addressLine1: payload.addressLine1,
+            city: payload.city,
+            postalCode: payload.postalCode,
+            doctorUserId: payload.doctorUserId,
+          });
+    },
     onMutate: async (newLocation) => {
       await queryClient.cancelQueries({ queryKey });
       const previousLocations = queryClient.getQueryData(queryKey);
-      queryClient.setQueryData(queryKey, (old: any[] = []) => {
+      queryClient.setQueryData(queryKey, (old: DoctorUnavailability[] = []) => {
         if (newLocation.locationId) {
           return old.map((loc) =>
             loc.id === newLocation.locationId
@@ -49,7 +71,7 @@ export function useLocations({
       return { previousLocations };
     },
     onError: (_, context) => {
-      queryClient.setQueryData(queryKey, context?.previousLocations);
+      queryClient.setQueryData(queryKey, context?.locationId);
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey }),
   });
@@ -62,7 +84,7 @@ export function useLocations({
       await queryClient.cancelQueries({ queryKey });
       const previousLocations = queryClient.getQueryData(queryKey);
 
-      queryClient.setQueryData(queryKey, (old: any[] = []) =>
+      queryClient.setQueryData(queryKey, (old: DoctorUnavailability[] = []) =>
         old.filter((loc) => loc.id !== deletedId),
       );
 

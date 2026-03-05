@@ -15,7 +15,7 @@ export const getDoctorLocations = async ({
 }) => {
   const token = await getAccessToken();
   return await apiClient({
-    endpoint: `/api/doctors/location/get/${doctorUserId}`,
+    endpoint: `/api/doctors/location/all/${doctorUserId}`,
     method: "GET",
     params: { lang },
     headers: { Authorization: `Bearer ${token}` },
@@ -35,7 +35,7 @@ export const createDoctorLocation = async ({
   locationName: string;
   addressLine1: string;
   city: string;
-  postalCode: number;
+  postalCode: string;
   doctorUserId: number;
 }) => {
   const token = await getAccessToken();

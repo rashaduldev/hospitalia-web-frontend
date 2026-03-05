@@ -1,5 +1,6 @@
 import { createI18nMiddleware } from "next-international/middleware";
 import { NextRequest, NextResponse } from "next/server";
+import { getAccessToken } from "./actions/auth";
 
 const LOCALES = ["en", "fr"];
 const DEFAULT_LOCALE = "en";
@@ -18,30 +19,22 @@ const PUBLIC_ROUTES = [
   "/register",
   "/forgot-password",
 ];
+
 const publicPathnameRegex = new RegExp(
-  `^(/(${LOCALES.join("|")}))?(${PUBLIC_ROUTES.flatMap((p) =>
-    p === "/" ? ["", "/"] : p,
-  )
-    .join("|")
-    .replace(/\//g, "\\/")})\\/?$`,
+  `^(${PUBLIC_ROUTES.map((p) => p.replace(/\//g, "\\/")).join("|")})\\/?$`,
   "i",
 );
 
-export function proxy(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  const isPublicPage = publicPathnameRegex.test(pathname);
-  const i18nResponse = I18nMiddleware(req);
-  if (isPublicPage) {
-    return i18nResponse;
-  }
-  const token = req.cookies.get("accessToken")?.value;
+  const token = await getAccessToken();
 
-  if (!token) {
+  const isPublicPage = publicPathnameRegex.test(pathname);
+  if (!isPublicPage && !token) {
     return NextResponse.redirect(new URL("/", req.url));
   }
-
-  return i18nResponse;
+  return I18nMiddleware(req);
 }
 
 export const config = {
