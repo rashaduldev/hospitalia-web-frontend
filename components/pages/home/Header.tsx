@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useI18n } from "@/locales/client";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { siteConfig } from "@/config/siteConfig";
 import { cn } from "@/lib/utils";
 
@@ -12,25 +12,18 @@ export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const t = useI18n();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-
-  const currentUserType = searchParams.get("userType");
 
   const NAV_LINKS = [
     { href: "/", label: t("nav.home") },
     {
-      href: "/login?userType=patient",
+      href: "/patient/login",
       label: t("nav.patient"),
-      hidden:
-        (pathname.includes("/login") || pathname.includes("/register")) &&
-        currentUserType === "patient",
+      hidden: pathname === "/patient/login" || pathname === "/patient/register",
     },
     {
       href: "/login",
       label: t("nav.doctor"),
-      hidden:
-        (pathname.includes("/login") || pathname.includes("/register")) &&
-        !currentUserType,
+      hidden: pathname === "/login" || pathname === "/register",
     },
   ];
 
@@ -73,25 +66,25 @@ export default function Header() {
             className={cn(
               "h-0.5 w-6 bg-card-foreground transition-all duration-300",
               {
-                "rotate-45 translate-y-2":isOpen,
-              }
+                "rotate-45 translate-y-2": isOpen,
+              },
             )}
           />
           <span
             className={cn(
               "h-0.5 w-6 bg-card-foreground transition-all duration-300",
               {
-                "opacity-0":isOpen,
-                "opacity-100":!isOpen
-              }
+                "opacity-0": isOpen,
+                "opacity-100": !isOpen,
+              },
             )}
           />
           <span
             className={cn(
               "h-0.5 w-6 bg-card-foreground transition-all duration-300",
               {
-                "-rotate-45 -translate-y-2":isOpen
-              }
+                "-rotate-45 -translate-y-2": isOpen,
+              },
             )}
           />
         </button>
@@ -102,9 +95,9 @@ export default function Header() {
         className={cn(
           "md:hidden absolute left-0 top-full w-full bg-background transition-all duration-300 ease-in-out",
           {
-            "opacity-100 translate-y-0 visible":isOpen,
-            "opacity-0 -translate-y-5 invisible":!isOpen
-          }
+            "opacity-100 translate-y-0 visible": isOpen,
+            "opacity-0 -translate-y-5 invisible": !isOpen,
+          },
         )}
       >
         <nav className="px-6 py-6 border-t">

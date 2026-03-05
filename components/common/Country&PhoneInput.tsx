@@ -6,6 +6,7 @@ import { PhoneInputProps } from "@/types/user.type";
 import { useQuery } from "@tanstack/react-query";
 import { ControlledSelect } from "./FormUIControllers/ControlledSelect";
 import { ControlledInput } from "./FormUIControllers/ControlledInput";
+import { Typography } from "../ui/Typography";
 
 type Country = {
   name: string;
@@ -43,6 +44,7 @@ async function fetchCountries(): Promise<Country[]> {
 export function CountryAndPhoneInput<T extends Record<string, any>>({
   control,
   countrycode,
+  required,
   mobileNumber,
   label = "Phone Number",
 }: PhoneInputProps<T>) {
@@ -53,7 +55,12 @@ export function CountryAndPhoneInput<T extends Record<string, any>>({
 
   return (
     <div className="space-y-1">
-      <Label>{label}</Label>
+      <div className="flex items-center gap-1 m-0 p-0 mb-1">
+        {label && <Label>{label}</Label>}
+        <Typography size="sm" color="destructive">
+          {required && required}
+        </Typography>
+      </div>
 
       <div className="flex gap-0 relative">
         {/* Country Code */}

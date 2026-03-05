@@ -11,24 +11,26 @@ import {
 import { cn } from "@/lib/utils";
 import { Typography } from "@/components/ui/Typography";
 
-type OptionType ={
+type OptionType = {
   label: string;
   value: string;
   [key: string]: any;
-}
-type ControlledSelectProps ={
+};
+type ControlledSelectProps = {
   name: string;
   label: string;
+  required?: string;
   control: Control<any>;
   placeholder?: string;
   options: OptionType[];
   className?: string;
   renderOption?: (opt: OptionType) => React.ReactNode;
-}
+};
 
 export const ControlledSelect: FC<ControlledSelectProps> = ({
   name,
   label,
+  required,
   control,
   placeholder,
   renderOption,
@@ -41,14 +43,16 @@ export const ControlledSelect: FC<ControlledSelectProps> = ({
       control={control}
       render={({ field, fieldState }) => (
         <div className="space-y-1">
-          {label && <Label>{label}</Label>}
+          <div className="flex items-center gap-1 m-0 p-0 mb-1">
+            {label && <Label>{label}</Label>}
+            <Typography size="sm" color="destructive">
+              {required && required}
+            </Typography>
+          </div>
 
           <Select value={field.value || ""} onValueChange={field.onChange}>
             <SelectTrigger
-              className={cn(
-                "w-full border rounded-lg",
-                className,
-              )}
+              className={cn("w-full border rounded-lg", className)}
             >
               <SelectValue placeholder={placeholder} />
             </SelectTrigger>
