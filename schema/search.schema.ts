@@ -1,7 +1,7 @@
 import * as z from "zod";
 
 export const searchSchema = z.object({
-  type: z.enum(["doctor", "hospital"]),
+  searchType: z.enum(["DOCTOR", "HOSPITAL"]),
   searchKeyword: z.string().min(1, "Please enter a name or keyword"),
 });
 

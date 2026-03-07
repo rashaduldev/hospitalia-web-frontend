@@ -12,52 +12,66 @@ const SearchPage = async ({ searchParams }: { searchParams: Promise<any> }) => {
   const lang = await getCurrentLocale();
   const sParams = await searchParams;
 
-  const searchKeyword = sParams.query || "";
-  const searchType = sParams.type || "DOCTOR";
+  const searchKeyword = sParams.searchKeyword || "";
+  const searchType = sParams.searchType || "DOCTOR";
+
   const response = await globalSearch({
     lang,
     searchType,
     searchKeyword,
   });
 
-  const displayData = response?.payload?.content || [];
+  const SearchResultData = response?.payload?.content || [];
 
   return (
     <div className="bg-background min-h-screen">
       <Header />
       <div className="max-w-6xl mx-auto py-10 px-4">
-        <div className="bg-popover px-6 py-6 rounded-sm shadow-sm">
+        <div className="bg-popover px-6 py-6 rounded-sm">
           <SearchForm
+            headingTitle="Get Appointment"
+            headingSubtitle="Nice to see you again!"
             className="w-full!"
             initialValues={{ searchKeyword, searchType }}
           />
         </div>
 
         <main className="p-8 mt-8 rounded-sm bg-popover min-h-100">
-          <Typography as="h3" size="2xl" weight="bold" className="mb-6">
-            {searchKeyword ? `Results for: ${searchKeyword}` : "Search Results"}
+          <Typography
+            as="h3"
+            size="2xl"
+            weight="bold"
+            color="foreground"
+            className="mb-6 capitalize"
+          >
+            {!searchKeyword
+              ? "Search Results"
+              : `${SearchResultData.length} ${
+                  searchType.charAt(0).toUpperCase() +
+                  searchType.slice(1).toLowerCase()
+                }${SearchResultData.length !== 1 ? "s" : ""} Found`}
           </Typography>
 
-          {displayData.length > 0 ? (
+          {SearchResultData.length > 0 ? (
             <div className="grid gap-4">
-              {displayData.map((item: any) => (
+              {SearchResultData.map((item: any) => (
                 <Link
                   href={`/doctor/${item.userId}`}
                   key={item.userId}
-                  className="p-4 border-b hover:bg-accent/50 transition-all block"
+                  className="py-4 border-b hover:bg-accent/50 transition-all block"
                 >
-                  <Typography size="xl" weight="medium">
+                  <Typography size="xl" color="foreground" weight="medium">
                     {item.name}
                   </Typography>
-                  <div className="flex gap-2 text-muted-foreground">
-                    <span>{item.specialities?.join(", ")}</span>
-                    {item.designation && <span>• {item.designation}</span>}
-                  </div>
-                  {item.locationName && (
-                    <p className="text-xs text-muted-foreground mt-1 truncate">
-                      {item.locationName[0]}
-                    </p>
-                  )}
+                  <Typography size="xs" color="foreground" className="mt-1">
+                    {[
+                      item.specialities?.join(", "),
+                      item.designation,
+                      item.locationName?.join(", "),
+                    ]
+                      .filter(Boolean)
+                      .join(", ")}
+                  </Typography>
                 </Link>
               ))}
               <Pagination
@@ -67,7 +81,9 @@ const SearchPage = async ({ searchParams }: { searchParams: Promise<any> }) => {
             </div>
           ) : (
             <div className="text-center py-20">
-              <Typography size="lg">No results found.</Typography>
+              <Typography size="lg" color="foreground">
+                No results found.
+              </Typography>
             </div>
           )}
         </main>

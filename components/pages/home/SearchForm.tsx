@@ -1,10 +1,8 @@
-/* eslint-disable react-hooks/incompatible-library */
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import {
@@ -16,6 +14,7 @@ import {
 import AppButton from "@/components/common/AppButton";
 import { ControlledInput } from "@/components/common/FormUIControllers/ControlledInput";
 import { DynamicHeading } from "@/components/common/DynamicHeading";
+import { useTransition } from "react";
 import { SearchFormProps, SearchFormValues } from "@/types/search.type";
 import { searchSchema } from "@/schema/search.schema";
 
@@ -28,28 +27,35 @@ export const SearchForm = ({
   initialValues,
 }: SearchFormProps) => {
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
-  const { control, handleSubmit, setValue, watch } = useForm<SearchFormValues>({
+  const { control, handleSubmit, setValue } = useForm<SearchFormValues>({
     resolver: zodResolver(searchSchema),
     defaultValues: {
-      type: initialValues?.type || "doctor",
+      searchType: initialValues?.searchType || "DOCTOR",
       searchKeyword: initialValues?.searchKeyword || "",
     },
   });
 
-  const currentType = watch("type");
+  const currentType = useWatch({
+    control,
+    name: "searchType",
+  });
 
   const handleFormSubmit = async (data: SearchFormValues) => {
     if (onSubmitAction) {
       onSubmitAction(data);
-    } else {
-      // Build search params and navigate
-      const params = new URLSearchParams();
-      params.set("query", data.searchKeyword);
-      params.set("type", data.type.toUpperCase()); // Matching your API expectation
-
-      router.push(`/search?${params.toString()}`);
+      return;
     }
+
+    const params = new URLSearchParams();
+
+    params.set("searchKeyword", data.searchKeyword);
+    params.set("searchType", data.searchType);
+
+    startTransition(() => {
+      router.push(`/search?${params.toString()}`);
+    });
   };
 
   return (
@@ -67,34 +73,44 @@ export const SearchForm = ({
         />
       )}
 
-      {/* Type Selection */}
+      {/* Search Type */}
       <RadioGroup
         value={currentType}
         className="flex mb-6 gap-4"
-        onValueChange={(val) => setValue("type", val as "doctor" | "hospital")}
+        onValueChange={(val) =>
+          setValue("searchType", val as "DOCTOR" | "HOSPITAL")
+        }
       >
-        {["doctor", "hospital"].map((item) => (
+        {["DOCTOR", "HOSPITAL"].map((item) => (
           <FieldLabel
             key={item}
             htmlFor={`${item}-plan`}
-            className="cursor-pointer"
+            className={`cursor-pointer rounded-lg border px-4 transition ${currentType === item ? "bg-border/40" : ""}`}
           >
-            <Field orientation="horizontal">
+            <Field orientation="horizontal" className="flex items-center gap-3">
+              <RadioGroupItem
+                value={item}
+                id={`${item}-plan`}
+                className="border border-border flex items-center justify-center data-[state=checked]:border-foreground data-[state=checked]:bg-foreground data-[state=checked]:text-foreground data-[state=checked]:size-2.5 data-[state=checked]:ring-4 data-[state=checked]:top-1 data-[state=checked]:ring-muted"
+              />
               <FieldContent>
-                <FieldTitle className="capitalize">{item}</FieldTitle>
+                <FieldTitle className="capitalize">
+                  {item.toLowerCase()}
+                </FieldTitle>
               </FieldContent>
-              <RadioGroupItem value={item} id={`${item}-plan`} />
             </Field>
           </FieldLabel>
         ))}
       </RadioGroup>
 
+      {/* Search Input */}
       <div className="mb-4">
         <Label className="mb-2 block">Search</Label>
+
         <ControlledInput
           name="searchKeyword"
           control={control}
-          placeholder={`Search ${currentType} by name...`}
+          placeholder={`Search ${currentType.toLowerCase()} by name...`}
         />
       </div>
 
@@ -105,8 +121,9 @@ export const SearchForm = ({
           type="submit"
           variant="secondary"
           className="w-full sm:w-fit text-muted px-10"
+          disabled={isPending}
         >
-          Search
+          {isPending ? "Searching..." : "Search"}
         </AppButton>
       </div>
     </form>

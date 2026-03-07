@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 const I18nMiddleware = createI18nMiddleware({
   locales: ["en", "fr"],
   defaultLocale: "en",
-  urlMappingStrategy:"rewrite",
+  urlMappingStrategy: "rewrite",
 });
 
 const PUBLIC_ROUTES = [
@@ -12,6 +12,8 @@ const PUBLIC_ROUTES = [
   "/search",
   "/login",
   "/register",
+  "/doctor",
+  "/hospital",
   "/forgot-password",
 ];
 
@@ -26,7 +28,7 @@ export function proxy(req: NextRequest) {
   const i18nResponse = I18nMiddleware(req);
 
   const isPublic = PUBLIC_ROUTES.some((route) =>
-    route === "/" ? purePath === "/" : purePath.startsWith(route)
+    route === "/" ? purePath === "/" : purePath.startsWith(route),
   );
 
   if (isPublic) return i18nResponse;

@@ -1,5 +1,5 @@
 export type SearchFormValues = {
-  type: "doctor" | "hospital";
+  searchType: "DOCTOR" | "HOSPITAL";
   searchKeyword: string;
 };
 
