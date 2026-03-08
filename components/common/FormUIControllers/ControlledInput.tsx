@@ -5,19 +5,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Typography } from "@/components/ui/Typography";
 
-type ControlledInputProps ={
+type ControlledInputProps = {
   name: string;
+  required?: string;
   label?: string;
   control: Control<any>;
   type?: string;
   placeholder?: string;
   className?: string;
-}
+};
 
 export const ControlledInput: FC<ControlledInputProps> = ({
   name,
   label,
   control,
+  required,
   type = "text",
   placeholder,
   className,
@@ -28,8 +30,12 @@ export const ControlledInput: FC<ControlledInputProps> = ({
       control={control}
       render={({ field, fieldState }) => (
         <div className="space-y-1 relative w-full">
-          {label && <Label>{label}</Label>}
-
+          <div className="flex items-center gap-1 m-0 p-0 mb-1">
+            {label && <Label>{label}</Label>}
+            <Typography size="sm" color="destructive">
+              {required && required}
+            </Typography>
+          </div>
           <Input
             {...field}
             type={type}
@@ -37,6 +43,7 @@ export const ControlledInput: FC<ControlledInputProps> = ({
             value={field.value || ""}
             className={className}
           />
+
           {fieldState.error && (
             <Typography size="xs" color="destructive">
               {fieldState.error.message}

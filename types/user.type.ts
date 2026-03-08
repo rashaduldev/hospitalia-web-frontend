@@ -3,6 +3,7 @@ import { Control, FieldErrors, FieldValues, Path } from "react-hook-form";
 export type PhoneInputProps<T extends FieldValues> = {
   control: Control<T>;
   countrycode: Path<T>;
+  required?: string;
   mobileNumber: Path<T>;
   label?: string;
   errors?: FieldErrors<T>;
@@ -20,6 +21,7 @@ export type ApiResponse<T> = {
   message: string;
   payload: T | null;
   status: number;
+  error?: string | null;
 };
 
 export interface Paginated<T> {
@@ -28,7 +30,6 @@ export interface Paginated<T> {
   limit: number;
   total: number;
 }
-
 
 export type RegisterRequestData = {
   firstName: string;
@@ -44,9 +45,9 @@ export type RegisterRequestData = {
   professionalInfoRequest?: {
     designation: string;
     specialityId: number[];
-    departmentId: number[];
-    fileObjectId: number;
-    workPhoneNumber: string;
+    departmentId?: number[];
+    fileObjectId?: number;
+    workPhoneNumber?: string;
     onmsRegistrationNumber?: string;
     professionalStatement?: string;
   };
@@ -68,10 +69,9 @@ export type User = {
   userType: string;
 };
 
-
-export type LoginResponseData ={
+export type LoginResponseData = {
   accessToken?: string;
   refreshToken?: string;
   userId?: number;
   user?: User;
-}
+};

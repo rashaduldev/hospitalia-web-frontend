@@ -3,8 +3,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
-import ErrorHandle from "@/components/common/ErrorHandle";
 import { getCurrentLocale } from "@/locales/server";
+import { ErrorHandle } from "@/components/common/ErrorHandle";
 
 export default async function UserLayout({
   children,
@@ -33,7 +33,7 @@ export default async function UserLayout({
             } as React.CSSProperties
           }
         >
-          <AppSidebar variant="inset" userRole={res?.userType} />
+          <AppSidebar variant="inset" userRole={res?.userType} lang={lang} />
           <SidebarInset>
             <SiteHeader user={res} />
             <div className="flex flex-1 flex-col">
