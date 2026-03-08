@@ -1,0 +1,222 @@
+"use client";
+
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Pencil, Trash2, MoreVertical, AlertCircle } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import AppButton from "../common/AppButton";
+import { Typography } from "../ui/Typography";
+import { ControlledSelect } from "../common/FormUIControllers/ControlledSelect";
+
+const TIME_SLOTS = [
+  { label: "10 Minutes", value: "10" },
+  { label: "15 Minutes", value: "15" },
+  { label: "30 Minutes", value: "30" },
+  { label: "90 Minutes", value: "90" },
+  { label: "1 Hour", value: "60" },
+  { label: "2 Hours", value: "120" },
+];
+
+const DAYS_OF_WEEK = [
+  "MONDAY",
+  "TUESDAY",
+  "WEDNESDAY",
+  "THURSDAY",
+  "FRIDAY",
+  "SATURDAY",
+  "SUNDAY",
+].map((day) => ({ label: day, value: day }));
+
+export const SlotActionCell = ({ slot }: { slot: any }) => {
+  const queryClient = useQueryClient();
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const { control, handleSubmit, register } = useForm({
+    defaultValues: {
+      dayOfWeek: slot.dayOfWeek || "",
+      startTime: slot.startTime?.replace("Z", "") || "",
+      endTime: slot.endTime?.replace("Z", "") || "",
+      timeSlot: String(slot.timeSlot || "10"),
+      doctorLocationId: slot.doctorLocationId || "",
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async (payload: any) => {
+      console.log("Updating ID:", slot.id, "Payload:", payload);
+      // await updateDoctorAvailability(slot.id, payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["doctor-availability"] });
+      setIsEditOpen(false);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => {
+      console.log("Deleting:", id);
+      // await deleteDoctorAvailability(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["doctor-availability"] });
+      setIsDeleteOpen(false);
+    },
+  });
+
+  const onUpdateSubmit = (data: any) => {
+    updateMutation.mutate(data);
+  };
+
+  return (
+    <div className="flex items-center justify-end gap-2">
+      <AppButton
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8 text-primary hover:bg-background"
+        onClick={() => setIsEditOpen(true)}
+      >
+        <Pencil className="h-4 w-4" />
+      </AppButton>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <AppButton variant="ghost" className="h-8 w-8 p-0">
+            <MoreVertical className="h-4 w-4" />
+          </AppButton>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem
+            onClick={() => setIsDeleteOpen(true)}
+            className="text-destructive font-medium"
+          >
+            <Trash2 className="mr-2 h-4 w-4" /> Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {/* EDIT DIALOG */}
+      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+        <DialogContent className="sm:max-w-112.5">
+          <DialogHeader>
+            <DialogTitle>Edit Schedule</DialogTitle>
+          </DialogHeader>
+
+          <form
+            onSubmit={handleSubmit(onUpdateSubmit)}
+            className="grid gap-4 py-4"
+          >
+            {updateMutation.isError && (
+              <div className="flex items-center gap-2 rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+                <AlertCircle className="h-4 w-4 shrink-0" />
+                <Typography>
+                  {(updateMutation.error as any)?.message ||
+                    "Failed to update schedule. Please try again."}
+                </Typography>
+              </div>
+            )}
+
+            <ControlledSelect
+              name="dayOfWeek"
+              label="Day of Week"
+              control={control}
+              options={DAYS_OF_WEEK}
+              placeholder="Select Day"
+            />
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Start Time</Label>
+                <Input type="time" {...register("startTime")} />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">End Time</Label>
+                <Input type="time" {...register("endTime")} />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Location ID</Label>
+              <Input {...register("doctorLocationId")} />
+            </div>
+
+            <ControlledSelect
+              name="timeSlot"
+              label="Time Slot"
+              control={control}
+              options={TIME_SLOTS}
+            />
+
+            <DialogFooter>
+              <AppButton
+                variant="outline"
+                type="button"
+                onClick={() => setIsEditOpen(false)}
+              >
+                Cancel
+              </AppButton>
+              <AppButton type="submit" disabled={updateMutation.isPending}>
+                {updateMutation.isPending ? "Saving..." : "Save"}
+              </AppButton>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* DELETE DIALOG */}
+      <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
+        <DialogContent className="sm:max-w-100">
+          <div className="flex flex-col items-center text-center p-2">
+            <div className="h-14 w-14 rounded-full bg-background flex items-center justify-center mb-4">
+              <AlertCircle className="h-8 w-8 text-destructive" />
+            </div>
+            <DialogTitle className="text-xl">Are you sure?</DialogTitle>
+            <DialogDescription className="mt-2 text-base">
+              This will permanently delete the schedule for{" "}
+              <strong>{slot.dayOfWeek}</strong>.
+            </DialogDescription>
+            {deleteMutation.isError && (
+              <p className="mt-4 text-sm text-destructive font-medium">
+                {(deleteMutation.error as any)?.message ||
+                  "Error: Could not delete schedule."}
+              </p>
+            )}
+          </div>
+          <DialogFooter className="sm:justify-center gap-2 mt-4">
+            <AppButton
+              variant="outline"
+              className="flex-1"
+              onClick={() => setIsDeleteOpen(false)}
+            >
+              Cancel
+            </AppButton>
+            <AppButton
+              variant="destructive"
+              className="flex-1"
+              onClick={() => deleteMutation.mutate(slot.id)}
+              disabled={deleteMutation.isPending}
+            >
+              {deleteMutation.isPending ? "Deleting..." : "Delete Now"}
+            </AppButton>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};

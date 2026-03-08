@@ -204,4 +204,22 @@ export default {
       "Sélectionnez les jours pour lesquels vous souhaitez définir la disponibilité",
     select_day: "Sélectionner le jour",
   },
+  unavailability: {
+    title: "Exceptions de planning",
+    description:
+      "Sélectionnez la date pour laquelle vous souhaitez être indisponible",
+    date: "Date",
+    btn: "Définir comme indisponible",
+    success_message: "Date définie comme indisponible avec succès",
+    error_message: "Échec de la définition de l’indisponibilité",
+    already_set: "Cette date est déjà définie comme indisponible",
+    currently_unavailable:
+      "Le médecin est actuellement indisponible à cette date.",
+    currently_available: "Le médecin est disponible à cette date.",
+    set_available_btn: "Définir comme disponible",
+    remove_success: "La date est de nouveau disponible.",
+    undo_btn: "Rendre disponible",
+    confirmed_slots: "Créneaux confirmés",
+    confirmed_slots_des: "Tous vos créneaux horaires confirmés",
+  },
 };

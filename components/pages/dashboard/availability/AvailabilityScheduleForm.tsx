@@ -184,7 +184,7 @@ export default function AvailabilityScheduleForm({
                   className={cn(
                     "px-7 py-2 rounded-lg border text-sm font-medium transition-all cursor-pointer",
                     {
-                      "bg-secondary-foreground border-secondary-foreground text-foreground":
+                      "bg-secondary-foreground hover:bg-secondary-foreground border-secondary-foreground text-foreground":
                         isSelected,
                       "bg-ring/20 hover:bg-ring/20 border-muted text-foreground":
                         !isSelected,

@@ -15,7 +15,7 @@ export const getDoctorAvailability = async ({
   const token = await getAccessToken();
 
   const res = await apiClient({
-    endpoint: `/api/doctors/availability/all/doctorUserId/${doctorUserId}`,
+    endpoint: `/api/doctors/availability/all/doctorUserId/${doctorUserId}/status`,
     method: "GET",
     params: { lang },
     headers: { Authorization: `Bearer ${token}` },

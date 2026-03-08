@@ -1,9 +1,10 @@
 import { getCurrentUser } from "@/actions/user.actions";
-import ErrorHandle from "@/components/common/ErrorHandle";
+import { ErrorHandle } from "@/components/common/ErrorHandle";
 import Unauthorized from "@/components/common/Unauthorized";
 import Availability from "@/components/pages/dashboard/availability/Availability";
 import { getCurrentLocale } from "@/locales/server";
 import { Metadata } from "next";
+import { setStaticParamsLocale } from "next-international/server";
 import React from "react";
 
 export const metadata: Metadata = {
@@ -12,8 +13,14 @@ export const metadata: Metadata = {
     "This is the availability page for user. Here you can set your availability for appointments.",
 };
 
-const AvailabilityPage = async () => {
+const AvailabilityPage = async ({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) => {
+  const { locale } = await params;
   const lang = await getCurrentLocale();
+  setStaticParamsLocale(locale);
 
   const res = await getCurrentUser({ lang });
 

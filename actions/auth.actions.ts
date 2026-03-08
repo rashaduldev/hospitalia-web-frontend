@@ -7,6 +7,7 @@ import {
   RegisterRequestData,
 } from "@/types/user.type";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 // cookie save
 export const setAuthCookies = async (
@@ -17,7 +18,7 @@ export const setAuthCookies = async (
 
   if (accessToken) {
     cookieStore.set("accessToken", accessToken, {
-      httpOnly: process.env.NODE_ENV === 'production',
+      httpOnly: process.env.NODE_ENV === "production",
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       path: "/",
@@ -27,7 +28,7 @@ export const setAuthCookies = async (
 
   if (refreshToken) {
     cookieStore.set("refreshToken", refreshToken, {
-      httpOnly: process.env.NODE_ENV === 'production',
+      httpOnly: process.env.NODE_ENV === "production",
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       path: "/",
@@ -72,4 +73,15 @@ export async function login(body: LoginRequestData, lang?: string) {
   await setAuthCookies(accessToken, refreshToken);
 
   return res;
+}
+
+// Logout
+export async function handleLogout({ lang }: { lang: string }) {
+  await apiClient({
+    endpoint: "/api/auth/sign-out",
+    method: "GET",
+    params: { lang },
+  });
+  await deleteAuthCookies();
+  redirect("/");
 }

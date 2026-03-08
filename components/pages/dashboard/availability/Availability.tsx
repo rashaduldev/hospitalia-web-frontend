@@ -1,20 +1,18 @@
-"use client";
-
 import { DynamicHeading } from "@/components/common/DynamicHeading";
 import AvailabilityScheduleForm from "./AvailabilityScheduleForm";
-import { useI18n } from "@/locales/client";
 import ScheduleManager from "./ScheduleManager";
+import { getI18n } from "@/locales/server";
 import { DefaultLocationManager } from "./DefaultLocationManager";
 // import ConfirmSlotsTable from "./ConfirmSlotsTable";
 
-export default function Availability({
+const Availability = async ({
   userId,
   lang,
 }: {
   lang: string;
   userId: number;
-}) {
-  const t = useI18n();
+}) => {
+  const t = await getI18n();
 
   return (
     <div>
@@ -40,4 +38,6 @@ export default function Availability({
       {/* <ConfirmSlotsTable lang={lang} doctorUserId={userId} /> */}
     </div>
   );
-}
+};
+
+export default Availability;

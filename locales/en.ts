@@ -214,5 +214,12 @@ export default {
     success_message: "Date set as unavailable successfully",
     error_message: "Failed to set unavailability",
     already_set: "This day is already set as unavailable",
+    currently_unavailable: "Doctor is currently unavailable on this date.",
+    currently_available: "Doctor is available on this date.",
+    set_available_btn: "Set as Available",
+    remove_success: "Date is now available again.",
+    undo_btn: "Make Available",
+    confirmed_slots: "Confirmed Slots",
+    confirmed_slots_des: "All your confirmed time slots",
   },
 };
