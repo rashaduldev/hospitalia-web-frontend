@@ -7,11 +7,13 @@ import {
 import { DynamicHeading } from "@/components/common/DynamicHeading";
 import { getCurrentLocale, getI18n } from "@/locales/server";
 import { appointmentColumns } from "@/components/common/DataTableColumns";
+import { Suspense } from "react";
+import { TableSkeleton } from "@/components/common/TableSkeleton";
 
 export default async function DoctorDashboardPage() {
   const t = await getI18n();
   const lang = await getCurrentLocale();
-  const CurrentUser = await getCurrentUser({lang});
+  const CurrentUser = await getCurrentUser({ lang });
 
   const doctorId = CurrentUser?.id;
 
@@ -42,12 +44,14 @@ export default async function DoctorDashboardPage() {
           descriptionProps={{ size: "sm" }}
           className="mb-6"
         />
-        <DataTableWithExport
-          columns={appointmentColumns}
-          data={todayAppoinment?.payload?.content || []}
-          filename="todays-appointments"
-          emptyMessage={t("appoinment.no_today")}
-        />
+        <Suspense fallback={<TableSkeleton columnCount={5} />}>
+          <DataTableWithExport
+            columns={appointmentColumns}
+            data={todayAppoinment?.payload?.content || []}
+            filename="todays-appointments"
+            emptyMessage={t("appoinment.no_today")}
+          />
+        </Suspense>
       </div>
 
       <div>
@@ -57,13 +61,15 @@ export default async function DoctorDashboardPage() {
           titleProps={{ size: "2xl", weight: "bold", color: "secondary" }}
           className="mb-6"
         />
-        <DataTableWithExport
-          columns={appointmentColumns}
-          excludeColumns={["patientName"]}
-          data={upcomingAppoinment?.payload?.content || []}
-          filename="upcoming-appointments"
-          emptyMessage={t("appoinment.no_upcoming")}
-        />
+        <Suspense fallback={<TableSkeleton columnCount={5} />}>
+          <DataTableWithExport
+            columns={appointmentColumns}
+            excludeColumns={["patientName"]}
+            data={upcomingAppoinment?.payload?.content || []}
+            filename="upcoming-appointments"
+            emptyMessage={t("appoinment.no_upcoming")}
+          />
+        </Suspense>
       </div>
     </div>
   );

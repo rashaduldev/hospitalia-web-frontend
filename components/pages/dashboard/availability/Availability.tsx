@@ -3,7 +3,7 @@ import AvailabilityScheduleForm from "./AvailabilityScheduleForm";
 import ScheduleManager from "./ScheduleManager";
 import { getI18n } from "@/locales/server";
 import { DefaultLocationManager } from "./DefaultLocationManager";
-// import ConfirmSlotsTable from "./ConfirmSlotsTable";
+import ConfirmSlotsTable from "./ConfirmSlotsTable";
 
 const Availability = async ({
   userId,
@@ -35,7 +35,7 @@ const Availability = async ({
         />
       </div>
       <ScheduleManager lang={lang} doctorUserId={userId} />
-      {/* <ConfirmSlotsTable lang={lang} doctorUserId={userId} /> */}
+      <ConfirmSlotsTable lang={lang} doctorUserId={userId} />
     </div>
   );
 };

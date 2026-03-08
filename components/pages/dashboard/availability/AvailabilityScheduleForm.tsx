@@ -18,6 +18,7 @@ import {
   AvailabilityScheduleSchemaFormValues,
 } from "@/schema/doctor.availability.schedule.schema";
 import AppButton from "@/components/common/AppButton";
+import { Location } from "@/types/doctor.location.type";
 
 const DAYS = [
   "SUNDAY",
@@ -134,33 +135,29 @@ export default function AvailabilityScheduleForm({
       }
     });
 
-    try {
-      const res = await createDoctorAvailability({
-        lang,
-        doctorUserId: doctorUserId,
-        weeklySchedule: finalScheduleArray,
-      });
+    const res = await createDoctorAvailability({
+      lang,
+      doctorUserId: doctorUserId,
+      weeklySchedule: finalScheduleArray,
+    });
 
-      if (!res.success) {
-        setError("root", {
-          type: "manual",
-          message: res.message,
-        });
-        return;
-      }
-      setFormStatus({
-        type: "success",
+    if (!res.success) {
+      setError("root", {
+        type: "manual",
         message: res.message,
       });
-      setSelectedDays([]);
-      reset();
-    } catch (error: any) {
-      setFormStatus({ type: "error", message: error?.message });
+      return;
     }
+    setFormStatus({
+      type: "success",
+      message: res.message,
+    });
+    setSelectedDays([]);
+    reset();
   };
 
   return (
-    <div className="mt-12.5 border rounded-lg p-6">
+    <div className="mt-12.5 border rounded-lg p-3 md:p-6">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <DynamicHeading
           title={t("schedule.title")}
@@ -200,7 +197,7 @@ export default function AvailabilityScheduleForm({
 
         {/* --- Location 1 --- */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="grid grid-cols-2 col-span-2 gap-4">
+          <div className="grid grid-cols-1 col-span-1 md:grid-cols-2 md:col-span-2">
             <ControlledSelect
               name="loc1.availabilityStatus"
               label="Availability Status *"
@@ -260,7 +257,7 @@ export default function AvailabilityScheduleForm({
               control={control}
               placeholder="Select Another Location"
               options={
-                locations?.map((loc: any) => ({
+                locations?.map((loc: Location) => ({
                   label: loc.locationName,
                   value: String(loc.locationId),
                 })) || []

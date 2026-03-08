@@ -57,6 +57,57 @@ export const createDoctorAvailability = async ({
   return res;
 };
 
+// Update a doctor's availability slot
+export const updateDoctorAvailability = async ({
+  doctorUserId,
+  availabilityIds,
+  weeklySchedule:[{
+    dayOfWeek,
+    startTime,
+    endTime,
+    timeSlot,
+    doctorLocationId,
+    availabilityStatus,
+  }]
+}: {
+  doctorUserId: number;
+  availabilityIds: [number];
+  weeklySchedule: [{
+    dayOfWeek: string;
+    startTime: string;
+    endTime: string;
+    timeSlot: string;
+    doctorLocationId: number;
+    availabilityStatus: string;
+  }];
+}) => {
+  const token = await getAccessToken();
+
+  const payload = {
+    doctorUserId,
+    availabilityIds: [availabilityIds],
+    weeklySchedule: [
+      {
+      dayOfWeek,
+      startTime,
+      endTime,
+      timeSlot,
+      doctorLocationId,
+      availabilityStatus,
+      },
+    ],
+  };
+
+  const res = await apiClient({
+    endpoint: "/api/doctors/availability/update",
+    method: "PUT",
+    body: payload,
+    headers: { Authorization: `Bearer ${token}` },
+  });  
+  return res;
+};
+
+
 // Delete an availability slot
 export const deleteAvailabilitySlot = async ({ id }: { id: number }) => {
   const token = await getAccessToken();

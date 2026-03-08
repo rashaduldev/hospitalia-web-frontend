@@ -3,9 +3,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Pencil, Trash2, MoreVertical, AlertCircle } from "lucide-react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-import { Input } from "@/components/ui/input";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,10 +18,16 @@ import {
   DialogFooter,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
 import AppButton from "../common/AppButton";
-import { Typography } from "../ui/Typography";
 import { ControlledSelect } from "../common/FormUIControllers/ControlledSelect";
+import {
+  deleteAvailabilitySlot,
+  updateDoctorAvailability,
+} from "@/actions/doctor/availability";
+import { ErrorHandle } from "../common/ErrorHandle";
+import { DoctorAvailabilitySlot } from "@/types/doctor.slot";
+import { ControlledInput } from "../common/FormUIControllers/ControlledInput";
+import { getDoctorLocations } from "@/actions/doctor/location";
 
 const TIME_SLOTS = [
   { label: "10 Minutes", value: "10" },
@@ -44,43 +48,98 @@ const DAYS_OF_WEEK = [
   "SUNDAY",
 ].map((day) => ({ label: day, value: day }));
 
-export const SlotActionCell = ({ slot }: { slot: any }) => {
+type FormDataType = {
+  dayOfWeek:
+    | "MONDAY"
+    | "TUESDAY"
+    | "WEDNESDAY"
+    | "THURSDAY"
+    | "FRIDAY"
+    | "SATURDAY"
+    | "SUNDAY";
+  startTime: string;
+  endTime: string;
+  timeSlot: string;
+  doctorLocationId: string | number;
+};
+
+export const SlotActionCell = ({ slot }: { slot: DoctorAvailabilitySlot }) => {
   const queryClient = useQueryClient();
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const { control, handleSubmit, register } = useForm({
+  const [statusMessage, setStatusMessage] = useState("");
+
+  const { control, handleSubmit } = useForm<FormDataType>({
     defaultValues: {
-      dayOfWeek: slot.dayOfWeek || "",
-      startTime: slot.startTime?.replace("Z", "") || "",
-      endTime: slot.endTime?.replace("Z", "") || "",
-      timeSlot: String(slot.timeSlot || "10"),
-      doctorLocationId: slot.doctorLocationId || "",
+      dayOfWeek: slot.dayOfWeek,
+      startTime: slot.startTime?.replace("Z", ""),
+      endTime: slot.endTime?.replace("Z", ""),
+      timeSlot: String(slot.timeSlot),
+      doctorLocationId: String(slot.doctorLocationId),
     },
   });
 
+  const { data: locationResponse } = useQuery({
+    queryKey: ["doctor-locations", slot.doctorUserId],
+    queryFn: () =>
+      getDoctorLocations({
+        lang: "en",
+        doctorUserId: slot.doctorUserId,
+      }),
+  });
+  const locationOptions =
+    locationResponse?.payload?.map((loc: any) => ({
+      label: loc.locationName,
+      value: String(loc.locationId),
+    })) || [];
+
+  // Update mutation
   const updateMutation = useMutation({
-    mutationFn: async (payload: any) => {
-      console.log("Updating ID:", slot.id, "Payload:", payload);
-      // await updateDoctorAvailability(slot.id, payload);
+    mutationFn: async (formData: FormDataType) => {
+      await updateDoctorAvailability({
+        doctorUserId: slot.doctorUserId,
+        availabilityIds: [slot.id],
+        weeklySchedule: [
+          {
+            dayOfWeek: formData.dayOfWeek,
+            startTime: formData.startTime,
+            endTime: formData.endTime,
+            timeSlot: formData.timeSlot,
+            doctorLocationId: Number(formData.doctorLocationId),
+            availabilityStatus: "AVAILABLE",
+          },
+        ],
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["doctor-availability"] });
       setIsEditOpen(false);
     },
+    onError: (error) => {
+      setStatusMessage("Update failed: " + error?.message);
+    },
   });
 
+  // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      console.log("Deleting:", id);
-      // await deleteDoctorAvailability(id);
+      const res = await deleteAvailabilitySlot({ id });
+      return res;
     },
-    onSuccess: () => {
+    onSuccess: (res) => {
       queryClient.invalidateQueries({ queryKey: ["doctor-availability"] });
       setIsDeleteOpen(false);
+      setStatusMessage(res?.message || "Deleted successfully");
+    },
+    onError: (error) => {
+      setStatusMessage(
+        "Update failed: " +
+          (error instanceof Error ? error.message : JSON.stringify(error)),
+      );
     },
   });
 
-  const onUpdateSubmit = (data: any) => {
+  const onUpdateSubmit = (data: FormDataType) => {
     updateMutation.mutate(data);
   };
 
@@ -88,11 +147,12 @@ export const SlotActionCell = ({ slot }: { slot: any }) => {
     <div className="flex items-center justify-end gap-2">
       <AppButton
         variant="ghost"
-        size="icon"
-        className="h-8 w-8 text-primary hover:bg-background"
+        size="sm"
         onClick={() => setIsEditOpen(true)}
+        leftIcon={<Pencil className="h-4 w-4" />}
+        className="bg-transparent hover:bg-transparent active:bg-transparent shadow-none"
       >
-        <Pencil className="h-4 w-4" />
+        Edit
       </AppButton>
 
       <DropdownMenu>
@@ -115,21 +175,18 @@ export const SlotActionCell = ({ slot }: { slot: any }) => {
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
         <DialogContent className="sm:max-w-112.5">
           <DialogHeader>
-            <DialogTitle>Edit Schedule</DialogTitle>
+            <DialogTitle className="text-2xl">Update Schedule</DialogTitle>
           </DialogHeader>
 
-          <form
-            onSubmit={handleSubmit(onUpdateSubmit)}
-            className="grid gap-4 py-4"
-          >
+          {/* EDIT DIALOG */}
+          <form onSubmit={handleSubmit(onUpdateSubmit)} className="grid gap-4">
             {updateMutation.isError && (
-              <div className="flex items-center gap-2 rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-                <AlertCircle className="h-4 w-4 shrink-0" />
-                <Typography>
-                  {(updateMutation.error as any)?.message ||
-                    "Failed to update schedule. Please try again."}
-                </Typography>
-              </div>
+              <ErrorHandle
+                message={
+                  updateMutation.error?.message || "Failed to update schedule."
+                }
+                type="inline"
+              />
             )}
 
             <ControlledSelect
@@ -142,18 +199,31 @@ export const SlotActionCell = ({ slot }: { slot: any }) => {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Start Time</Label>
-                <Input type="time" {...register("startTime")} />
+                <ControlledInput
+                  label="Start Time"
+                  name="startTime"
+                  control={control}
+                  type="time"
+                />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium">End Time</Label>
-                <Input type="time" {...register("endTime")} />
+                <ControlledInput
+                  label="End Time"
+                  name="endTime"
+                  control={control}
+                  type="time"
+                />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Location ID</Label>
-              <Input {...register("doctorLocationId")} />
+              <ControlledSelect
+                name="doctorLocationId"
+                label="Location"
+                control={control}
+                options={locationOptions}
+                placeholder="Select location"
+              />
             </div>
 
             <ControlledSelect
@@ -191,11 +261,15 @@ export const SlotActionCell = ({ slot }: { slot: any }) => {
               This will permanently delete the schedule for{" "}
               <strong>{slot.dayOfWeek}</strong>.
             </DialogDescription>
+
             {deleteMutation.isError && (
-              <p className="mt-4 text-sm text-destructive font-medium">
-                {(deleteMutation.error as any)?.message ||
-                  "Error: Could not delete schedule."}
-              </p>
+              <ErrorHandle
+                message={
+                  deleteMutation.error?.message ||
+                  "Error: Could not delete schedule."
+                }
+                type="inline"
+              />
             )}
           </div>
           <DialogFooter className="sm:justify-center gap-2 mt-4">

@@ -184,7 +184,7 @@ export default {
     deafult_location: "Default Locations",
     hospital_name_search: "Enter Hospital/Clinic Name",
     hospital_location_search: "Enter Hospital/Clinic Address",
-    postal_code_placeh: "Ex: 1207",
+    postal_code_placeh: "Enter Your Postal Code (number)",
     city_placeh: "Enter your city",
     delete_title: "Are you sure?",
     delete_description:

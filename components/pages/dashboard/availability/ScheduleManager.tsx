@@ -105,14 +105,12 @@ export default function ScheduleManager({
           }}
           disabled={{ before: startOfDay(new Date()) }}
         />
-        <div>
-          <StatusMessage
-            isPending={isPending}
-            isCreateError={createMutation.isError}
-            isDeleteError={deleteMutation.isError}
-            isDateInDatabase={isDateInDatabase}
-          />
-        </div>
+        <StatusMessage
+          isPending={isPending}
+          createError={createMutation.isError}
+          deleteError={deleteMutation.isError}
+          isDateInDatabase={isDateInDatabase}
+        />
 
         <AppButton
           onClick={handleToggleAvailability}
