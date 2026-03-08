@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { format, parseISO } from "date-fns";
 import { CalendarCheck2, Loader2, Clock } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import { ControlledSelect } from "@/components/common/FormUIControllers/ControlledSelect";
 import { Calendar } from "@/components/ui/calendar";
 import { Typography } from "@/components/ui/Typography";
@@ -30,14 +29,15 @@ import { DoctorBookingType } from "@/types/doctor.booking";
 
 const DoctorBooking = ({
   locationOptions,
-  doctorUserId,
+  doctor,
   currentUserId,
   token,
   doctorUnAvailable = [],
   lang = "en",
+  onBookingSuccess,
 }: DoctorBookingType) => {
-  const router = useRouter();
   const [showLoginDialog, setShowLoginDialog] = useState(false);
+  const doctorUserId = doctor.userId;
 
   const {
     handleSubmit,
@@ -73,9 +73,10 @@ const DoctorBooking = ({
     useQuery({
       queryKey: ["doctorAvailability", doctorUserId, selectedLocation],
       queryFn: async () => {
+        console.log("selectedLocation", selectedLocation);
         const res = await getDoctorAvailabilityWithLocation({
           lang,
-          doctorUserId,
+          doctorUserId: doctorUserId as number,
           doctorLocationId: Number(selectedLocation),
         });
         return res.payload || [];
@@ -89,7 +90,7 @@ const DoctorBooking = ({
     queryFn: async () => {
       if (!selectedDate) return [];
       const res = await getAvailableSlots({
-        doctorUserId,
+        doctorUserId: doctorUserId as number,
         lang,
         requestedDate: format(parseISO(selectedDate), "yyyy-MM-dd"),
       });
@@ -158,8 +159,8 @@ const DoctorBooking = ({
       (s: any) => s.startTime === data.availableSlots,
     );
     const res = await bookAppointment({
-      doctorUserId,
-      patientUserId: currentUserId,
+      doctorUserId: doctorUserId as number,
+      patientUserId: currentUserId as number,
       appointmentDate: format(parseISO(data.availableDates), "yyyy-MM-dd"),
       dayOfWeek: format(parseISO(data.availableDates), "EEEE").toUpperCase(),
       fees: patientType === "new" ? 25000 : 10000,
@@ -175,7 +176,23 @@ const DoctorBooking = ({
     });
 
     if (res.success) {
-      router.push("/success");
+      const selectedLocationObj = locationOptions.find(
+        (l) => Number(l.value) == Number(selectedLocation),
+      );
+
+      if (onBookingSuccess) {
+        onBookingSuccess({
+          doctorName: `${doctor.firstName} ${doctor.lastName}`,
+          designation: `${doctor.professionalInfoResponse?.designation}`,
+          location: selectedLocationObj?.label || "",
+          date: format(parseISO(data.availableDates), "do MMMM"),
+          startTime: selectedSlotObj?.startTime,
+          endTime: selectedSlotObj?.endTime,
+          price: patientType === "new" ? "25,000 CFA" : "10,000 CFA",
+        });
+      }
+
+      return;
     }
     if (!res.success) {
       setError("root", {
@@ -187,7 +204,7 @@ const DoctorBooking = ({
   };
 
   return (
-    <div className="max-w-xl mx-auto p-4">
+    <div className="max-w-xl mx-auto p-4 border rounded-lg">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <Typography
           size="3xl"
@@ -293,7 +310,7 @@ const DoctorBooking = ({
           )}
 
           {errors.availableDates && (
-            <Typography size="xs" className="text-destructive">
+            <Typography size="xs" className="text-destructive text-center">
               {errors.availableDates.message}
             </Typography>
           )}

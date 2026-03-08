@@ -1,4 +1,5 @@
 import { Control, FieldErrors, FieldValues, Path } from "react-hook-form";
+import { Speciality } from "./speciality.type";
 
 export type PhoneInputProps<T extends FieldValues> = {
   control: Control<T>;
@@ -39,11 +40,13 @@ export type UserType = {
   countryCode?: string;
   mobileNumber: string;
   password: string;
-  userId?: string;
-
-  professionalInfoRequest?: {
+  userId?: number;
+  profileImage?: string;
+  professionalInfoResponse?: {
     designation: string;
+    specialities?: Speciality[];
     specialityId: number[];
+    departments?: string;
     departmentId: number[];
     fileObjectId: number;
     workPhoneNumber: string;
