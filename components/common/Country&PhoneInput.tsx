@@ -98,7 +98,7 @@ export function CountryAndPhoneInput<T extends Record<string, any>>({
           name={mobileNumber}
           control={control}
           placeholder="Enter your number"
-          className="flex-1 rounded-l-none"
+          className="flex-1 rounded-l-none -mt-1"
         />
       </div>
     </div>

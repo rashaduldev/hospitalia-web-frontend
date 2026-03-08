@@ -8,7 +8,6 @@ import { ROUTES, Role } from "@/lib/constants";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarHeader,
   SidebarMenu,
 } from "./ui/sidebar";
@@ -56,23 +55,21 @@ export function AppSidebar({ lang, userRole, ...props }: AppSidebarProps) {
         </SidebarMenu>
       </SidebarHeader>
 
-      <SidebarContent className="flex flex-col h-full mt-5">
+      <SidebarContent className="flex flex-col h-full">
         <div className="flex-1">
           <NavDocuments items={formattedRoleLinks} />
         </div>
-        <div className="mt-auto pb-4 border-t pt-4">
+        <div className="mt-auto">
           <NavDocuments items={formattedCommonLinks} />
         </div>
         <button
           onClick={() => handleLogout({ lang })}
-          className="flex items-center gap-2 text-sm p-1 cursor-pointer hover:bg-muted-foreground/8 rounded-md"
+          className="flex items-center gap-2 text-sm p-3 cursor-pointer hover:bg-muted-foreground/8 rounded-md mb-2"
         >
-          <LogOut />
+          <LogOut size={16} />
           Sign Out
         </button>
       </SidebarContent>
-
-      <SidebarFooter />
     </Sidebar>
   );
 }

@@ -36,7 +36,7 @@ export default async function UserLayout({
           <AppSidebar variant="inset" userRole={res?.userType} lang={lang} />
           <SidebarInset>
             <SiteHeader user={res} />
-            <div className="flex flex-1 flex-col">
+            <div className="flex flex-1 flex-col bg-[#F9FBFD]">
               <div className="@container/main flex flex-1 flex-col gap-2">
                 <div className="flex flex-col gap-4 md:gap-6 mx-3 md:mx-6">
                   {children}

@@ -3,7 +3,8 @@ import {
   ChartBarIcon,
   FolderIcon,
   Settings2Icon,
-  LogOut,
+  UserRoundPlus,
+  Clock,
 } from "lucide-react";
 
 export const ROUTES = {
@@ -16,12 +17,12 @@ export const ROUTES = {
     {
       name: "Set Availability",
       url: "/availability",
-      icon: ChartBarIcon,
+      icon: Clock,
     },
     {
       name: "Add Secretary",
       url: "/secretary",
-      icon: FolderIcon,
+      icon: UserRoundPlus,
     },
   ],
   HOSPITAL: [
