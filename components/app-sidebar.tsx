@@ -14,6 +14,7 @@ import {
 } from "./ui/sidebar";
 import { useMemo } from "react";
 import { handleLogout } from "@/actions/auth.actions";
+import { Typography } from "./ui/Typography";
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   userRole: Role;
@@ -46,11 +47,11 @@ export function AppSidebar({ lang, userRole, ...props }: AppSidebarProps) {
           >
             <DashboardLogo className="w-32 h-6" />
           </Link>
-          <div className="flex items-center justify-center gap-3 py-4 border-b">
-            <CircleUserRound className="size-5 text-muted-foreground" />
-            <span className="text-sm font-semibold capitalize">
-              {userRole?.toLowerCase() || "User"} Portal
-            </span>
+          <div className="flex items-center justify-center gap-3 pb-14 pt-9">
+            <CircleUserRound className="size-10 text-muted-foreground" />
+            <Typography color="black" size="2xl" weight="semiBold">
+              Welcome Back
+            </Typography>
           </div>
         </SidebarMenu>
       </SidebarHeader>
