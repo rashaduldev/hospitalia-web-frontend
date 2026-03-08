@@ -18,6 +18,7 @@ import {
   AvailabilityScheduleSchemaFormValues,
 } from "@/schema/doctor.availability.schedule.schema";
 import AppButton from "@/components/common/AppButton";
+import { Location } from "@/types/doctor.location.type";
 
 const DAYS = [
   "SUNDAY",
@@ -134,29 +135,25 @@ export default function AvailabilityScheduleForm({
       }
     });
 
-    try {
-      const res = await createDoctorAvailability({
-        lang,
-        doctorUserId: doctorUserId,
-        weeklySchedule: finalScheduleArray,
-      });
+    const res = await createDoctorAvailability({
+      lang,
+      doctorUserId: doctorUserId,
+      weeklySchedule: finalScheduleArray,
+    });
 
-      if (!res.success) {
-        setError("root", {
-          type: "manual",
-          message: res.message,
-        });
-        return;
-      }
-      setFormStatus({
-        type: "success",
+    if (!res.success) {
+      setError("root", {
+        type: "manual",
         message: res.message,
       });
-      setSelectedDays([]);
-      reset();
-    } catch (error: any) {
-      setFormStatus({ type: "error", message: error?.message });
+      return;
     }
+    setFormStatus({
+      type: "success",
+      message: res.message,
+    });
+    setSelectedDays([]);
+    reset();
   };
 
   return (
@@ -260,7 +257,7 @@ export default function AvailabilityScheduleForm({
               control={control}
               placeholder="Select Another Location"
               options={
-                locations?.map((loc: any) => ({
+                locations?.map((loc: Location) => ({
                   label: loc.locationName,
                   value: String(loc.locationId),
                 })) || []
