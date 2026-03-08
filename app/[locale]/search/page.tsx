@@ -5,6 +5,7 @@ import Link from "next/link";
 import { getCurrentLocale } from "@/locales/server";
 import Pagination from "@/components/common/Pagination";
 import SearchForm from "@/components/pages/home/SearchForm";
+import { SearchResultIteam } from "@/types/search.type";
 
 export const metadata = { title: "Hospitalia - Search" };
 
@@ -27,7 +28,7 @@ const SearchPage = async ({ searchParams }: { searchParams: Promise<any> }) => {
     <div className="bg-background min-h-screen">
       <Header />
       <div className="max-w-6xl mx-auto py-10 px-4">
-        <div className="bg-popover px-6 py-6 rounded-sm">
+        <div className="bg-popover rounded-sm">
           <SearchForm
             headingTitle="Get Appointment"
             headingSubtitle="Nice to see you again!"
@@ -36,7 +37,7 @@ const SearchPage = async ({ searchParams }: { searchParams: Promise<any> }) => {
           />
         </div>
 
-        <main className="p-8 mt-8 rounded-sm bg-popover min-h-100">
+        <main className="p-8 mt-8 rounded-sm bg-muted-foreground/5 min-h-100">
           <Typography
             as="h3"
             size="2xl"
@@ -54,7 +55,7 @@ const SearchPage = async ({ searchParams }: { searchParams: Promise<any> }) => {
 
           {SearchResultData.length > 0 ? (
             <div className="grid gap-4">
-              {SearchResultData.map((item: any) => (
+              {SearchResultData.map((item: SearchResultIteam) => (
                 <Link
                   href={`/doctor/${item.userId}`}
                   key={item.userId}

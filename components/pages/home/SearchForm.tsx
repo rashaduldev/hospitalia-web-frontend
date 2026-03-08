@@ -19,7 +19,7 @@ import { SearchFormProps, SearchFormValues } from "@/types/search.type";
 import { searchSchema } from "@/schema/search.schema";
 
 export const SearchForm = ({
-  formWidth = "w-[90%] sm:w-105 lg:w-121",
+  formWidth = "w-full sm:w-105 lg:w-121",
   headingTitle,
   headingSubtitle,
   className,
@@ -61,7 +61,7 @@ export const SearchForm = ({
   return (
     <form
       onSubmit={handleSubmit(handleFormSubmit)}
-      className={`rounded-[10px] p-4 sm:p-6 ${formWidth} ${className || ""}`}
+      className={`rounded-[10px] p-4 sm:p-6 bg-muted-foreground/5 ${formWidth} ${className || ""}`}
     >
       {headingTitle && (
         <DynamicHeading
