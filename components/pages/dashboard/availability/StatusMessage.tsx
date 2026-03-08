@@ -1,31 +1,34 @@
 import { ErrorHandle } from "@/components/common/ErrorHandle";
-import { useI18n } from "@/locales/client";
 
 type StatusMessageProps = {
   isPending: boolean;
-  isCreateError: boolean;
-  isDeleteError: boolean;
+  createError: any;
+  deleteError: any;
   isDateInDatabase: boolean;
 };
 
 export const StatusMessage = ({
   isPending,
-  isCreateError,
-  isDeleteError,
+  createError,
+  deleteError,
   isDateInDatabase,
 }: StatusMessageProps) => {
-  const t = useI18n();
-
   if (isPending) return null;
 
   let message: string | null = null;
 
-  if (isCreateError || isDeleteError) {
-    message = t("unavailability.error_message") || "Something went wrong.";
-  } else if (isDateInDatabase) {
+  if (createError) {
     message =
-      t("unavailability.already_set") ||
-      "This day is already set as unavailable";
+      createError?.message ||
+      createError?.response?.data?.message ||
+      "Something went wrong while creating.";
+  } else if (deleteError) {
+    message =
+      deleteError?.message ||
+      deleteError?.response?.data?.message ||
+      "Something went wrong while deleting.";
+  } else if (isDateInDatabase) {
+    message = "This day is already set as unavailable";
   }
 
   if (!message) return null;

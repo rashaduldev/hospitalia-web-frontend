@@ -24,7 +24,11 @@ import { Label } from "@/components/ui/label";
 import AppButton from "../common/AppButton";
 import { Typography } from "../ui/Typography";
 import { ControlledSelect } from "../common/FormUIControllers/ControlledSelect";
-import { deleteAvailabilitySlot } from "@/actions/doctor/availability";
+import {
+  deleteAvailabilitySlot,
+  updateDoctorAvailability,
+} from "@/actions/doctor/availability";
+import { ErrorHandle } from "../common/ErrorHandle";
 
 const TIME_SLOTS = [
   { label: "10 Minutes", value: "10" },
@@ -70,18 +74,29 @@ export const SlotActionCell = ({ slot }: { slot: any }) => {
 
   // Update mutation
   const updateMutation = useMutation({
-    mutationFn: async (payload: any) => {
-      console.log("Updating ID:", slot.id, "Payload:", payload);
-      // await updateDoctorAvailability(slot.id, payload);
+    mutationFn: async (formData: FormDataType) => {
+      await updateDoctorAvailability({
+        doctorUserId: slot.doctorUserId,
+        availabilityIds: [slot.id],
+        weeklySchedule: [
+          {
+            dayOfWeek: formData.dayOfWeek,
+            startTime: formData.startTime,
+            endTime: formData.endTime,
+            timeSlot: formData.timeSlot,
+            doctorLocationId: Number(formData.doctorLocationId),
+            availabilityStatus: "AVAILABLE",
+          },
+        ],
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["doctor-availability"] });
       setIsEditOpen(false);
-      setStatusMessage("Schedule updated successfully ");
     },
     onError: (error: any) => {
       setStatusMessage(
-        "Update failed : " + (error?.message || "Unknown error"),
+        "Update failed: " + (error?.response?.data?.message || error?.message),
       );
     },
   });
@@ -89,16 +104,17 @@ export const SlotActionCell = ({ slot }: { slot: any }) => {
   // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      return await deleteAvailabilitySlot({ id });
+      const res = await deleteAvailabilitySlot({ id });
+      return res;
     },
-    onSuccess: () => {
+    onSuccess: (res: any) => {
       queryClient.invalidateQueries({ queryKey: ["doctor-availability"] });
       setIsDeleteOpen(false);
-      setStatusMessage("Deleted successfully ");
+      setStatusMessage(res.message || "Deleted successfully");
     },
     onError: (error: any) => {
       setStatusMessage(
-        "Delete failed : " + (error?.message || "Unknown error"),
+        error?.response?.data?.message || error?.message || "Unknown error",
       );
     },
   });
@@ -111,11 +127,12 @@ export const SlotActionCell = ({ slot }: { slot: any }) => {
     <div className="flex items-center justify-end gap-2">
       <AppButton
         variant="ghost"
-        size="icon"
-        className="h-8 w-8 text-primary hover:bg-background"
+        size="sm"
         onClick={() => setIsEditOpen(true)}
+        leftIcon={<Pencil className="h-4 w-4" />}
+        className="bg-transparent hover:bg-transparent active:bg-transparent shadow-none"
       >
-        <Pencil className="h-4 w-4" />
+        Edit
       </AppButton>
 
       <DropdownMenu>
@@ -141,18 +158,21 @@ export const SlotActionCell = ({ slot }: { slot: any }) => {
             <DialogTitle>Edit Schedule</DialogTitle>
           </DialogHeader>
 
+          {/* EDIT DIALOG */}
           <form
             onSubmit={handleSubmit(onUpdateSubmit)}
             className="grid gap-4 py-4"
           >
             {updateMutation.isError && (
-              <div className="flex items-center gap-2 rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-                <AlertCircle className="h-4 w-4 shrink-0" />
-                <Typography>
-                  {(updateMutation.error as any)?.message ||
-                    "Failed to update schedule. Please try again."}
-                </Typography>
-              </div>
+              <ErrorHandle
+                message={
+                  (updateMutation.error as any)?.response?.data?.message ||
+                  (updateMutation.error as any)?.message ||
+                  "Failed to update schedule."
+                }
+                status={(updateMutation.error as any)?.response?.status}
+                type="inline"
+              />
             )}
 
             <ControlledSelect
@@ -214,11 +234,17 @@ export const SlotActionCell = ({ slot }: { slot: any }) => {
               This will permanently delete the schedule for{" "}
               <strong>{slot.dayOfWeek}</strong>.
             </DialogDescription>
+
             {deleteMutation.isError && (
-              <p className="mt-4 text-sm text-destructive font-medium">
-                {(deleteMutation.error as any)?.message ||
-                  "Error: Could not delete schedule."}
-              </p>
+              <ErrorHandle
+                message={
+                  (deleteMutation.error as any)?.response?.data?.message ||
+                  (deleteMutation.error as any)?.message ||
+                  "Error: Could not delete schedule."
+                }
+                status={(deleteMutation.error as any)?.response?.status}
+                type="inline"
+              />
             )}
           </div>
           <DialogFooter className="sm:justify-center gap-2 mt-4">
