@@ -1,9 +1,8 @@
+import { ErrorHandle } from "@/components/common/ErrorHandle";
 import { useI18n } from "@/locales/client";
 
 type StatusMessageProps = {
   isPending: boolean;
-  isCreateSuccess: boolean;
-  isDeleteSuccess: boolean;
   isCreateError: boolean;
   isDeleteError: boolean;
   isDateInDatabase: boolean;
@@ -11,8 +10,6 @@ type StatusMessageProps = {
 
 export const StatusMessage = ({
   isPending,
-  isCreateSuccess,
-  isDeleteSuccess,
   isCreateError,
   isDeleteError,
   isDateInDatabase,
@@ -21,39 +18,17 @@ export const StatusMessage = ({
 
   if (isPending) return null;
 
-  if (isCreateSuccess) {
-    return (
-      <p className="text-sm text-secondary font-medium">
-        {t("unavailability.success_message") ||
-          "Date set as unavailable successfully"}
-      </p>
-    );
-  }
-
-  if (isDeleteSuccess) {
-    return (
-      <p className="text-sm text-secondary font-medium">
-        {t("unavailability.remove_success") || "Availability restored"}
-      </p>
-    );
-  }
+  let message: string | null = null;
 
   if (isCreateError || isDeleteError) {
-    return (
-      <p className="text-sm text-destructive font-medium">
-        {t("unavailability.error_message") || "Something went wrong."}
-      </p>
-    );
+    message = t("unavailability.error_message") || "Something went wrong.";
+  } else if (isDateInDatabase) {
+    message =
+      t("unavailability.already_set") ||
+      "This day is already set as unavailable";
   }
 
-  if (isDateInDatabase) {
-    return (
-      <p className="text-sm text-destructive font-medium">
-        {t("unavailability.already_set") ||
-          "This day is already set as unavailable"}
-      </p>
-    );
-  }
+  if (!message) return null;
 
-  return null;
+  return <ErrorHandle message={message} type="inline" />;
 };

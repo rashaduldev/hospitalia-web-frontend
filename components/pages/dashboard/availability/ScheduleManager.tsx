@@ -105,13 +105,9 @@ export default function ScheduleManager({
           }}
           disabled={{ before: startOfDay(new Date()) }}
         />
-
-        {/* New Status Message Component replacing renderMessage() */}
         <div>
           <StatusMessage
             isPending={isPending}
-            isCreateSuccess={createMutation.isSuccess}
-            isDeleteSuccess={deleteMutation.isSuccess}
             isCreateError={createMutation.isError}
             isDeleteError={deleteMutation.isError}
             isDateInDatabase={isDateInDatabase}
