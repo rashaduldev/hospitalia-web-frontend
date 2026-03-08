@@ -15,10 +15,7 @@ const ConfirmSlotsTable = async ({
   const t = await getI18n();
 
   const data = await getDoctorAvailability({ lang, doctorUserId });
-  console.log("data", data);
-
   const slots = data?.payload?.content || [];
-  console.log("slots", slots);
 
   return (
     <div className="mt-8">

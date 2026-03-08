@@ -1,7 +1,6 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Clock, MapPin } from "lucide-react";
 import { SlotActionCell } from "../cells/SlotActionCell";
 import { Checkbox } from "../ui/checkbox";
 import { parse, format } from "date-fns";

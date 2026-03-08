@@ -3,9 +3,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Pencil, Trash2, MoreVertical, AlertCircle } from "lucide-react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-import { Input } from "@/components/ui/input";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +18,6 @@ import {
   DialogFooter,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
 import AppButton from "../common/AppButton";
 import { ControlledSelect } from "../common/FormUIControllers/ControlledSelect";
 import {
@@ -29,6 +26,8 @@ import {
 } from "@/actions/doctor/availability";
 import { ErrorHandle } from "../common/ErrorHandle";
 import { DoctorAvailabilitySlot } from "@/types/doctor.slot";
+import { ControlledInput } from "../common/FormUIControllers/ControlledInput";
+import { getDoctorLocations } from "@/actions/doctor/location";
 
 const TIME_SLOTS = [
   { label: "10 Minutes", value: "10" },
@@ -69,15 +68,30 @@ export const SlotActionCell = ({ slot }: { slot: DoctorAvailabilitySlot }) => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
-  const { control, handleSubmit, register } = useForm({
+
+  const { control, handleSubmit } = useForm<FormDataType>({
     defaultValues: {
-      dayOfWeek: slot.dayOfWeek || "",
-      startTime: slot.startTime?.replace("Z", "") || "",
-      endTime: slot.endTime?.replace("Z", "") || "",
-      timeSlot: String(slot.timeSlot || "10"),
-      doctorLocationId: slot.doctorLocationId || "",
+      dayOfWeek: slot.dayOfWeek,
+      startTime: slot.startTime?.replace("Z", ""),
+      endTime: slot.endTime?.replace("Z", ""),
+      timeSlot: String(slot.timeSlot),
+      doctorLocationId: String(slot.doctorLocationId),
     },
   });
+
+  const { data: locationResponse } = useQuery({
+    queryKey: ["doctor-locations", slot.doctorUserId],
+    queryFn: () =>
+      getDoctorLocations({
+        lang: "en",
+        doctorUserId: slot.doctorUserId,
+      }),
+  });
+  const locationOptions =
+    locationResponse?.payload?.map((loc: any) => ({
+      label: loc.locationName,
+      value: String(loc.locationId),
+    })) || [];
 
   // Update mutation
   const updateMutation = useMutation({
@@ -185,18 +199,31 @@ export const SlotActionCell = ({ slot }: { slot: DoctorAvailabilitySlot }) => {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Start Time</Label>
-                <Input type="time" {...register("startTime")} />
+                <ControlledInput
+                  label="Start Time"
+                  name="startTime"
+                  control={control}
+                  type="time"
+                />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium">End Time</Label>
-                <Input type="time" {...register("endTime")} />
+                <ControlledInput
+                  label="End Time"
+                  name="endTime"
+                  control={control}
+                  type="time"
+                />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Location ID</Label>
-              <Input {...register("doctorLocationId")} />
+              <ControlledSelect
+                name="doctorLocationId"
+                label="Location"
+                control={control}
+                options={locationOptions}
+                placeholder="Select location"
+              />
             </div>
 
             <ControlledSelect
