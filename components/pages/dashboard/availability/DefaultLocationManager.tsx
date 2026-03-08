@@ -51,7 +51,6 @@ export function DefaultLocationManager({
         locationName: "",
         addressLine1: "",
         city: "",
-        postalCode: 0,
       },
     });
 
@@ -69,15 +68,27 @@ export function DefaultLocationManager({
 
   const mutation = useMutation({
     mutationFn: async (data: LocationFormValues) => {
-      const userId = Number(doctorUserId);
+      console.log("data", data);
+
       if (editingId) {
         return updateDoctorLocation({
+          lang,
           locationId: editingId,
-          doctorUserId: userId,
-          ...data,
+          city: data.city,
+          postalCode: data.postalCode,
+          doctorUserId,
+          locationName: data.locationName,
+          addressLine1: data.addressLine1,
         } as UpdateLocationParams);
       }
-      return createDoctorLocation({ lang, ...data, doctorUserId: userId });
+      return createDoctorLocation({
+        lang,
+        locationName: data.locationName,
+        addressLine1: data.addressLine1,
+        city: data.city,
+        postalCode: data.postalCode,
+        doctorUserId,
+      });
     },
     onSuccess: () => {
       setSuccessMessage(
@@ -220,7 +231,6 @@ export function DefaultLocationManager({
                     key={loc.locationId}
                     className="flex items-start justify-between border-b py-3 gap-4"
                   >
-                    {/* Text Container: flex-1 takes space, min-w-0 allows shrinking */}
                     <div className="flex flex-col gap-1 flex-1 min-w-0">
                       <Typography
                         size="sm"
@@ -237,8 +247,6 @@ export function DefaultLocationManager({
                       >
                         {loc.addressLine1}
                       </Typography>
-
-                      {/* Optional: if you want to show city/postal code clearly */}
                       <Typography
                         size="xs"
                         color="muted_foreground"
@@ -247,8 +255,6 @@ export function DefaultLocationManager({
                         {loc.city} {loc.postalCode ? `- ${loc.postalCode}` : ""}
                       </Typography>
                     </div>
-
-                    {/* Buttons: shrink-0 prevents the buttons from getting squeezed */}
                     <div className="flex gap-1 shrink-0 items-center mt-1">
                       <AppButton
                         variant="ghost"
@@ -259,14 +265,14 @@ export function DefaultLocationManager({
                           setValue("locationName", loc.locationName);
                           setValue("addressLine1", loc.addressLine1);
                           setValue("city", loc.city);
-                          setValue("postalCode", Number(loc.postalCode));
+                          setValue("postalCode", loc.postalCode);
                         }}
                       >
                         <Pencil size={16} />
                       </AppButton>
                       <AppButton
                         size="sm"
-                        className="h-8 w-8 p-0 bg-destructive hover:bg-destructive/90 text-white"
+                        className="h-8 w-8 p-0 bg-destructive hover:bg-destructive/90 text-muted"
                         onClick={() => setDeleteId(loc.locationId)}
                       >
                         <Trash size={16} />

@@ -1,5 +1,5 @@
 import Header from "@/components/pages/home/Header";
-import RegistrationForm from "@/components/pages/register/RegisterForm";
+import PatinetRegistrationForm from "@/components/pages/patient/register/RegisterForm";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -16,7 +16,7 @@ export default async function RegisterPage() {
       </h2>
       <div className="min-h-screen bg-muted/40 px-4">
         <div className="container mx-auto">
-          <RegistrationForm />
+          <PatinetRegistrationForm />
         </div>
       </div>
     </div>

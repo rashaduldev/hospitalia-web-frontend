@@ -2,7 +2,6 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginFormSchema, LoginFormValues } from "@/schema/ueser.schema";
 import Link from "next/link";
 import { CountryAndPhoneInput } from "@/components/common/Country&PhoneInput";
 import { ControlledInput } from "@/components/common/FormUIControllers/ControlledInput";
@@ -13,9 +12,10 @@ import { useRouter } from "next/navigation";
 import { DynamicHeading } from "@/components/common/DynamicHeading";
 import { Typography } from "@/components/ui/Typography";
 import { useI18n } from "@/locales/client";
+import { loginFormSchema, LoginFormValues } from "@/schema/ueser.schema";
 import AppButton from "@/components/common/AppButton";
 
-const LoginForm = ({ isPatient }: { isPatient: boolean }) => {
+const PatientLoginForm = () => {
   const t = useI18n();
   const [showPassword, setShowPassword] = useState(false);
   const {
@@ -118,7 +118,7 @@ const LoginForm = ({ isPatient }: { isPatient: boolean }) => {
 
       {/* Links */}
       <div className="mt-8 space-y-4 flex flex-col gap-2">
-        <Link href={isPatient ? "/register?userType=patient" : "/register"}>
+        <Link href="/patient/register">
           <Typography
             size="sm"
             weight="medium"
@@ -144,4 +144,4 @@ const LoginForm = ({ isPatient }: { isPatient: boolean }) => {
   );
 };
 
-export default LoginForm;
+export default PatientLoginForm;

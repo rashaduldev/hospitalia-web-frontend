@@ -18,8 +18,8 @@ type OptionType = {
 };
 type ControlledSelectProps = {
   name: string;
-  required?: string;
   label: string;
+  required?: string;
   control: Control<any>;
   placeholder?: string;
   options: OptionType[];

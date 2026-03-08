@@ -110,7 +110,7 @@ export default {
     lastName: "Last Name",
     gender: "Gender",
     userType: "User Type",
-    email: "Email (Optional)",
+    email: "Email",
     dateOfBirth: "Date of Birth",
     phone: "Phone",
 
@@ -119,7 +119,7 @@ export default {
 
     designation: "Title / Designation",
     speciality: "Speciality",
-    onms: "ONMS Registration Number (Optional)",
+    onms: "ONMS Registration Number",
     statement: "Professional Statement",
 
     submit: "Register as a Healthcare Provider",
@@ -138,17 +138,24 @@ export default {
     },
 
     errors: {
+      firstNameRequired: "First name is required",
       firstNameMin: "First name must be at least 2 characters",
+      firstNameMax: "First name must be at max 50 characters",
+      lastNameMax: "Last name must be at max 50 characters",
       genderRequired: "Gender is required",
       invalidEmail: "Invalid email address",
       userTypeRequired: "User type is required",
-
+      emailRequired: "Email is required",
+      emailMax: "First name must be at max 80 characters",
       countryRequired: "Country code is required",
       phoneRequired: "Mobile number is required",
       phoneShort: "Mobile number is too short",
       phoneLong: "Mobile number is too long",
-
       passwordMin: "Password must be at least 8 characters",
+      passwordMax: "Password must be at max 32 characters",
+      passwordUppercase: "Password must contain at least one uppercase letter",
+      passwordNumber: "Password must contain at least one number",
+      passwordSpecial: "Password must contain at least one special character",
       passwordStrength:
         "Password must contain uppercase, lowercase, number and special character",
 
@@ -158,6 +165,9 @@ export default {
       specialityRequired: "Speciality is required",
 
       passwordNotMatch: "Passwords do not match",
+      designation: "Designation is required",
+      speciality: "Speciality is required",
+      onmsRegistrationNumber: "Onms Registration Number is required",
     },
   },
   appoinment: {

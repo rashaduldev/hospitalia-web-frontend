@@ -161,6 +161,9 @@ export default {
       specialityRequired: "La spécialité est requise",
 
       passwordNotMatch: "Les mots de passe ne correspondent pas",
+      designation: "La désignation est requise",
+      speciality: "La spécialité est requise",
+      onmsRegistrationNumber: "Le numéro d'inscription ONMS est requis",
     },
   },
   appoinment: {

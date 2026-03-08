@@ -15,6 +15,7 @@ import { DynamicHeading } from "@/components/common/DynamicHeading";
 import { useI18n } from "@/locales/client";
 import AppButton from "@/components/common/AppButton";
 import { UnavailableDate } from "@/types/doctor.unavailable";
+import { StatusMessage } from "./StatusMessage";
 
 export default function ScheduleManager({
   lang,
@@ -79,45 +80,6 @@ export default function ScheduleManager({
 
   const isPending = createMutation.isPending || deleteMutation.isPending;
 
-  const renderMessage = () => {
-    if (isPending) return null;
-
-    if (createMutation.isSuccess) {
-      return (
-        <p className="text-sm text-secondary font-medium">
-          {t("unavailability.success_message") ||
-            "Date set as unavailable successfully"}
-        </p>
-      );
-    }
-    if (deleteMutation.isSuccess) {
-      return (
-        <p className="text-sm text-secondary font-medium">
-          {t("unavailability.remove_success")}
-        </p>
-      );
-    }
-
-    if (createMutation.isError || deleteMutation.isError) {
-      return (
-        <p className="text-sm text-destructive font-medium">
-          {t("unavailability.error_message") || "Something went wrong."}
-        </p>
-      );
-    }
-
-    if (isDateInDatabase) {
-      return (
-        <p className="text-sm text-destructive font-medium">
-          {t("unavailability.already_set") ||
-            "This day is already set as unavailable"}
-        </p>
-      );
-    }
-
-    return null;
-  };
-
   return (
     <div className="space-y-10 mt-7">
       <section className="space-y-4 border rounded-sm p-6">
@@ -143,9 +105,12 @@ export default function ScheduleManager({
           }}
           disabled={{ before: startOfDay(new Date()) }}
         />
-
-        {/* Message Area */}
-        <div>{renderMessage()}</div>
+        <StatusMessage
+          isPending={isPending}
+          createError={createMutation.isError}
+          deleteError={deleteMutation.isError}
+          isDateInDatabase={isDateInDatabase}
+        />
 
         <AppButton
           onClick={handleToggleAvailability}

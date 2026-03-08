@@ -59,11 +59,6 @@ export const ROUTES = {
       url: "/settings",
       icon: Settings2Icon,
     },
-    {
-      name: "Sign Out",
-      url: "/logout",
-      icon: LogOut,
-    },
   ],
 };
 

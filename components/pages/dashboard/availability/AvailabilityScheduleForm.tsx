@@ -7,7 +7,7 @@ import { ControlledSelect } from "@/components/common/FormUIControllers/Controll
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Typography } from "@/components/ui/Typography";
-import { useLocations } from "@/hooks/use-locations";
+import { useLocations } from "@/hooks/useLocations";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/locales/client";
 import { useState } from "react";
@@ -17,6 +17,8 @@ import {
   AvailabilityScheduleSchema,
   AvailabilityScheduleSchemaFormValues,
 } from "@/schema/doctor.availability.schedule.schema";
+import AppButton from "@/components/common/AppButton";
+import { Location } from "@/types/doctor.location.type";
 
 const DAYS = [
   "SUNDAY",
@@ -45,11 +47,9 @@ const AVAILABILITY_OPTIONS = [
 export default function AvailabilityScheduleForm({
   doctorUserId,
   lang,
-  // existingAvailability = [],
 }: {
   doctorUserId: number;
   lang: string;
-  // existingAvailability?: any[];
 }) {
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [formStatus, setFormStatus] = useState<{
@@ -57,7 +57,10 @@ export default function AvailabilityScheduleForm({
     message: string;
   } | null>(null);
 
-  const { data: locations } = useLocations(doctorUserId);
+  const { locations } = useLocations({
+    lang,
+    doctorUserId,
+  });
   const t = useI18n();
 
   const {
@@ -91,13 +94,6 @@ export default function AvailabilityScheduleForm({
       prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day],
     );
   };
-
-  // const isDayUnavailableInApi = (day: string) => {
-  //   return existingAvailability?.some(
-  //     (item: any) =>
-  //       item.dayOfWeek === day && item.availabilityStatus === "UNAVAILABLE",
-  //   );
-  // };
 
   const onSubmit = async (data: AvailabilityScheduleSchemaFormValues) => {
     setFormStatus(null);
@@ -139,29 +135,25 @@ export default function AvailabilityScheduleForm({
       }
     });
 
-    try {
-      const res = await createDoctorAvailability({
-        lang,
-        doctorUserId: doctorUserId,
-        weeklySchedule: finalScheduleArray,
-      });
+    const res = await createDoctorAvailability({
+      lang,
+      doctorUserId: doctorUserId,
+      weeklySchedule: finalScheduleArray,
+    });
 
-      if (!res.success) {
-        setError("root", {
-          type: "manual",
-          message: res.message,
-        });
-        return;
-      }
-      setFormStatus({
-        type: "success",
+    if (!res.success) {
+      setError("root", {
+        type: "manual",
         message: res.message,
       });
-      setSelectedDays([]);
-      reset();
-    } catch (error: any) {
-      setFormStatus({ type: "error", message: error?.message });
+      return;
     }
+    setFormStatus({
+      type: "success",
+      message: res.message,
+    });
+    setSelectedDays([]);
+    reset();
   };
 
   return (
@@ -180,26 +172,24 @@ export default function AvailabilityScheduleForm({
           </Label>
           <div className="flex flex-wrap gap-2">
             {DAYS.map((day) => {
-              // const isUnavailable = isDayUnavailableInApi(day);
               const isSelected = selectedDays.includes(day);
               return (
-                <button
+                <AppButton
                   key={day}
                   type="button"
                   onClick={() => toggleDay(day)}
                   className={cn(
                     "px-7 py-2 rounded-lg border text-sm font-medium transition-all cursor-pointer",
                     {
-                      // "bg-destructive border-destructive text-muted":
-                      //   isUnavailable,
-                      "bg-secondary-foreground border-secondary-foreground text-foreground":
+                      "bg-secondary-foreground hover:bg-secondary-foreground border-secondary-foreground text-foreground":
                         isSelected,
-                      "bg-ring/20 border-muted text-foreground": !isSelected,
+                      "bg-ring/20 hover:bg-ring/20 border-muted text-foreground":
+                        !isSelected,
                     },
                   )}
                 >
                   {day.charAt(0) + day.slice(1).toLowerCase()}
-                </button>
+                </AppButton>
               );
             })}
           </div>
@@ -267,7 +257,7 @@ export default function AvailabilityScheduleForm({
               control={control}
               placeholder="Select Another Location"
               options={
-                locations?.map((loc: any) => ({
+                locations?.map((loc: Location) => ({
                   label: loc.locationName,
                   value: String(loc.locationId),
                 })) || []

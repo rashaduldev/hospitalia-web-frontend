@@ -1,5 +1,6 @@
 import { createI18nMiddleware } from "next-international/middleware";
 import { NextRequest, NextResponse } from "next/server";
+import { getAccessToken } from "./actions/auth";
 
 const I18nMiddleware = createI18nMiddleware({
   locales: ["en", "fr"],
@@ -11,35 +12,29 @@ const PUBLIC_ROUTES = [
   "/",
   "/search",
   "/login",
+  "/patient/login",
+  "/patient/register",
   "/register",
   "/doctor",
   "/hospital",
   "/forgot-password",
 ];
 
-function removeLocale(pathname: string) {
-  return pathname.replace(/^\/(en|fr)/, "") || "/";
-}
+const publicPathnameRegex = new RegExp(
+  `^(${PUBLIC_ROUTES.map((p) => p.replace(/\//g, "\\/")).join("|")})\\/?$`,
+  "i",
+);
 
-export function proxy(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  const purePath = removeLocale(pathname);
 
-  const i18nResponse = I18nMiddleware(req);
+  const token = await getAccessToken();
 
-  const isPublic = PUBLIC_ROUTES.some((route) =>
-    route === "/" ? purePath === "/" : purePath.startsWith(route),
-  );
-
-  if (isPublic) return i18nResponse;
-
-  const token = req.cookies.get("accessToken")?.value;
-
-  if (!token) {
+  const isPublicPage = publicPathnameRegex.test(pathname);
+  if (!isPublicPage && !token) {
     return NextResponse.redirect(new URL("/", req.url));
   }
-
-  return i18nResponse;
+  return I18nMiddleware(req);
 }
 
 export const config = {

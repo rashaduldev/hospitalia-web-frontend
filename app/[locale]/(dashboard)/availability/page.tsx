@@ -1,5 +1,5 @@
 import { getCurrentUser } from "@/actions/user.actions";
-import ErrorHandle from "@/components/common/ErrorHandle";
+import { ErrorHandle } from "@/components/common/ErrorHandle";
 import Unauthorized from "@/components/common/Unauthorized";
 import Availability from "@/components/pages/dashboard/availability/Availability";
 import { getCurrentLocale } from "@/locales/server";

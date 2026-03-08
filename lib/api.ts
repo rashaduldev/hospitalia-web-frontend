@@ -30,7 +30,7 @@ export async function apiClient<Response = any, Request = any>({
 
   const res = await fetch(url, {
     method,
-    cache:"no-store",
+    cache: "no-store",
     headers: {
       "Content-Type": "application/json",
       ...headers,
@@ -40,6 +40,7 @@ export async function apiClient<Response = any, Request = any>({
         ? JSON.stringify(body)
         : undefined,
   });
+  console.log("res", res);
 
   let data: any = {};
   try {
