@@ -28,7 +28,7 @@ export default async function UserLayout({
         <SidebarProvider
           style={
             {
-              "--sidebar-width": "calc(var(--spacing) * 72)",
+              "--sidebar-width": "calc(var(--spacing) * 76)",
               "--header-height": "calc(var(--spacing) * 12)",
             } as React.CSSProperties
           }
@@ -36,7 +36,7 @@ export default async function UserLayout({
           <AppSidebar variant="inset" userRole={res?.userType} lang={lang} />
           <SidebarInset>
             <SiteHeader user={res} />
-            <div className="flex flex-1 flex-col">
+            <div className="flex flex-1 flex-col bg-dashboard-bg">
               <div className="@container/main flex flex-1 flex-col gap-2">
                 <div className="flex flex-col gap-4 md:gap-6 mx-3 md:mx-6">
                   {children}

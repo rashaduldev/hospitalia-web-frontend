@@ -2,21 +2,21 @@ import { createI18nMiddleware } from "next-international/middleware";
 import { NextRequest, NextResponse } from "next/server";
 import { getAccessToken } from "./actions/auth";
 
-const LOCALES = ["en", "fr"];
-const DEFAULT_LOCALE = "en";
-
 const I18nMiddleware = createI18nMiddleware({
-  locales: LOCALES,
-  defaultLocale: DEFAULT_LOCALE,
+  locales: ["en", "fr"],
+  defaultLocale: "en",
   urlMappingStrategy: "rewrite",
 });
 
 const PUBLIC_ROUTES = [
   "/",
+  "/search",
   "/login",
   "/patient/login",
   "/patient/register",
   "/register",
+  "/doctor",
+  "/hospital",
   "/forgot-password",
 ];
 

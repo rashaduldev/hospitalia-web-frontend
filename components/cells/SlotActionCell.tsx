@@ -28,6 +28,7 @@ import { ErrorHandle } from "../common/ErrorHandle";
 import { DoctorAvailabilitySlot } from "@/types/doctor.slot";
 import { ControlledInput } from "../common/FormUIControllers/ControlledInput";
 import { getDoctorLocations } from "@/actions/doctor/location";
+import { Location } from "@/types/doctor.location.type";
 
 const TIME_SLOTS = [
   { label: "10 Minutes", value: "10" },
@@ -88,7 +89,7 @@ export const SlotActionCell = ({ slot }: { slot: DoctorAvailabilitySlot }) => {
       }),
   });
   const locationOptions =
-    locationResponse?.payload?.map((loc: any) => ({
+    locationResponse?.payload?.map((loc: Location) => ({
       label: loc.locationName,
       value: String(loc.locationId),
     })) || [];
