@@ -201,8 +201,8 @@ const DoctorBooking = ({
           designation: `${doctor.professionalInfoResponse?.designation}`,
           location: selectedLocationObj?.label || "",
           date: format(parseISO(data.availableDates), "do MMMM"),
-          startTime: selectedSlotObj?.startTime,
-          endTime: selectedSlotObj?.endTime,
+          startTime: formatTimeTo12H(selectedSlotObj?.startTime),
+          endTime: formatTimeTo12H(selectedSlotObj?.endTime),
           price: patientType === "new" ? "25,000 CFA" : "10,000 CFA",
         });
       }

@@ -7,6 +7,13 @@ import { getDoctorUnAvailability } from "@/actions/doctor/unavailability";
 import { getCurrentUser } from "@/actions/user.actions";
 import { getAccessToken } from "@/actions/auth";
 import BookingClientSection from "@/components/pages/booking/BookingClientSection";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Hospitalia - Book Appointment",
+  description:
+    "Book an appointment, View available locations, schedule, and more.",
+};
 
 type Props = {
   params: Promise<{ userId: string }>;
