@@ -30,15 +30,6 @@ const DAYS = [
   "SATURDAY",
 ];
 
-const VALID_TIME_SLOTS = [
-  { label: "10 Minutes", value: "MIN_10" },
-  { label: "15 Minutes", value: "MIN_15" },
-  { label: "30 Minutes", value: "MIN_30" },
-  { label: "90 Minutes", value: "MIN_90" },
-  { label: "1 Hour", value: "HOUR_1" },
-  { label: "2 Hours", value: "HOUR_2" },
-];
-
 const AVAILABILITY_OPTIONS = [
   { label: "Available", value: "AVAILABLE" },
   { label: "Unavailable", value: "UNAVAILABLE" },
@@ -47,9 +38,11 @@ const AVAILABILITY_OPTIONS = [
 export default function AvailabilityScheduleForm({
   doctorUserId,
   lang,
+  timeSlots,
 }: {
   doctorUserId: number;
   lang: string;
+  timeSlots: string[];
 }) {
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [formStatus, setFormStatus] = useState<{
@@ -239,7 +232,10 @@ export default function AvailabilityScheduleForm({
               name="loc1.timeSlot"
               label="Time Slot"
               control={control}
-              options={VALID_TIME_SLOTS}
+              options={timeSlots.map((slot) => ({
+                label: slot.replace("_", " "),
+                value: slot,
+              }))}
             />
           </div>
         </div>
@@ -283,7 +279,10 @@ export default function AvailabilityScheduleForm({
               name="loc2.timeSlot"
               label="Time Slot"
               control={control}
-              options={VALID_TIME_SLOTS}
+              options={timeSlots.map((slot) => ({
+                label: slot.replace("_", " "),
+                value: slot,
+              }))}
             />
           </div>
         </div>
