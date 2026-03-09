@@ -5,7 +5,7 @@ import { useForm, useController, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, parseISO } from "date-fns";
 import { CalendarCheck2, Loader2, Clock } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ControlledSelect } from "@/components/common/FormUIControllers/ControlledSelect";
 import { Calendar } from "@/components/ui/calendar";
 import { Typography } from "@/components/ui/Typography";
@@ -25,7 +25,8 @@ import {
 import { bookAppointment } from "@/actions/doctor/booking";
 import { getDoctorAvailabilityWithLocation } from "@/actions/doctor/availability";
 import { getAvailableSlots } from "@/actions/doctor/slot";
-import { DoctorBookingType } from "@/types/doctor.booking";
+import { UnavailableDate } from "@/types/doctor.unavailable";
+import { SingleDoctorInfo } from "@/types/doctor";
 
 const DoctorBooking = ({
   locationOptions,
@@ -35,7 +36,15 @@ const DoctorBooking = ({
   doctorUnAvailable = [],
   lang = "en",
   onBookingSuccess,
-}: DoctorBookingType) => {
+}: {
+  locationOptions: { label: string; value: number }[];
+  doctor: SingleDoctorInfo;
+  token: string | null;
+  currentUserId: number;
+  doctorUnAvailable: UnavailableDate[];
+  lang: string;
+  onBookingSuccess?: (info: any) => void;
+}) => {
   const [showLoginDialog, setShowLoginDialog] = useState(false);
   const doctorUserId = doctor.userId;
 
@@ -58,6 +67,7 @@ const DoctorBooking = ({
   const selectedLocation = useWatch({ control, name: "location" });
   const selectedDate = useWatch({ control, name: "availableDates" });
   const patientType = useWatch({ control, name: "patientType" });
+  const queryClient = useQueryClient();
 
   const { field: dateField } = useController({
     name: "availableDates",
@@ -75,7 +85,7 @@ const DoctorBooking = ({
       queryFn: async () => {
         const res = await getDoctorAvailabilityWithLocation({
           lang,
-          doctorUserId: doctorUserId as number,
+          doctorUserId: doctorUserId,
           doctorLocationId: Number(selectedLocation),
         });
         return res.payload || [];
@@ -89,7 +99,7 @@ const DoctorBooking = ({
     queryFn: async () => {
       if (!selectedDate) return [];
       const res = await getAvailableSlots({
-        doctorUserId: doctorUserId as number,
+        doctorUserId: doctorUserId,
         lang,
         requestedDate: format(parseISO(selectedDate), "yyyy-MM-dd"),
       });
@@ -157,9 +167,15 @@ const DoctorBooking = ({
     const selectedSlotObj = slotData?.slots?.find(
       (s: any) => s.startTime === data.availableSlots,
     );
+    if (!currentUserId) {
+      setError("root", {
+        type: "manual",
+        message: "must login",
+      });
+    }
     const res = await bookAppointment({
-      doctorUserId: doctorUserId as number,
-      patientUserId: currentUserId as number,
+      doctorUserId: doctorUserId,
+      patientUserId: currentUserId,
       appointmentDate: format(parseISO(data.availableDates), "yyyy-MM-dd"),
       dayOfWeek: format(parseISO(data.availableDates), "EEEE").toUpperCase(),
       fees: patientType === "new" ? 25000 : 10000,
@@ -182,7 +198,7 @@ const DoctorBooking = ({
       if (onBookingSuccess) {
         onBookingSuccess({
           doctorName: `${doctor.firstName} ${doctor.lastName}`,
-          designation: `${doctor.professionalInfoRequest?.designation}`,
+          designation: `${doctor.professionalInfoResponse?.designation}`,
           location: selectedLocationObj?.label || "",
           date: format(parseISO(data.availableDates), "do MMMM"),
           startTime: selectedSlotObj?.startTime,
@@ -221,9 +237,14 @@ const DoctorBooking = ({
           control={control}
           placeholder="Select Location"
           options={locationOptions}
-          onChange={() => {
+          onChange={(value) => {
+            setValue("location", value);
             setValue("availableDates", "");
             setValue("availableSlots", "");
+
+            queryClient.removeQueries({
+              queryKey: ["availableSlots"],
+            });
           }}
         />
         <div className="text-center space-y-6">

@@ -5,7 +5,7 @@ import { PatientRegisterRequestData } from "@/types/patient.user.type";
 import {
   LoginRequestData,
   LoginResponseData,
-  NewUser,
+  RegisterUser,
 } from "@/types/user.type";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -66,7 +66,7 @@ export const register = async ({
   bodyData,
   lang,
 }: {
-  bodyData: NewUser;
+  bodyData: RegisterUser;
   lang: string;
 }) => {
   return apiClient({

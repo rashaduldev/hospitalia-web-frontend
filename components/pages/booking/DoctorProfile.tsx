@@ -4,9 +4,16 @@ import { MapPin, UserPlus } from "lucide-react";
 import { Speciality } from "@/types/speciality.type";
 import doctorMale from "../../../public/assets/doctor_male.jpg";
 import doctorFemale from "../../../public/assets/doctor_female.jpg";
-import { DoctorProfileType } from "@/types/doctor.booking";
+import { SingleDoctorInfo } from "@/types/doctor";
+import { DoctorLocation } from "@/types/doctor.location.type";
 
-const DoctorProfile = ({ doctor, doctorLocations }: DoctorProfileType) => {
+const DoctorProfile = ({
+  doctor,
+  doctorLocations,
+}: {
+  doctor: SingleDoctorInfo;
+  doctorLocations: DoctorLocation[];
+}) => {
   const profileImage = doctor?.profileImage
     ? doctor?.profileImage
     : doctor?.gender === "MALE"
@@ -29,11 +36,11 @@ const DoctorProfile = ({ doctor, doctorLocations }: DoctorProfileType) => {
         </Typography>
 
         <Typography as="h3" size="xs" color="muted_foreground">
-          {doctor.professionalInfoRequest?.designation}
+          {doctor.professionalInfoResponse?.designation}
         </Typography>
 
         <Typography as="h3" size="xs" color="muted_foreground">
-          {doctor.professionalInfoRequest?.specialities
+          {doctor.professionalInfoResponse?.specialities
             ?.map((item: Speciality) => item.name)
             .join(", ")}
         </Typography>
@@ -53,13 +60,13 @@ const DoctorProfile = ({ doctor, doctorLocations }: DoctorProfileType) => {
 
         <div className="space-y-1">
           <Typography as="h3" size="xs" color="muted_foreground">
-            {doctor.professionalInfoRequest?.specialities
+            {doctor.professionalInfoResponse?.specialities
               ?.map((item: Speciality) => item.name)
               .join(", ")}
           </Typography>
 
           <Typography as="h3" size="xs" color="muted_foreground">
-            {doctor.professionalInfoRequest?.departments}
+            {doctor.professionalInfoResponse?.departments}
           </Typography>
         </div>
       </div>

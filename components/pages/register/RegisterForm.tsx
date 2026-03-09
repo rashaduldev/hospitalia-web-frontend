@@ -18,7 +18,7 @@ import { useI18n } from "@/locales/client";
 import { Typography } from "@/components/ui/Typography";
 import { RegisterFormSchema, RegisterFormValues } from "@/schema/ueser.schema";
 import AppButton from "@/components/common/AppButton";
-import { NewUser } from "@/types/user.type";
+import { RegisterUser } from "@/types/user.type";
 
 export default function PatinetRegistrationForm({ lang }: { lang: string }) {
   const t = useI18n();
@@ -40,6 +40,7 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
       lastName: "",
       email: "",
       password: "",
+      dateOfBirth: "",
       confirmPassword: "",
       designation: "",
       countryCode: "",
@@ -67,7 +68,7 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
   const specialities = data?.content ?? [];
 
   const onSubmit = async (data: RegisterFormValues) => {
-    const bodyData: NewUser = {
+    const bodyData: RegisterUser = {
       firstName: data.firstName,
       lastName: data.lastName,
       gender: data.gender,

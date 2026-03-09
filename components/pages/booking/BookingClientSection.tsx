@@ -4,8 +4,10 @@ import { useState } from "react";
 import DoctorProfile from "./DoctorProfile";
 import { Typography } from "@/components/ui/Typography";
 import AppButton from "@/components/common/AppButton";
-import { BookingClientSectionProps } from "@/types/doctor.booking";
 import DoctorBooking from "../doctor-booking/DoctorBooking";
+import { DoctorLocation, LocationOption } from "@/types/doctor.location.type";
+import { UnavailableDate } from "@/types/doctor.unavailable";
+import { SingleDoctorInfo } from "@/types/doctor";
 
 const BookingClientSection = ({
   doctor,
@@ -15,7 +17,15 @@ const BookingClientSection = ({
   token,
   currentUserId,
   doctorUnAvailable,
-}: BookingClientSectionProps) => {
+}: {
+  doctor: SingleDoctorInfo;
+  doctorLocations: DoctorLocation[];
+  locationOptions: LocationOption[];
+  lang: string;
+  token: string | null;
+  currentUserId: number;
+  doctorUnAvailable: UnavailableDate[];
+}) => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [bookingInfo, setBookingInfo] = useState<any>(null);
   if (isSuccess && bookingInfo) {

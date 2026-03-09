@@ -1,9 +1,8 @@
-import { getAllDoctor } from "@/actions/doctor/doctordata";
+import { getDoctorInfobyUserid } from "@/actions/doctor/doctordata";
 import Header from "@/components/pages/home/Header";
 import { getCurrentLocale } from "@/locales/server";
 import { getDoctorLocations } from "@/actions/doctor/location";
 import { Location } from "@/types/doctor.location.type";
-import { NewUser } from "@/types/user.type";
 import { getDoctorUnAvailability } from "@/actions/doctor/unavailability";
 import { getCurrentUser } from "@/actions/user.actions";
 import { getAccessToken } from "@/actions/auth";
@@ -18,14 +17,15 @@ const DoctorBookingPage = async ({ params }: Props) => {
   const { userId } = await params;
   const currentUser = await getCurrentUser({ lang });
   const token = await getAccessToken();
+  const SignleDoctorUserId = Number(userId);
 
-  const doctorData = await getAllDoctor({ lang });
-  const doctors = doctorData?.payload?.content || [];
+  const singleDoctor = await getDoctorInfobyUserid({
+    lang,
+    SignleDoctorUserId,
+  });
+  const doctorUserId = singleDoctor?.payload?.userId;
+  console.log("singleDoctor", singleDoctor.payload);
 
-  const doctor = doctors.find(
-    (doc: NewUser) => doc?.userId?.toString() === userId,
-  );
-  const doctorUserId = doctor.userId;
   const doctorLocations = await getDoctorLocations({ lang, doctorUserId });
   const doctorUnAvailable = await getDoctorUnAvailability({
     lang,
@@ -44,7 +44,7 @@ const DoctorBookingPage = async ({ params }: Props) => {
 
       <div className="max-w-6xl mx-auto p-8">
         <BookingClientSection
-          doctor={doctor}
+          doctor={singleDoctor?.payload}
           doctorLocations={locations}
           locationOptions={locationOptions}
           lang={lang}

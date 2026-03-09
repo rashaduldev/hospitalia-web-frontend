@@ -32,17 +32,36 @@ export interface Paginated<T> {
   total: number;
 }
 
+export type RegisterUser = {
+  firstName: string;
+  lastName?: string;
+  gender: string;
+  userType: string;
+  email: string;
+  dateOfBirth?: string;
+  countryCode: string;
+  mobileNumber: string;
+  password: string;
+  profileImage?: string;
+  professionalInfoRequest: {
+    designation: string;
+    specialityId: number[];
+    onmsRegistrationNumber: string;
+    professionalStatement?: string;
+  };
+};
+
 export type NewUser = {
   firstName: string;
   lastName?: string;
   gender: string;
   userType: string;
-  email?: string;
+  email: string;
   dateOfBirth?: string;
-  countryCode?: string;
+  countryCode: string;
   mobileNumber: string;
   password: string;
-  userId?: number;
+  userId: number;
   profileImage?: string;
   professionalInfoRequest: {
     designation: string;
