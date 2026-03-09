@@ -5,7 +5,7 @@ export type ApiClientOptions<Request = any> = {
   method?: "GET" | "POST" | "PUT" | "DELETE";
   body?: Request;
   params?: Record<string, string | number | boolean>;
-  headers?: Record<string, string>;
+  headers?: HeadersInit;
 };
 
 export async function apiClient<Response = any, Request = any>({
@@ -40,7 +40,7 @@ export async function apiClient<Response = any, Request = any>({
         ? JSON.stringify(body)
         : undefined,
   });
-  console.log("res", res);
+  // console.log("res", res);
 
   let data: any = {};
   try {

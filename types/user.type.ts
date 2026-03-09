@@ -1,4 +1,5 @@
 import { Control, FieldErrors, FieldValues, Path } from "react-hook-form";
+import { Speciality } from "./speciality.type";
 
 export type PhoneInputProps<T extends FieldValues> = {
   control: Control<T>;
@@ -31,24 +32,46 @@ export interface Paginated<T> {
   total: number;
 }
 
-export type RegisterRequestData = {
+export type RegisterUser = {
   firstName: string;
   lastName?: string;
   gender: string;
   userType: string;
-  email?: string;
+  email: string;
   dateOfBirth?: string;
-  countryCode?: string;
+  countryCode: string;
   mobileNumber: string;
   password: string;
-
-  professionalInfoRequest?: {
+  profileImage?: string;
+  professionalInfoRequest: {
     designation: string;
     specialityId: number[];
+    onmsRegistrationNumber: string;
+    professionalStatement?: string;
+  };
+};
+
+export type NewUser = {
+  firstName: string;
+  lastName?: string;
+  gender: string;
+  userType: string;
+  email: string;
+  dateOfBirth?: string;
+  countryCode: string;
+  mobileNumber: string;
+  password: string;
+  userId: number;
+  profileImage?: string;
+  professionalInfoRequest: {
+    designation: string;
+    specialities?: Speciality[];
+    specialityId: number[];
+    departments?: string;
     departmentId?: number[];
     fileObjectId?: number;
     workPhoneNumber?: string;
-    onmsRegistrationNumber?: string;
+    onmsRegistrationNumber: string;
     professionalStatement?: string;
   };
 };
