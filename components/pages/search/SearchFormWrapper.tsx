@@ -5,7 +5,6 @@ import { SearchForm } from "@/components/pages/home/SearchForm";
 import { SearchFormValues } from "@/types/search.type";
 
 export default function SearchFormWrapper({
-  lang,
   initialValues,
 }: {
   lang: string;
@@ -17,15 +16,14 @@ export default function SearchFormWrapper({
   const handleSearch = (data: SearchFormValues) => {
     const params = new URLSearchParams();
     if (data.searchKeyword) params.set("query", data.searchKeyword);
-    params.set("type", data.type);
-    params.set("city", data.city);
+    params.set("type", data.searchType);
+    params.set("city", data.searchKeyword);
 
     router.push(`${pathname}?${params.toString()}`);
   };
 
   return (
     <SearchForm
-      lang={lang}
       headingTitle="Get Appointment"
       headingSubtitle="Nice to see you again!"
       onSubmitAction={handleSearch}

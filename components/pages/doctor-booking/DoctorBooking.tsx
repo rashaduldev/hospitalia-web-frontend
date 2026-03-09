@@ -73,7 +73,6 @@ const DoctorBooking = ({
     useQuery({
       queryKey: ["doctorAvailability", doctorUserId, selectedLocation],
       queryFn: async () => {
-        console.log("selectedLocation", selectedLocation);
         const res = await getDoctorAvailabilityWithLocation({
           lang,
           doctorUserId: doctorUserId as number,
@@ -183,7 +182,7 @@ const DoctorBooking = ({
       if (onBookingSuccess) {
         onBookingSuccess({
           doctorName: `${doctor.firstName} ${doctor.lastName}`,
-          designation: `${doctor.professionalInfoResponse?.designation}`,
+          designation: `${doctor.professionalInfoRequest?.designation}`,
           location: selectedLocationObj?.label || "",
           date: format(parseISO(data.availableDates), "do MMMM"),
           startTime: selectedSlotObj?.startTime,

@@ -5,7 +5,6 @@ import { Speciality } from "@/types/speciality.type";
 import doctorMale from "../../../public/assets/doctor_male.jpg";
 import doctorFemale from "../../../public/assets/doctor_female.jpg";
 import { DoctorProfileType } from "@/types/doctor.booking";
-import { Location } from "@/types/doctor.location.type";
 
 const DoctorProfile = ({ doctor, doctorLocations }: DoctorProfileType) => {
   const profileImage = doctor?.profileImage
@@ -13,13 +12,6 @@ const DoctorProfile = ({ doctor, doctorLocations }: DoctorProfileType) => {
     : doctor?.gender === "MALE"
       ? doctorMale
       : doctorFemale;
-  console.log("doctorLocations", doctorLocations);
-  console.log(
-    "itemnae",
-    doctorLocations?.forEach((item) => {
-      console.log("itemnae", item);
-    }),
-  );
   return (
     <div className="text-center border px-9 py-7 rounded-lg flex-1">
       {/* doctor profile info */}
@@ -37,11 +29,11 @@ const DoctorProfile = ({ doctor, doctorLocations }: DoctorProfileType) => {
         </Typography>
 
         <Typography as="h3" size="xs" color="muted_foreground">
-          {doctor.professionalInfoResponse?.designation}
+          {doctor.professionalInfoRequest?.designation}
         </Typography>
 
         <Typography as="h3" size="xs" color="muted_foreground">
-          {doctor.professionalInfoResponse?.specialities
+          {doctor.professionalInfoRequest?.specialities
             ?.map((item: Speciality) => item.name)
             .join(", ")}
         </Typography>
@@ -61,13 +53,13 @@ const DoctorProfile = ({ doctor, doctorLocations }: DoctorProfileType) => {
 
         <div className="space-y-1">
           <Typography as="h3" size="xs" color="muted_foreground">
-            {doctor.professionalInfoResponse?.specialities
+            {doctor.professionalInfoRequest?.specialities
               ?.map((item: Speciality) => item.name)
               .join(", ")}
           </Typography>
 
           <Typography as="h3" size="xs" color="muted_foreground">
-            {doctor.professionalInfoResponse?.departments}
+            {doctor.professionalInfoRequest?.departments}
           </Typography>
         </div>
       </div>
@@ -91,9 +83,7 @@ const DoctorProfile = ({ doctor, doctorLocations }: DoctorProfileType) => {
             color="muted_foreground"
             className="wrap-break-word"
           >
-            {doctorLocations
-              ?.map((item: Location) => item.locationName)
-              .join(", ")}
+            {doctorLocations?.map((item) => item.locationName).join(", ")}
           </Typography>
         </div>
 

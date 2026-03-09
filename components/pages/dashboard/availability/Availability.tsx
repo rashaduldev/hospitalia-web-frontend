@@ -1,9 +1,9 @@
 import { DynamicHeading } from "@/components/common/DynamicHeading";
-import { DefaultLocationManager } from "./DefaultLocationManager";
 import AvailabilityScheduleForm from "./AvailabilityScheduleForm";
 import ScheduleManager from "./ScheduleManager";
-import ConfirmSlotsTable from "./ConfirmSlotsTable";
 import { getI18n } from "@/locales/server";
+import { DefaultLocationManager } from "./DefaultLocationManager";
+import ConfirmSlotsTable from "./ConfirmSlotsTable";
 
 const Availability = async ({
   userId,

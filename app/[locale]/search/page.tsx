@@ -1,112 +1,89 @@
 import { globalSearch } from "@/actions/global.search";
-import { getAllHospital } from "@/actions/hospital/hospitaldata";
-import { getAllDoctor } from "@/actions/doctor/doctordata";
 import { Typography } from "@/components/ui/Typography";
 import Header from "@/components/pages/home/Header";
 import Link from "next/link";
-import SearchFormWrapper from "../../../components/pages/search/SearchFormWrapper";
 import { getCurrentLocale } from "@/locales/server";
-import { Metadata } from "next";
 import Pagination from "@/components/common/Pagination";
+import SearchForm from "@/components/pages/home/SearchForm";
+import { SearchResultIteam } from "@/types/search.type";
 
-export const metadata: Metadata = {
-  title: "Hospitalia - Search",
-  description:
-    "This is the Hopitalia Search Page, Here Search Doctor and Hospital name",
-};
+export const metadata = { title: "Hospitalia - Search" };
 
-type SearchPageProps = {
-  params: Promise<{ lang: string }>;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-};
-
-const SearchPage = async ({ searchParams }: SearchPageProps) => {
+const SearchPage = async ({ searchParams }: { searchParams: Promise<any> }) => {
   const lang = await getCurrentLocale();
   const sParams = await searchParams;
 
-  const query = (sParams.query as string) || "";
-  const type = (sParams.type as string) || "doctor";
-  const city = (sParams.city as string) || "all";
+  const searchKeyword = sParams.searchKeyword || "";
+  const searchType = sParams.searchType || "DOCTOR";
 
-  let results;
-  if (query.trim() !== "") {
-    results = await globalSearch({ lang, searchKeyword: query });
-  } else if (type === "doctor") {
-    results = await getAllDoctor({ lang });
-  } else {
-    results = await getAllHospital({ lang });
-  }
+  const response = await globalSearch({
+    lang,
+    searchType,
+    searchKeyword,
+  });
 
-  const displayData = results?.payload?.content || [];
+  const SearchResultData = response?.payload?.content || [];
 
   return (
     <div className="bg-background min-h-screen">
       <Header />
-      <div className="max-w-5xl mx-auto py-10 px-4">
-        <div className="w-full bg-popover px-6 py-3 rounded-sm">
-          <SearchFormWrapper
-            lang={lang}
-            initialValues={{ searchKeyword: query, type: type as any, city }}
+      <div className="max-w-6xl mx-auto py-10 px-4">
+        <div className="bg-popover rounded-sm">
+          <SearchForm
+            headingTitle="Get Appointment"
+            headingSubtitle="Nice to see you again!"
+            className="w-full!"
+            initialValues={{ searchKeyword, searchType }}
           />
         </div>
 
-        <main className="p-8 mt-8 rounded-sm bg-popover min-h-100">
-          <div className="flex justify-between items-center mb-4">
-            <Typography as="h3" size="2xl" weight="bold" color="foreground">
-              {query
-                ? `Results for: ${query}`
-                : `${displayData.length} ${type}s Found`}
-            </Typography>
-          </div>
-          <hr className="mb-6" />
+        <main className="p-8 mt-8 rounded-sm bg-muted-foreground/5 min-h-100">
+          <Typography
+            as="h3"
+            size="2xl"
+            weight="bold"
+            color="foreground"
+            className="mb-6 capitalize"
+          >
+            {!searchKeyword
+              ? "Search Results"
+              : `${SearchResultData.length} ${
+                  searchType.charAt(0).toUpperCase() +
+                  searchType.slice(1).toLowerCase()
+                }${SearchResultData.length !== 1 ? "s" : ""} Found`}
+          </Typography>
 
-          {displayData.length > 0 ? (
+          {SearchResultData.length > 0 ? (
             <div className="grid gap-4">
-              {displayData.map((item: any, index: number) => {
-                const title = item.firstName
-                  ? `${item.firstName} ${item.lastName}`
-                  : item.hospitalName || "Unnamed Result";
-
-                const subtitle =
-                  item.professionalInfoResponse?.specialities?.[0]?.name ||
-                  item.category ||
-                  type;
-
-                return (
-                  <Link
-                    href={`/doctor/${item?.userId}`}
-                    key={item.userId || index}
-                    className="py-1 border-b hover:bg-accent/50 transition-colors"
-                  >
-                    <Typography size="xl" weight="medium" color="foreground">
-                      {title}
-                    </Typography>
-                    <div className="flex items-center mt-1">
-                      <Typography
-                        size="sm"
-                        color="muted_foreground"
-                        className="mr-1"
-                      >
-                        {subtitle},
-                      </Typography>
-                      {item.professionalInfoResponse?.designation && (
-                        <Typography size="sm" color="muted_foreground">
-                          {item.professionalInfoResponse.designation}
-                        </Typography>
-                      )}
-                    </div>
-                  </Link>
-                );
-              })}
-              <Pagination totalRows={displayData.length} itemsPerPage={10} />
+              {SearchResultData.map((item: SearchResultIteam) => (
+                <Link
+                  href={`/doctor/${item.userId}`}
+                  key={item.userId}
+                  className="py-4 border-b hover:bg-accent/50 transition-all block"
+                >
+                  <Typography size="xl" color="foreground" weight="medium">
+                    {item.name}
+                  </Typography>
+                  <Typography size="xs" color="foreground" className="mt-1">
+                    {[
+                      item.specialities?.join(", "),
+                      item.designation,
+                      item.locationName?.join(", "),
+                    ]
+                      .filter(Boolean)
+                      .join(", ")}
+                  </Typography>
+                </Link>
+              ))}
+              <Pagination
+                totalRows={response?.payload?.pageable?.totalElements || 0}
+                itemsPerPage={20}
+              />
             </div>
           ) : (
-            <div className="text-muted-foreground text-center py-20">
-              <Typography size="lg" weight="semiBold" color="foreground">
+            <div className="text-center py-20">
+              <Typography size="lg" color="foreground">
                 No results found.
-              </Typography>
-              <Typography size="sm" color="foreground">
-                Try adjusting your filters or search keywords.
               </Typography>
             </div>
           )}
@@ -115,4 +92,5 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
     </div>
   );
 };
+
 export default SearchPage;

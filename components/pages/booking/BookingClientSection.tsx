@@ -18,7 +18,6 @@ const BookingClientSection = ({
 }: BookingClientSectionProps) => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [bookingInfo, setBookingInfo] = useState<any>(null);
-  console.log("doctorLocations", doctorLocations);
   if (isSuccess && bookingInfo) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4 text-center space-y-6">

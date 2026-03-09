@@ -1,15 +1,21 @@
-import { Searchschema } from "@/schema/search.schema";
-import z from "zod";
-
-export type SearchFormValues = z.infer<typeof Searchschema>;
+export type SearchFormValues = {
+  searchType: "DOCTOR" | "HOSPITAL";
+  searchKeyword: string;
+};
 
 export type SearchFormProps = {
   formWidth?: string;
   headingTitle?: string;
   headingSubtitle?: string;
-  cityOptions?: { label: string; value: string }[];
-  lang: string;
   className?: string;
   onSubmitAction?: (data: SearchFormValues) => void;
   initialValues?: Partial<SearchFormValues>;
+};
+
+export type SearchResultIteam = {
+  userId: number;
+  name: string;
+  designation: string;
+  locationName: string[];
+  specialities: string[];
 };

@@ -4,6 +4,7 @@ import { Speciality } from "./speciality.type";
 export type PhoneInputProps<T extends FieldValues> = {
   control: Control<T>;
   countrycode: Path<T>;
+  required?: string;
   mobileNumber: Path<T>;
   label?: string;
   errors?: FieldErrors<T>;
@@ -21,6 +22,7 @@ export type ApiResponse<T> = {
   message: string;
   payload: T | null;
   status: number;
+  error?: string | null;
 };
 
 export interface Paginated<T> {
@@ -30,7 +32,7 @@ export interface Paginated<T> {
   total: number;
 }
 
-export type UserType = {
+export type NewUser = {
   firstName: string;
   lastName?: string;
   gender: string;
@@ -42,15 +44,15 @@ export type UserType = {
   password: string;
   userId?: number;
   profileImage?: string;
-  professionalInfoResponse?: {
+  professionalInfoRequest: {
     designation: string;
     specialities?: Speciality[];
     specialityId: number[];
     departments?: string;
-    departmentId: number[];
-    fileObjectId: number;
-    workPhoneNumber: string;
-    onmsRegistrationNumber?: string;
+    departmentId?: number[];
+    fileObjectId?: number;
+    workPhoneNumber?: string;
+    onmsRegistrationNumber: string;
     professionalStatement?: string;
   };
 };

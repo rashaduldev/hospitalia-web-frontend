@@ -34,12 +34,12 @@ export const createDoctorLocation = async ({
   locationName: string;
   addressLine1: string;
   city: string;
-  postalCode: number;
+  postalCode: string;
   doctorUserId: number;
 }) => {
   const token = await getAccessToken();
   const res = await apiClient({
-    endpoint: `/api/doctors/location/create`,
+    endpoint: "/api/doctors/location/create",
     method: "POST",
     body: {
       locationName,
@@ -88,7 +88,7 @@ export const updateDoctorLocation = async ({
   const token = await getAccessToken();
 
   const res = await apiClient({
-    endpoint: `/api/doctors/location/update`,
+    endpoint: "/api/doctors/location/update",
     method: "PUT",
     body: {
       locationId,

@@ -1,10 +1,9 @@
-import { getCurrentLocale, getI18n } from "@/locales/server";
+import { getI18n } from "@/locales/server";
 import { SearchForm } from "./SearchForm";
 import { Typography } from "@/components/ui/Typography";
 
 const Banner = async () => {
   const t = await getI18n();
-  const lang = await getCurrentLocale();
 
   return (
     <section
@@ -27,10 +26,9 @@ const Banner = async () => {
         </Typography>
       </div>
 
-      <div className="absolute left-1/2 -translate-x-1/2 top-10 lg:left-14 lg:translate-x-0 lg:top-8">
+      <div className="absolute left-1/2 -translate-x-1/2 top-10 lg:left-14 lg:translate-x-0 lg:top-8 w-[95%]">
         <SearchForm
-          className="bg-background"
-          lang={lang}
+          className="bg-background!"
           headingTitle={t("banner.cardTitle")}
           headingSubtitle={t("banner.cardSubtitle")}
         />

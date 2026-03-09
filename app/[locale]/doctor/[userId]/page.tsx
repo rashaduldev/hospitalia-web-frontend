@@ -3,7 +3,7 @@ import Header from "@/components/pages/home/Header";
 import { getCurrentLocale } from "@/locales/server";
 import { getDoctorLocations } from "@/actions/doctor/location";
 import { Location } from "@/types/doctor.location.type";
-import { UserType } from "@/types/user.type";
+import { NewUser } from "@/types/user.type";
 import { getDoctorUnAvailability } from "@/actions/doctor/unavailability";
 import { getCurrentUser } from "@/actions/user.actions";
 import { getAccessToken } from "@/actions/auth";
@@ -23,7 +23,7 @@ const DoctorBookingPage = async ({ params }: Props) => {
   const doctors = doctorData?.payload?.content || [];
 
   const doctor = doctors.find(
-    (doc: UserType) => doc?.userId?.toString() === userId,
+    (doc: NewUser) => doc?.userId?.toString() === userId,
   );
   const doctorUserId = doctor.userId;
   const doctorLocations = await getDoctorLocations({ lang, doctorUserId });

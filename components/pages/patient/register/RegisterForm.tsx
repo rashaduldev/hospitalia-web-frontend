@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,18 +6,18 @@ import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { CountryAndPhoneInput } from "@/components/common/Country&PhoneInput";
 import { useRouter } from "next/navigation";
-import { getSpecialitiesAllCustomer } from "@/actions/speciality.customer";
-import { useQuery } from "@tanstack/react-query";
 import { ControlledInput } from "@/components/common/FormUIControllers/ControlledInput";
 import { ControlledSelect } from "@/components/common/FormUIControllers/ControlledSelect";
-import { ControlledTextarea } from "@/components/common/FormUIControllers/ControlledTextarea";
 import { ControlledDateInput } from "@/components/common/FormUIControllers/ControlledDateInput";
-import { register } from "@/actions/auth.actions";
+import { Patientregister } from "@/actions/auth.actions";
 import { useI18n } from "@/locales/client";
 import { Typography } from "@/components/ui/Typography";
-import { RegisterFormSchema, RegisterFormValues } from "@/schema/ueser.schema";
+import {
+  PatientRegisterFormSchema,
+  PatientRegisterFormValues,
+} from "@/schema/patient.user.schema";
+import { PatientRegisterRequestData } from "@/types/patient.user.type";
 import AppButton from "@/components/common/AppButton";
-import { NewUser } from "@/types/user.type";
 
 export default function PatinetRegistrationForm({ lang }: { lang: string }) {
   const t = useI18n();
@@ -31,9 +30,9 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
     control,
     setError,
     formState: { errors, isSubmitting },
-  } = useForm<RegisterFormValues>({
+  } = useForm<PatientRegisterFormValues>({
     resolver: zodResolver(
-      RegisterFormSchema((key) => t(key as keyof typeof t) as string),
+      PatientRegisterFormSchema((key) => t(key as any, {}) as string),
     ),
     defaultValues: {
       firstName: "",
@@ -41,50 +40,29 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
       email: "",
       password: "",
       confirmPassword: "",
-      designation: "",
+      userType: "PATIENT",
       countryCode: "",
       mobileNumber: "",
-      specialityId: "",
-      onmsRegistrationNumber: "",
     },
     mode: "onChange",
   });
 
   const router = useRouter();
 
-  const { data } = useQuery({
-    queryKey: ["specialities"],
-    queryFn: async () => {
-      const res = await getSpecialitiesAllCustomer();
-
-      if (!res.success) {
-        throw new Error(res.message);
-      }
-
-      return res.payload;
-    },
-  });
-  const specialities = data?.content ?? [];
-
-  const onSubmit = async (data: RegisterFormValues) => {
-    const bodyData: NewUser = {
+  const onSubmit = async (data: PatientRegisterFormValues) => {
+    const bodyData: PatientRegisterRequestData = {
       firstName: data.firstName,
       lastName: data.lastName,
       gender: data.gender,
-      email: data.email,
+      email: data.email || "",
       dateOfBirth: data.dateOfBirth,
       userType: data.userType,
       countryCode: data.countryCode,
       mobileNumber: data.mobileNumber,
       password: data.password,
-      professionalInfoRequest: {
-        designation: data.designation,
-        specialityId: [Number(data.specialityId)],
-        onmsRegistrationNumber: data.onmsRegistrationNumber,
-        professionalStatement: data.professionalStatement,
-      },
     };
-    const res = await register({ bodyData, lang });
+
+    const res = await Patientregister({ bodyData, lang });
 
     if (!res.success) {
       setError("root", {
@@ -94,19 +72,17 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
       return;
     }
 
-    router.push("/login");
+    router.push("/patient/login");
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      {/* PERSONAL INFO */}
       <div className="rounded-lg border bg-card p-6 space-y-5">
         <Typography size="2xl" as="h3" color="foreground">
           {t("register.personalInfo")}
         </Typography>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {/* First Name */}
           <ControlledInput
             name="firstName"
             required="*"
@@ -115,7 +91,6 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
             placeholder="Enter your first name"
           />
 
-          {/* Last Name */}
           <ControlledInput
             name="lastName"
             label={t("register.lastName")}
@@ -123,7 +98,6 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
             placeholder="Enter your last name"
           />
 
-          {/* Gender */}
           <ControlledSelect
             name="gender"
             required="*"
@@ -141,26 +115,6 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
               },
             ]}
           />
-          {/* User Type */}
-          <ControlledSelect
-            name="userType"
-            required="*"
-            label={t("register.userType")}
-            control={control}
-            placeholder="Select user type"
-            options={[
-              {
-                label: t("register.userTypeOptions.doctor"),
-                value: "DOCTOR",
-              },
-              {
-                label: t("register.userTypeOptions.hospital"),
-                value: "HOSPITAL",
-              },
-            ]}
-          />
-
-          {/* Email */}
           <ControlledInput
             name="email"
             required="*"
@@ -170,26 +124,22 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
             placeholder="Enter your email"
           />
 
-          {/* Date of Birth */}
           <ControlledDateInput
             name="dateOfBirth"
             label={t("register.dateOfBirth")}
             control={control}
             error={errors.dateOfBirth?.message}
-            disableFuture
           />
 
-          {/* CountryCode with phone */}
           <CountryAndPhoneInput
-            required="*"
             control={control}
+            required="*"
             countrycode="countryCode"
             mobileNumber="mobileNumber"
             label={t("register.phone")}
             errors={errors}
           />
 
-          {/* Password */}
           <div className="relative">
             <ControlledInput
               name="password"
@@ -211,7 +161,6 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
             </button>
           </div>
 
-          {/* Confirm Password */}
           <div className="relative">
             <ControlledInput
               name="confirmPassword"
@@ -234,61 +183,11 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
           </div>
         </div>
       </div>
-
-      {/* PROFESSIONAL INFO */}
-      <div className="rounded-lg border bg-card p-6 space-y-5 mt-12">
-        <Typography size="2xl" as="h3" color="foreground">
-          {t("register.professionalInfo")}
-        </Typography>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {/* Designation */}
-          <ControlledInput
-            name="designation"
-            required="*"
-            label={t("register.designation")}
-            control={control}
-            placeholder="Enter your title/designation"
-          />
-
-          {/* Speciality */}
-          <ControlledSelect
-            name="specialityId"
-            required="*"
-            label="Speciality"
-            control={control}
-            placeholder="Select speciality"
-            options={specialities.map((item) => ({
-              label: item.name,
-              value: String(item.id),
-            }))}
-          />
-          {/* ONMS Registration Number */}
-          <ControlledInput
-            name="onmsRegistrationNumber"
-            required="*"
-            label={t("register.onms")}
-            control={control}
-            placeholder="Enter your registration number"
-          />
-        </div>
-
-        {/* Professional Statement */}
-        <ControlledTextarea
-          name="professionalStatement"
-          label={t("register.statement")}
-          control={control}
-          placeholder="Write your professional statement"
-        />
-      </div>
-
-      {/* Feedback Messages */}
       {errors.root && (
         <p className="text-destructive text-xs font-semibold mt-4">
           {errors.root.message}
         </p>
       )}
-      {/* Submit Button */}
       <div className="flex flex-col items-center gap-4 mt-6 mb-12">
         <AppButton
           className="w-full max-w-md"
@@ -301,7 +200,7 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
         </AppButton>
 
         <Link
-          href="/login"
+          href="/patient/login"
           className="text-sm font-medium text-primary hover:underline"
         >
           {t("register.alreadyAccount")}

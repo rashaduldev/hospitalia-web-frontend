@@ -18,12 +18,14 @@ type ControlledDateInputProps = {
   placeholder?: string;
   className?: string;
   error?: string;
+  disableFuture?: boolean;
 };
 
 export const ControlledDateInput: React.FC<ControlledDateInputProps> = ({
   name,
   label,
   control,
+  disableFuture = false,
   placeholder = "Select date",
   className = "",
 }) => {
@@ -52,6 +54,9 @@ export const ControlledDateInput: React.FC<ControlledDateInputProps> = ({
                 mode="single"
                 selected={field.value ? new Date(field.value) : undefined}
                 captionLayout="dropdown"
+                disabled={
+                  disableFuture ? (date) => date > new Date() : undefined
+                }
                 onSelect={(date) => {
                   if (!date) return;
                   const yyyy = date.getFullYear();

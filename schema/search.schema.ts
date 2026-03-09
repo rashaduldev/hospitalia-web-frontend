@@ -1,7 +1,8 @@
-import z from "zod";
+import * as z from "zod";
 
-export const Searchschema = z.object({
-  type: z.string(),
-  city: z.string().min(1, "City is required"),
-  searchKeyword: z.string().optional().or(z.literal("")),
+export const searchSchema = z.object({
+  searchType: z.enum(["DOCTOR", "HOSPITAL"]),
+  searchKeyword: z.string().min(1, "Please enter a name or keyword"),
 });
+
+export type searchFormValues = z.infer<typeof searchSchema>;

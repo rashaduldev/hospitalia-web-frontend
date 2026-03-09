@@ -18,14 +18,41 @@ export type Location = {
   country?: string;
   state?: string;
   city: string;
-  postalCode: number;
+  postalCode: string;
 };
+
 export type UpdateLocationParams = {
   lang: string;
   locationId: number;
   locationName: string;
   addressLine1: string;
   city: string;
-  postalCode: number;
+  postalCode: string;
   doctorUserId: number;
 };
+
+export type DoctorLocation = {
+  locationId: number;
+  doctorUserId: number;
+  locationName: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state?: string;
+  country?: string;
+  postalCode: string;
+  latitude?: number;
+  longitude?: number;
+};
+
+export interface DoctorUnavailability {
+  id: number;
+  doctorUserId: number;
+  unavailableDate: string;
+  createdBy: string;
+  creationDate: string;
+  creationDateTimeStamp: number;
+  lastModifiedBy: string;
+  lastModifiedDate: string;
+  lastModifiedDateTimeStamp: number;
+}

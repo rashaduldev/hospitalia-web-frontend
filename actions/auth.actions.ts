@@ -1,12 +1,14 @@
 "use server";
 
 import { apiClient } from "@/lib/api";
+import { PatientRegisterRequestData } from "@/types/patient.user.type";
 import {
   LoginRequestData,
   LoginResponseData,
-  UserType,
+  NewUser,
 } from "@/types/user.type";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 // cookie save
 export const setAuthCookies = async (
@@ -43,14 +45,36 @@ export const deleteAuthCookies = async () => {
   cookieStore.delete("refreshToken");
 };
 
-// Register
-export const register = async (body: UserType, lang?: string) => {
+// Patient Register
+export const Patientregister = async ({
+  bodyData,
+  lang,
+}: {
+  bodyData: PatientRegisterRequestData;
+  lang: string;
+}) => {
   return apiClient({
     endpoint: "/api/auth/sign-up",
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    params: lang ? { lang } : undefined,
-    body,
+    params: { lang },
+    body: { bodyData },
+  });
+};
+// Register
+export const register = async ({
+  bodyData,
+  lang,
+}: {
+  bodyData: NewUser;
+  lang: string;
+}) => {
+  return apiClient({
+    endpoint: "/api/auth/sign-up",
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    params: { lang },
+    body: bodyData,
   });
 };
 
@@ -72,4 +96,15 @@ export async function login(body: LoginRequestData, lang?: string) {
   await setAuthCookies(accessToken, refreshToken);
 
   return res;
+}
+
+// Logout
+export async function handleLogout({ lang }: { lang: string }) {
+  await apiClient({
+    endpoint: "/api/auth/sign-out",
+    method: "GET",
+    params: { lang },
+  });
+  await deleteAuthCookies();
+  redirect("/");
 }

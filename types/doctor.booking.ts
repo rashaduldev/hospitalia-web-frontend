@@ -1,10 +1,10 @@
-import { LocationOption } from "./doctor.location.type";
+import { DoctorLocation, LocationOption } from "./doctor.location.type";
 import { UnavailableDate } from "./doctor.unavailable";
-import { UserType } from "./user.type";
+import { NewUser } from "./user.type";
 
 export type DoctorBookingType = {
   locationOptions: { label: string; value: number }[];
-  doctor: UserType;
+  doctor: NewUser;
   token: string | null;
   currentUserId?: number;
   doctorUnAvailable: UnavailableDate[];
@@ -13,8 +13,8 @@ export type DoctorBookingType = {
 };
 
 export type BookingClientSectionProps = {
-  doctor: UserType;
-  doctorLocations: Location[];
+  doctor: NewUser;
+  doctorLocations: DoctorLocation[];
   locationOptions: LocationOption[];
   lang: string;
   token: string | null;
@@ -23,6 +23,6 @@ export type BookingClientSectionProps = {
 };
 
 export type DoctorProfileType = {
-  doctor: UserType;
-  doctorLocations: Location[];
+  doctor: NewUser;
+  doctorLocations: DoctorLocation[];
 };

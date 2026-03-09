@@ -1,5 +1,5 @@
 import Header from "@/components/pages/home/Header";
-import RegistrationForm from "@/components/pages/register/RegisterForm";
+import PatinetRegistrationForm from "@/components/pages/patient/register/RegisterForm";
 import { getCurrentLocale } from "@/locales/server";
 import { Metadata } from "next";
 
@@ -8,7 +8,6 @@ export const metadata: Metadata = {
   description:
     "Create your Hospitalia account to access hospital services, manage appointments, and connect with healthcare professionals securely.",
 };
-
 export default async function RegisterPage() {
   const lang = await getCurrentLocale();
   return (
@@ -19,7 +18,7 @@ export default async function RegisterPage() {
       </h2>
       <div className="min-h-screen bg-muted/40 px-4">
         <div className="container mx-auto">
-          <RegistrationForm lang={lang} />
+          <PatinetRegistrationForm lang={lang} />
         </div>
       </div>
     </div>

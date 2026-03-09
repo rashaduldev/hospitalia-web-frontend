@@ -3,8 +3,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
-import ErrorHandle from "@/components/common/ErrorHandle";
 import { getCurrentLocale } from "@/locales/server";
+import { ErrorHandle } from "@/components/common/ErrorHandle";
 
 export default async function UserLayout({
   children,
@@ -28,15 +28,15 @@ export default async function UserLayout({
         <SidebarProvider
           style={
             {
-              "--sidebar-width": "calc(var(--spacing) * 72)",
+              "--sidebar-width": "calc(var(--spacing) * 76)",
               "--header-height": "calc(var(--spacing) * 12)",
             } as React.CSSProperties
           }
         >
-          <AppSidebar variant="inset" userRole={res?.userType} />
+          <AppSidebar variant="inset" userRole={res?.userType} lang={lang} />
           <SidebarInset>
             <SiteHeader user={res} />
-            <div className="flex flex-1 flex-col">
+            <div className="flex flex-1 flex-col bg-dashboard-bg">
               <div className="@container/main flex flex-1 flex-col gap-2">
                 <div className="flex flex-col gap-4 md:gap-6 mx-3 md:mx-6">
                   {children}
