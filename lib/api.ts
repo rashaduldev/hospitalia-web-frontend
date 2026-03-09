@@ -40,7 +40,7 @@ export async function apiClient<Response = any, Request = any>({
         ? JSON.stringify(body)
         : undefined,
   });
-  console.log("res", res);
+  // console.log("res", res);
 
   let data: any = {};
   try {

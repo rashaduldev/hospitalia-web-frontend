@@ -15,7 +15,6 @@ const Availability = async ({
 }) => {
   const t = await getI18n();
   const timeSlots = await getDefaultTimeSlot({ lang });
-  console.log("timeSlots", timeSlots.payload);
 
   return (
     <div>

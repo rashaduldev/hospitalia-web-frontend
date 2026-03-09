@@ -24,7 +24,6 @@ const DoctorBookingPage = async ({ params }: Props) => {
     SignleDoctorUserId,
   });
   const doctorUserId = singleDoctor?.payload?.userId;
-  console.log("singleDoctor", singleDoctor.payload);
 
   const doctorLocations = await getDoctorLocations({ lang, doctorUserId });
   const doctorUnAvailable = await getDoctorUnAvailability({

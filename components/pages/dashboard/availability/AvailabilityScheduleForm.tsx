@@ -19,6 +19,7 @@ import {
 } from "@/schema/doctor.availability.schedule.schema";
 import AppButton from "@/components/common/AppButton";
 import { Location } from "@/types/doctor.location.type";
+import { WeeklySchedule } from "@/types/doctorSchedule";
 
 const DAYS = [
   "SUNDAY",
@@ -54,6 +55,7 @@ export default function AvailabilityScheduleForm({
     lang,
     doctorUserId,
   });
+
   const t = useI18n();
 
   const {
@@ -70,14 +72,14 @@ export default function AvailabilityScheduleForm({
         doctorLocationId: "",
         startTime: "",
         endTime: "",
-        timeSlot: "MIN_10",
+        timeSlot: "",
       },
       loc2: {
         availabilityStatus: "AVAILABLE",
         doctorLocationId: "",
         startTime: "",
         endTime: "",
-        timeSlot: "MIN_10",
+        timeSlot: "",
       },
     },
   });
@@ -99,7 +101,7 @@ export default function AvailabilityScheduleForm({
       return;
     }
 
-    const finalScheduleArray: any[] = [];
+    const finalScheduleArray: WeeklySchedule[] = [];
 
     selectedDays.forEach((day) => {
       const formatTime = (time: string | undefined) =>
@@ -122,7 +124,7 @@ export default function AvailabilityScheduleForm({
           doctorLocationId: Number(data.loc2.doctorLocationId),
           startTime: formatTime(data.loc2.startTime),
           endTime: formatTime(data.loc2.endTime),
-          timeSlot: data.loc2.timeSlot,
+          timeSlot: data.loc2.timeSlot ?? "",
           dayOfWeek: day,
         });
       }
@@ -205,7 +207,7 @@ export default function AvailabilityScheduleForm({
             control={control}
             placeholder="Select Location"
             options={
-              locations?.map((loc: any) => ({
+              locations?.payload?.map((loc: Location) => ({
                 label: loc.locationName,
                 value: String(loc.locationId),
               })) || []
@@ -231,6 +233,7 @@ export default function AvailabilityScheduleForm({
             <ControlledSelect
               name="loc1.timeSlot"
               label="Time Slot"
+              placeholder="Select Time Slot"
               control={control}
               options={timeSlots.map((slot) => ({
                 label: slot.replace("_", " "),
@@ -253,7 +256,7 @@ export default function AvailabilityScheduleForm({
               control={control}
               placeholder="Select Another Location"
               options={
-                locations?.map((loc: Location) => ({
+                locations?.payload?.map((loc: Location) => ({
                   label: loc.locationName,
                   value: String(loc.locationId),
                 })) || []
@@ -278,6 +281,7 @@ export default function AvailabilityScheduleForm({
             <ControlledSelect
               name="loc2.timeSlot"
               label="Time Slot"
+              placeholder="Select Time Slot"
               control={control}
               options={timeSlots.map((slot) => ({
                 label: slot.replace("_", " "),

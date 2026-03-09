@@ -18,7 +18,7 @@ export function useLocations({
   doctorUserId: number;
 }) {
   const queryClient = useQueryClient();
-  const queryKey = ["locations", doctorUserId];
+  const queryKey = ["doctor-locations", doctorUserId];
 
   const query = useQuery({
     queryKey,
@@ -68,8 +68,8 @@ export function useLocations({
 
       return { previousLocations };
     },
-    onError: (_, context) => {
-      queryClient.setQueryData(queryKey, context?.locationId);
+    onError: (_, __, context) => {
+      queryClient.setQueryData(queryKey, context?.previousLocations);
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey }),
   });
