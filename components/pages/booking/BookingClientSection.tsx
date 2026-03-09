@@ -3,7 +3,6 @@
 import { useState } from "react";
 import DoctorProfile from "./DoctorProfile";
 import { Typography } from "@/components/ui/Typography";
-import AppButton from "@/components/common/AppButton";
 import DoctorBooking from "../doctor-booking/DoctorBooking";
 import { DoctorLocation, LocationOption } from "@/types/doctor.location.type";
 import { UnavailableDate } from "@/types/doctor.unavailable";
@@ -59,13 +58,6 @@ const BookingClientSection = ({
             <strong>Price:</strong> {bookingInfo.price}
           </Typography>
         </div>
-
-        <AppButton
-          className="mt-4 w-full max-w-xs"
-          onClick={() => window.location.reload()}
-        >
-          Back to Home
-        </AppButton>
       </div>
     );
   }

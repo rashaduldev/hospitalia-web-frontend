@@ -473,7 +473,9 @@ const DoctorBooking = ({
               Cancel
             </AppButton>
             <AppButton
-              onClick={() => (window.location.href = "/patient/login")}
+              onClick={() =>
+                (window.location.href = `/patient/login?redirect=${encodeURIComponent(window.location.pathname)}`)
+              }
             >
               Go to Login
             </AppButton>

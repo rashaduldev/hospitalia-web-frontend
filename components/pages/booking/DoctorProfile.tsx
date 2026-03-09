@@ -7,6 +7,10 @@ import doctorFemale from "../../../public/assets/doctor_female.jpg";
 import { SingleDoctorInfo } from "@/types/doctor";
 import { DoctorLocation } from "@/types/doctor.location.type";
 
+const NEW_PATIENT_FEE = 25000;
+const RETURNING_PATIENT_FEE = 10000;
+const CURRENCY = "CFA";
+
 const DoctorProfile = ({
   doctor,
   doctorLocations,
@@ -19,6 +23,10 @@ const DoctorProfile = ({
     : doctor?.gender === "MALE"
       ? doctorMale
       : doctorFemale;
+
+  const formatPrice = (price: number) =>
+    `${price.toLocaleString()} ${CURRENCY}`;
+
   return (
     <div className="text-center border px-9 py-7 rounded-lg flex-1">
       {/* doctor profile info */}
@@ -93,14 +101,14 @@ const DoctorProfile = ({
             {doctorLocations?.map((item) => item.locationName).join(", ")}
           </Typography>
         </div>
-
+        {/* fees */}
         <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 justify-center">
           <Typography className="py-2 rounded-sm bg-secondary text-muted text-sm px-2">
-            New Patient: 25,000 CFA
+            New Patient: {formatPrice(NEW_PATIENT_FEE)}
           </Typography>
 
           <Typography className="py-2 rounded-sm bg-primary text-muted text-sm px-2">
-            Returning Patient: 10,000 CFA
+            Returning Patient: {formatPrice(RETURNING_PATIENT_FEE)}
           </Typography>
         </div>
 
