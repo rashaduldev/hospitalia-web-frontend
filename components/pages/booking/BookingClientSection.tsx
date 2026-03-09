@@ -29,34 +29,54 @@ const BookingClientSection = ({
   const [bookingInfo, setBookingInfo] = useState<any>(null);
   if (isSuccess && bookingInfo) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4 text-center space-y-6">
-        <Typography size="3xl" weight="bold" color="secondary">
-          Appointment Booked Successfully
-        </Typography>
+      <div className="mt-14 bg-background p-4 text-center space-y-6">
+        <div className="border max-w-158.25 w-full mx-auto rounded-sm p-6">
+          <Typography
+            size="3xl"
+            weight="bold"
+            color="secondary"
+            className="mb-6"
+          >
+            Appointment Booked Successfully
+          </Typography>
 
-        <div className="w-full max-w-md border rounded-lg p-6 bg-muted-foreground/10 text-left space-y-3">
-          <Typography size="xl" weight="semiBold" className="border-b pb-2">
-            Appointment Summary
-          </Typography>
-          <Typography size="sm">
-            <strong>Doctor:</strong> {bookingInfo.doctorName}
-          </Typography>
-          <Typography size="sm">
-            <strong>Designation:</strong> {bookingInfo.designation}
-          </Typography>
-          <Typography size="sm">
-            <strong>Location:</strong> {bookingInfo.location}
-          </Typography>
-          <Typography size="sm">
-            <strong>Date:</strong> {bookingInfo.date}
-          </Typography>
-          <Typography size="sm">
-            <strong>Time:</strong> {bookingInfo.startTime} -{" "}
-            {bookingInfo.endTime}
-          </Typography>
-          <Typography size="sm">
-            <strong>Price:</strong> {bookingInfo.price}
-          </Typography>
+          <div className="w-full border rounded-sm p-6 text-left space-y-6">
+            <Typography size="xl" weight="bold" color="foreground">
+              Appointment Summary
+            </Typography>
+            <Typography size="sm">
+              <strong>Doctor-</strong>{" "}
+              <span className="text-muted-foreground">
+                {bookingInfo.doctorName}
+              </span>
+            </Typography>
+            <Typography size="sm">
+              <strong>Designation:</strong>{" "}
+              <span className="text-muted-foreground">
+                {bookingInfo.designation}
+              </span>
+            </Typography>
+            <Typography size="sm">
+              <strong>Location:</strong>{" "}
+              <span className="text-muted-foreground">
+                {bookingInfo.location}
+              </span>
+            </Typography>
+            <Typography size="sm">
+              <strong>Date:</strong>{" "}
+              <span className="text-muted-foreground">{bookingInfo.date}</span>
+            </Typography>
+            <Typography size="sm">
+              <strong>Time:</strong>{" "}
+              <span className="text-muted-foreground">
+                {bookingInfo.startTime} - {bookingInfo.endTime}
+              </span>
+            </Typography>
+            <Typography size="sm">
+              <strong>Price:</strong>{" "}
+              <span className="text-muted-foreground">{bookingInfo.price}</span>
+            </Typography>
+          </div>
         </div>
       </div>
     );
