@@ -18,7 +18,7 @@ import AppButton from "@/components/common/AppButton";
 const PatientLoginForm = () => {
   const t = useI18n();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect");
+  const callback = searchParams.get("callback");
   const [showPassword, setShowPassword] = useState(false);
   const {
     handleSubmit,
@@ -54,7 +54,7 @@ const PatientLoginForm = () => {
       });
       return;
     }
-    router.push(redirect || "/dashboard");
+    router.push(callback || "/dashboard");
   };
 
   return (

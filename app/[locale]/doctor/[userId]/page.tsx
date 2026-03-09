@@ -32,6 +32,9 @@ const DoctorBookingPage = async ({ params }: Props) => {
   });
   const doctorUserId = singleDoctor?.payload?.userId;
 
+  if (!doctorUserId) {
+    throw new Error("Doctor not found or invalid doctor ID");
+  }
   const doctorLocations = await getDoctorLocations({ lang, doctorUserId });
   const doctorUnAvailable = await getDoctorUnAvailability({
     lang,

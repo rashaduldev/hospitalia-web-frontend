@@ -27,6 +27,7 @@ import { getDoctorAvailabilityWithLocation } from "@/actions/doctor/availability
 import { getAvailableSlots } from "@/actions/doctor/slot";
 import { UnavailableDate } from "@/types/doctor.unavailable";
 import { SingleDoctorInfo } from "@/types/doctor";
+import { usePathname, useRouter } from "next/navigation";
 
 const DoctorBooking = ({
   locationOptions,
@@ -68,6 +69,8 @@ const DoctorBooking = ({
   const selectedDate = useWatch({ control, name: "availableDates" });
   const patientType = useWatch({ control, name: "patientType" });
   const queryClient = useQueryClient();
+  const router = useRouter();
+  const pathname = usePathname();
 
   const { field: dateField } = useController({
     name: "availableDates",
@@ -157,13 +160,16 @@ const DoctorBooking = ({
   const hasSlots = Object.values(groupedSlots).some(
     (slots) => slots.length > 0,
   );
-
+  const isLoggedIn = !!token;
+  const redirectToLogin = () => {
+    router.push(`/patient/login?callback=${encodeURIComponent(pathname)}`);
+  };
   // Submit
   const onSubmit = async (data: DoctorBookingFormValues) => {
     if (!token) {
-      return setShowLoginDialog(true);
+      setShowLoginDialog(true);
+      return;
     }
-
     const selectedSlotObj = slotData?.slots?.find(
       (s: any) => s.startTime === data.availableSlots,
     );
@@ -209,6 +215,7 @@ const DoctorBooking = ({
 
       return;
     }
+
     if (!res.success) {
       setError("root", {
         type: "manual",
@@ -454,7 +461,10 @@ const DoctorBooking = ({
       </form>
 
       {/* Login Dialog */}
-      <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
+      <Dialog
+        open={!isLoggedIn && showLoginDialog}
+        onOpenChange={setShowLoginDialog}
+      >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-2xl">
@@ -472,13 +482,7 @@ const DoctorBooking = ({
             >
               Cancel
             </AppButton>
-            <AppButton
-              onClick={() =>
-                (window.location.href = `/patient/login?redirect=${encodeURIComponent(window.location.pathname)}`)
-              }
-            >
-              Go to Login
-            </AppButton>
+            <AppButton onClick={redirectToLogin}>Go to Login</AppButton>
           </DialogFooter>
         </DialogContent>
       </Dialog>

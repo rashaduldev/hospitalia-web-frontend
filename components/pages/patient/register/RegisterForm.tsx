@@ -128,6 +128,7 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
             name="dateOfBirth"
             label={t("register.dateOfBirth")}
             control={control}
+            disableFuture
             error={errors.dateOfBirth?.message}
           />
 
