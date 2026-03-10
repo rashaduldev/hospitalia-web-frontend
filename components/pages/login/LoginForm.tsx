@@ -40,7 +40,9 @@ const LoginForm = ({ isPatient }: { isPatient: boolean }) => {
   });
 
   const onSubmit = async (data: LoginFormValues) => {
-    const { countryCode, phoneNumber } = getCleanPhoneData(data.phoneNumber);
+    const { countryCode, number: phoneNumber } = getCleanPhoneData(
+      data.phoneNumber,
+    );
     const res = await login({
       countryCode,
       phoneNumber,

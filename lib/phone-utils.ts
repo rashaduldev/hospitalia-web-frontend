@@ -1,9 +1,10 @@
 import { parsePhoneNumber } from "react-phone-number-input";
 
-export const getCleanPhoneData = (fullPhoneNumber: string) => {
-  const parsed = parsePhoneNumber(fullPhoneNumber);
+export const getCleanPhoneData = (fullValue: string) => {
+  const parsed = parsePhoneNumber(fullValue || "");
+
   return {
     countryCode: parsed ? `+${parsed.countryCallingCode}` : "",
-    phoneNumber: parsed ? parsed.nationalNumber : fullPhoneNumber,
+    number: parsed ? parsed.nationalNumber : fullValue,
   };
 };

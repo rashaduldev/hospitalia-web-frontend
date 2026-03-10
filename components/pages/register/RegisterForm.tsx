@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
-import { CountryAndPhoneInput } from "@/components/common/Country&PhoneInput";
 import { useRouter } from "next/navigation";
 import { getSpecialitiesAllCustomer } from "@/actions/speciality.customer";
 import { useQuery } from "@tanstack/react-query";
@@ -19,6 +18,8 @@ import { Typography } from "@/components/ui/Typography";
 import { RegisterFormSchema, RegisterFormValues } from "@/schema/ueser.schema";
 import AppButton from "@/components/common/AppButton";
 import { RegisterUser } from "@/types/user.type";
+import { getCleanPhoneData } from "@/lib/phone-utils";
+import { ControlledPhoneInput } from "@/components/common/FormUIControllers/ControlledPhoneInput";
 
 export default function PatinetRegistrationForm({ lang }: { lang: string }) {
   const t = useI18n();
@@ -31,6 +32,7 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
     control,
     setError,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(
@@ -69,6 +71,9 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
   const specialities = data?.content ?? [];
 
   const onSubmit = async (data: RegisterFormValues) => {
+    const { countryCode, number: mobileNumber } = getCleanPhoneData(
+      data.mobileNumber,
+    );
     const bodyData: RegisterUser = {
       firstName: data.firstName,
       lastName: data.lastName,
@@ -76,8 +81,8 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
       email: data.email,
       dateOfBirth: data.dateOfBirth,
       userType: data.userType,
-      countryCode: data.countryCode,
-      mobileNumber: data.mobileNumber,
+      countryCode,
+      mobileNumber,
       password: data.password,
       professionalInfoRequest: {
         designation: data.designation,
@@ -182,13 +187,13 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
           />
 
           {/* CountryCode with phone */}
-          <CountryAndPhoneInput
-            required="*"
+          <ControlledPhoneInput
+            name="mobileNumber"
             control={control}
-            countrycode="countryCode"
-            mobileNumber="mobileNumber"
-            label={t("register.phone")}
-            errors={errors}
+            requiredMark="*"
+            label={t("login.phoneLabel")}
+            setValue={setValue}
+            defaultCountry="SN"
           />
 
           {/* Password */}
