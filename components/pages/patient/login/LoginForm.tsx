@@ -24,6 +24,7 @@ const PatientLoginForm = () => {
     handleSubmit,
     control,
     setError,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(
@@ -54,7 +55,8 @@ const PatientLoginForm = () => {
       });
       return;
     }
-    router.push(callback || "/dashboard");
+    router.replace(callback || "/dashboard");
+    reset();
   };
 
   return (

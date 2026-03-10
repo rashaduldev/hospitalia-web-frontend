@@ -192,10 +192,10 @@ export default function AvailabilityScheduleForm({
 
         {/* --- Location 1 --- */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="grid grid-cols-1 col-span-1 md:grid-cols-2 md:col-span-2">
+          <div className="grid grid-cols-1 col-span-1 md:grid-cols-2 md:col-span-2 gap-4">
             <ControlledSelect
               name="loc1.availabilityStatus"
-              label="Availability Status *"
+              label="Availability *"
               control={control}
               options={AVAILABILITY_OPTIONS}
             />
@@ -246,7 +246,7 @@ export default function AvailabilityScheduleForm({
         {/* --- Location 2 (Optional) --- */}
         <div className="space-y-4">
           <Typography as="h3" color="foreground" weight="semiBold">
-            Add Another Location on the Same Day (Optional)
+            Add Another Location on the Same Day (If Needed)
           </Typography>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -29,6 +29,7 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
     handleSubmit,
     control,
     setError,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<PatientRegisterFormValues>({
     resolver: zodResolver(
@@ -72,7 +73,8 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
       return;
     }
 
-    router.push("/patient/login");
+    router.replace("/patient/login");
+    reset();
   };
 
   return (
@@ -128,7 +130,6 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
             name="dateOfBirth"
             label={t("register.dateOfBirth")}
             control={control}
-            disableFuture
             error={errors.dateOfBirth?.message}
             disableFuture
           />

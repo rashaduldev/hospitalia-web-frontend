@@ -30,6 +30,7 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
     handleSubmit,
     control,
     setError,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(
@@ -94,8 +95,8 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
       });
       return;
     }
-
-    router.push("/login");
+    router.replace("/login");
+    reset();
   };
 
   return (
@@ -285,9 +286,14 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
 
       {/* Feedback Messages */}
       {errors.root && (
-        <p className="text-destructive text-xs font-semibold mt-4">
+        <Typography
+          color="destructive"
+          size="xs"
+          weight="semiBold"
+          className="mt-4"
+        >
           {errors.root.message}
-        </p>
+        </Typography>
       )}
       {/* Submit Button */}
       <div className="flex flex-col items-center gap-4 mt-6 mb-12">

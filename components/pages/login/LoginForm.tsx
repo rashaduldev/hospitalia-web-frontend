@@ -22,6 +22,7 @@ const LoginForm = ({ isPatient }: { isPatient: boolean }) => {
     handleSubmit,
     control,
     setError,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(
@@ -52,7 +53,8 @@ const LoginForm = ({ isPatient }: { isPatient: boolean }) => {
       });
       return;
     }
-    router.push("/dashboard");
+    router.replace("/dashboard");
+    reset();
   };
 
   return (
