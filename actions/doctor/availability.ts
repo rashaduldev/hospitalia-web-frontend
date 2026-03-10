@@ -12,13 +12,29 @@ export const getDoctorAvailability = async ({
   doctorUserId: number;
   lang: string;
 }) => {
-  const token = await getAccessToken();
-
   const res = await apiClient({
     endpoint: `/api/doctors/availability/all/doctorUserId/${doctorUserId}/status`,
     method: "GET",
     params: { lang },
-    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res;
+};
+
+// Get doctor's all weekly availability schedule by doctor user id
+
+export const getDoctorAvailabilityWithLocation = async ({
+  doctorUserId,
+  doctorLocationId,
+  lang,
+}: {
+  doctorUserId: number;
+  doctorLocationId: number;
+  lang: string;
+}) => {
+  const res = await apiClient({
+    endpoint: `/api/doctors/availability/all/doctorUserId/${doctorUserId}/location/${doctorLocationId}`,
+    method: "GET",
+    params: { lang },
   });
   return res;
 };
@@ -61,25 +77,29 @@ export const createDoctorAvailability = async ({
 export const updateDoctorAvailability = async ({
   doctorUserId,
   availabilityIds,
-  weeklySchedule:[{
-    dayOfWeek,
-    startTime,
-    endTime,
-    timeSlot,
-    doctorLocationId,
-    availabilityStatus,
-  }]
+  weeklySchedule: [
+    {
+      dayOfWeek,
+      startTime,
+      endTime,
+      timeSlot,
+      doctorLocationId,
+      availabilityStatus,
+    },
+  ],
 }: {
   doctorUserId: number;
   availabilityIds: [number];
-  weeklySchedule: [{
-    dayOfWeek: string;
-    startTime: string;
-    endTime: string;
-    timeSlot: string;
-    doctorLocationId: number;
-    availabilityStatus: string;
-  }];
+  weeklySchedule: [
+    {
+      dayOfWeek: string;
+      startTime: string;
+      endTime: string;
+      timeSlot: string;
+      doctorLocationId: number;
+      availabilityStatus: string;
+    },
+  ];
 }) => {
   const token = await getAccessToken();
 
@@ -88,12 +108,12 @@ export const updateDoctorAvailability = async ({
     availabilityIds: [availabilityIds],
     weeklySchedule: [
       {
-      dayOfWeek,
-      startTime,
-      endTime,
-      timeSlot,
-      doctorLocationId,
-      availabilityStatus,
+        dayOfWeek,
+        startTime,
+        endTime,
+        timeSlot,
+        doctorLocationId,
+        availabilityStatus,
       },
     ],
   };
@@ -103,10 +123,9 @@ export const updateDoctorAvailability = async ({
     method: "PUT",
     body: payload,
     headers: { Authorization: `Bearer ${token}` },
-  });  
+  });
   return res;
 };
-
 
 // Delete an availability slot
 export const deleteAvailabilitySlot = async ({ id }: { id: number }) => {

@@ -1,10 +1,11 @@
 "use server";
 
 import { apiClient } from "@/lib/api";
+import { PatientRegisterRequestData } from "@/types/patient.user.type";
 import {
   LoginRequestData,
   LoginResponseData,
-  RegisterRequestData,
+  RegisterUser,
 } from "@/types/user.type";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -44,14 +45,36 @@ export const deleteAuthCookies = async () => {
   cookieStore.delete("refreshToken");
 };
 
-// Register
-export const register = async (body: RegisterRequestData, lang?: string) => {
+// Patient Register
+export const Patientregister = async ({
+  bodyData,
+  lang,
+}: {
+  bodyData: PatientRegisterRequestData;
+  lang: string;
+}) => {
   return apiClient({
     endpoint: "/api/auth/sign-up",
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    params: lang ? { lang } : undefined,
-    body,
+    params: { lang },
+    body: { bodyData },
+  });
+};
+// Register
+export const register = async ({
+  bodyData,
+  lang,
+}: {
+  bodyData: RegisterUser;
+  lang: string;
+}) => {
+  return apiClient({
+    endpoint: "/api/auth/sign-up",
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    params: { lang },
+    body: bodyData,
   });
 };
 

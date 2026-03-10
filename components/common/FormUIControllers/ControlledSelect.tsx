@@ -13,14 +13,15 @@ import { Typography } from "@/components/ui/Typography";
 
 type OptionType = {
   label: string;
-  value: string;
+  value: string | number;
   [key: string]: any;
 };
 type ControlledSelectProps = {
   name: string;
-  label: string;
   required?: string;
+  label?: string;
   control: Control<any>;
+  onChange?: (value: string) => void;
   placeholder?: string;
   options: OptionType[];
   className?: string;
@@ -72,7 +73,11 @@ export const ControlledSelect: FC<ControlledSelectProps> = ({
             </SelectContent>
           </Select>
           {fieldState.error && (
-            <Typography size="xs" color="destructive">
+            <Typography
+              size="xs"
+              color="destructive"
+              className="mt-1 text-left"
+            >
               {fieldState.error.message}
             </Typography>
           )}

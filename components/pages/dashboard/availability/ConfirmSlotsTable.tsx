@@ -27,7 +27,11 @@ const ConfirmSlotsTable = async ({
           descriptionProps={{ size: "sm" }}
         />
         <Suspense fallback={<p>loading...</p>}>
-          <DataTableWithExport columns={ConfirmSlotsColumns} data={slots} />
+          <DataTableWithExport
+            emptyMessage="No slots found"
+            columns={ConfirmSlotsColumns}
+            data={slots}
+          />
         </Suspense>
       </div>
     </div>

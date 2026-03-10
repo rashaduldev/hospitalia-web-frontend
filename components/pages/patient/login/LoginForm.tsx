@@ -8,7 +8,7 @@ import { ControlledInput } from "@/components/common/FormUIControllers/Controlle
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { login } from "@/actions/auth.actions";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { DynamicHeading } from "@/components/common/DynamicHeading";
 import { Typography } from "@/components/ui/Typography";
 import { useI18n } from "@/locales/client";
@@ -17,6 +17,8 @@ import AppButton from "@/components/common/AppButton";
 
 const PatientLoginForm = () => {
   const t = useI18n();
+  const searchParams = useSearchParams();
+  const callback = searchParams.get("callback");
   const [showPassword, setShowPassword] = useState(false);
   const {
     handleSubmit,
@@ -52,7 +54,7 @@ const PatientLoginForm = () => {
       });
       return;
     }
-    router.push("/dashboard");
+    router.push(callback || "/dashboard");
   };
 
   return (
