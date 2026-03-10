@@ -19,9 +19,9 @@ export type Country = {
 
 export type ApiResponse<T> = {
   success: boolean;
+  status: "success" | "error";
   message: string;
   payload: T | null;
-  status: number;
   error?: string | null;
 };
 

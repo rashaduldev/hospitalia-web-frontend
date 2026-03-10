@@ -16,10 +16,12 @@ import { loginFormSchema, LoginFormValues } from "@/schema/ueser.schema";
 import AppButton from "@/components/common/AppButton";
 
 const PatientLoginForm = () => {
+  const router = useRouter();
   const t = useI18n();
   const searchParams = useSearchParams();
   const callback = searchParams.get("callback");
   const [showPassword, setShowPassword] = useState(false);
+
   const {
     handleSubmit,
     control,
@@ -36,7 +38,7 @@ const PatientLoginForm = () => {
       phoneNumber: "",
     },
   });
-  const router = useRouter();
+
   const onSubmit = async ({
     countryCode,
     phoneNumber,
@@ -55,6 +57,7 @@ const PatientLoginForm = () => {
       });
       return;
     }
+
     router.replace(callback || "/dashboard");
     reset();
   };
