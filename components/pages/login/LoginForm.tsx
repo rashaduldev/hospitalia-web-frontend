@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginFormSchema, LoginFormValues } from "@/schema/ueser.schema";
 import Link from "next/link";
@@ -13,13 +13,8 @@ import { DynamicHeading } from "@/components/common/DynamicHeading";
 import { Typography } from "@/components/ui/Typography";
 import { useI18n } from "@/locales/client";
 import AppButton from "@/components/common/AppButton";
-import { PhoneInput } from "@/components/ui/phone-input";
-import { Label } from "@/components/ui/label";
-import {
-  parsePhoneNumber,
-  getCountryCallingCode,
-  Country,
-} from "react-phone-number-input";
+import { ControlledPhoneInput } from "@/components/common/FormUIControllers/ControlledPhoneInput";
+import { getCleanPhoneData } from "@/lib/phone-utils";
 
 const LoginForm = ({ isPatient }: { isPatient: boolean }) => {
   const t = useI18n();
@@ -45,13 +40,10 @@ const LoginForm = ({ isPatient }: { isPatient: boolean }) => {
   });
 
   const onSubmit = async (data: LoginFormValues) => {
-    const phoneNumberObj = parsePhoneNumber(data.phoneNumber);
-    const cleanPhoneNumber = phoneNumberObj
-      ? phoneNumberObj.nationalNumber
-      : data.phoneNumber;
+    const { countryCode, phoneNumber } = getCleanPhoneData(data.phoneNumber);
     const res = await login({
-      countryCode: data.countryCode,
-      phoneNumber: cleanPhoneNumber,
+      countryCode,
+      phoneNumber,
       password: data.password,
     });
 
@@ -75,40 +67,20 @@ const LoginForm = ({ isPatient }: { isPatient: boolean }) => {
 
       <div className="space-y-4">
         {/* Phone Number Field */}
-        <Controller
+        <ControlledPhoneInput
           name="phoneNumber"
           control={control}
-          render={({ field, fieldState }) => (
-            <div className="space-y-1 w-full">
-              <Label>{t("login.phoneLabel")}</Label>
-              <PhoneInput
-                {...field}
-                defaultCountry="SN"
-                international
-                value={field.value}
-                onChange={(value) => field.onChange(value || "")}
-                onCountryChange={(country: Country | undefined) => {
-                  if (country) {
-                    const code = `+${getCountryCallingCode(country)}`;
-                    setValue("countryCode", code);
-                    setValue("phoneNumber", code);
-                  }
-                }}
-              />
-              {fieldState.error && (
-                <Typography size="xs" color="destructive">
-                  {fieldState.error.message}
-                </Typography>
-              )}
-            </div>
-          )}
+          requiredMark="*"
+          label={t("login.phoneLabel")}
+          setValue={setValue}
+          defaultCountry="SN"
         />
 
         {/* Password Field */}
         <div className="relative">
           <ControlledInput
             name="password"
-            required="*"
+            requiredMark="*"
             label={t("login.passwordLabel")}
             type={showPassword ? "text" : "password"}
             control={control}

@@ -111,7 +111,7 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
           {/* First Name */}
           <ControlledInput
             name="firstName"
-            required="*"
+            requiredMark="*"
             label={t("register.firstName")}
             control={control}
             placeholder="Enter your first name"
@@ -165,7 +165,7 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
           {/* Email */}
           <ControlledInput
             name="email"
-            required="*"
+            requiredMark="*"
             label={t("register.email")}
             type="email"
             control={control}
@@ -195,7 +195,7 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
           <div className="relative">
             <ControlledInput
               name="password"
-              required="*"
+              requiredMark="*"
               label={t("register.password")}
               type={showPassword ? "text" : "password"}
               control={control}
@@ -217,7 +217,7 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
           <div className="relative">
             <ControlledInput
               name="confirmPassword"
-              required="*"
+              requiredMark="*"
               label={t("register.confirmPassword")}
               type={showConfirmPassword ? "text" : "password"}
               control={control}
@@ -247,7 +247,7 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
           {/* Designation */}
           <ControlledInput
             name="designation"
-            required="*"
+            requiredMark="*"
             label={t("register.designation")}
             control={control}
             placeholder="Enter your title/designation"
@@ -268,7 +268,7 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
           {/* ONMS Registration Number */}
           <ControlledInput
             name="onmsRegistrationNumber"
-            required="*"
+            requiredMark="*"
             label={t("register.onms")}
             control={control}
             placeholder="Enter your registration number"

@@ -87,7 +87,7 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           <ControlledInput
             name="firstName"
-            required="*"
+            requiredMark="*"
             label={t("register.firstName")}
             control={control}
             placeholder="Enter your first name"
@@ -119,7 +119,7 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
           />
           <ControlledInput
             name="email"
-            required="*"
+            requiredMark="*"
             label={t("register.email")}
             type="email"
             control={control}
@@ -146,7 +146,7 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
           <div className="relative">
             <ControlledInput
               name="password"
-              required="*"
+              requiredMark="*"
               label={t("register.password")}
               type={showPassword ? "text" : "password"}
               control={control}
@@ -167,7 +167,7 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
           <div className="relative">
             <ControlledInput
               name="confirmPassword"
-              required="*"
+              requiredMark="*"
               label={t("register.confirmPassword")}
               type={showConfirmPassword ? "text" : "password"}
               control={control}

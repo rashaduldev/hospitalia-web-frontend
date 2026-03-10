@@ -87,7 +87,7 @@ const PatientLoginForm = () => {
         <div className="relative">
           <ControlledInput
             name="password"
-            required="*"
+            requiredMark="*"
             label={t("login.passwordLabel")}
             type={showPassword ? "text" : "password"}
             control={control}

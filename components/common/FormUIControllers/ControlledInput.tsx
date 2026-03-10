@@ -7,7 +7,7 @@ import { Typography } from "@/components/ui/Typography";
 
 type ControlledInputProps = {
   name: string;
-  required?: string;
+  requiredMark?: string;
   label?: string;
   control: Control<any>;
   type?: string;
@@ -19,7 +19,7 @@ export const ControlledInput: FC<ControlledInputProps> = ({
   name,
   label,
   control,
-  required,
+  requiredMark,
   type = "text",
   placeholder,
   className,
@@ -33,7 +33,7 @@ export const ControlledInput: FC<ControlledInputProps> = ({
           <div className="flex items-center gap-1 m-0 p-0 mb-1">
             {label && <Label>{label}</Label>}
             <Typography size="sm" color="destructive">
-              {required && required}
+              {requiredMark && requiredMark}
             </Typography>
           </div>
           <Input
