@@ -4,6 +4,7 @@ import ScheduleManager from "./ScheduleManager";
 import { getI18n } from "@/locales/server";
 import { DefaultLocationManager } from "./DefaultLocationManager";
 import ConfirmSlotsTable from "./ConfirmSlotsTable";
+import { getDefaultTimeSlot } from "@/actions/doctor/slot";
 
 const Availability = async ({
   userId,
@@ -13,6 +14,7 @@ const Availability = async ({
   userId: number;
 }) => {
   const t = await getI18n();
+  const timeSlots = await getDefaultTimeSlot({ lang });
 
   return (
     <div>
@@ -24,16 +26,14 @@ const Availability = async ({
           descriptionProps={{ size: "sm" }}
           className="mb-6"
         />
-        {/* Default Locations and Time Slots */}
+        {/* Default Locations */}
         <DefaultLocationManager doctorUserId={userId} lang={lang} />
       </div>
-      <div>
-        <AvailabilityScheduleForm
-          lang={lang}
-          doctorUserId={userId}
-          // existingAvailability={user?.data}
-        />
-      </div>
+      <AvailabilityScheduleForm
+        timeSlots={timeSlots?.payload}
+        lang={lang}
+        doctorUserId={userId}
+      />
       <ScheduleManager lang={lang} doctorUserId={userId} />
       <ConfirmSlotsTable lang={lang} doctorUserId={userId} />
     </div>

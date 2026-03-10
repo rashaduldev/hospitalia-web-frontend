@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { ControlledInput } from "@/components/common/FormUIControllers/ControlledInput";
 import { ControlledSelect } from "@/components/common/FormUIControllers/ControlledSelect";
 import { ControlledDateInput } from "@/components/common/FormUIControllers/ControlledDateInput";
-import { register } from "@/actions/auth.actions";
+import { Patientregister } from "@/actions/auth.actions";
 import { useI18n } from "@/locales/client";
 import { Typography } from "@/components/ui/Typography";
 import {
@@ -19,7 +19,7 @@ import {
 import { PatientRegisterRequestData } from "@/types/patient.user.type";
 import AppButton from "@/components/common/AppButton";
 
-export default function PatinetRegistrationForm() {
+export default function PatinetRegistrationForm({ lang }: { lang: string }) {
   const t = useI18n();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -50,7 +50,7 @@ export default function PatinetRegistrationForm() {
   const router = useRouter();
 
   const onSubmit = async (data: PatientRegisterFormValues) => {
-    const registerPayload: PatientRegisterRequestData = {
+    const bodyData: PatientRegisterRequestData = {
       firstName: data.firstName,
       lastName: data.lastName,
       gender: data.gender,
@@ -62,7 +62,7 @@ export default function PatinetRegistrationForm() {
       password: data.password,
     };
 
-    const res = await register(registerPayload);
+    const res = await Patientregister({ bodyData, lang });
 
     if (!res.success) {
       setError("root", {
@@ -128,6 +128,7 @@ export default function PatinetRegistrationForm() {
             name="dateOfBirth"
             label={t("register.dateOfBirth")}
             control={control}
+            disableFuture
             error={errors.dateOfBirth?.message}
             disableFuture
           />

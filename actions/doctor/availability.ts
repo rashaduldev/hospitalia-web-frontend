@@ -13,12 +13,30 @@ export const getDoctorAvailability = async ({
   lang: string;
 }) => {
   const token = await getAccessToken();
-
   const res = await apiClient({
     endpoint: `/api/doctors/availability/all/doctorUserId/${doctorUserId}/status`,
     method: "GET",
     params: { lang },
     headers: { Authorization: `Bearer ${token}` },
+  });
+  return res;
+};
+
+// Get doctor's all weekly availability schedule by doctor user id
+
+export const getDoctorAvailabilityWithLocation = async ({
+  doctorUserId,
+  doctorLocationId,
+  lang,
+}: {
+  doctorUserId: number;
+  doctorLocationId: number;
+  lang: string;
+}) => {
+  const res = await apiClient({
+    endpoint: `/api/doctors/availability/all/doctorUserId/${doctorUserId}/location/${doctorLocationId}`,
+    method: "GET",
+    params: { lang },
   });
   return res;
 };

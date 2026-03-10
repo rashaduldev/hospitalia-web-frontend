@@ -13,13 +13,12 @@ export const getDoctorLocations = async ({
   lang: string;
   doctorUserId: number;
 }) => {
-  const token = await getAccessToken();
-  return await apiClient({
+  const res = await apiClient({
     endpoint: `/api/doctors/location/all/${doctorUserId}`,
     method: "GET",
     params: { lang },
-    headers: { Authorization: `Bearer ${token}` },
   });
+  return res;
 };
 
 // Create a new default location

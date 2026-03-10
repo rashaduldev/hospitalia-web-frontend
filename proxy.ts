@@ -12,16 +12,16 @@ const PUBLIC_ROUTES = [
   "/",
   "/search",
   "/login",
+  "/doctor",
   "/patient/login",
   "/patient/register",
   "/register",
-  "/doctor",
   "/hospital",
   "/forgot-password",
 ];
 
 const publicPathnameRegex = new RegExp(
-  `^(${PUBLIC_ROUTES.map((p) => p.replace(/\//g, "\\/")).join("|")})\\/?$`,
+  `^(${PUBLIC_ROUTES.map((p) => p.replace(/\//g, "\\/")).join("|")})(/.*)?$`,
   "i",
 );
 

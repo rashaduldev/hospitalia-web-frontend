@@ -16,11 +16,11 @@ import { ControlledDateInput } from "@/components/common/FormUIControllers/Contr
 import { register } from "@/actions/auth.actions";
 import { useI18n } from "@/locales/client";
 import { Typography } from "@/components/ui/Typography";
-import { RegisterRequestData } from "@/types/user.type";
 import { RegisterFormSchema, RegisterFormValues } from "@/schema/ueser.schema";
 import AppButton from "@/components/common/AppButton";
+import { RegisterUser } from "@/types/user.type";
 
-export default function PatinetRegistrationForm() {
+export default function PatinetRegistrationForm({ lang }: { lang: string }) {
   const t = useI18n();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -40,6 +40,7 @@ export default function PatinetRegistrationForm() {
       lastName: "",
       email: "",
       password: "",
+      dateOfBirth: "",
       confirmPassword: "",
       designation: "",
       countryCode: "",
@@ -67,7 +68,7 @@ export default function PatinetRegistrationForm() {
   const specialities = data?.content ?? [];
 
   const onSubmit = async (data: RegisterFormValues) => {
-    const registerPayload: RegisterRequestData = {
+    const bodyData: RegisterUser = {
       firstName: data.firstName,
       lastName: data.lastName,
       gender: data.gender,
@@ -84,10 +85,7 @@ export default function PatinetRegistrationForm() {
         professionalStatement: data.professionalStatement,
       },
     };
-    console.log("registerPayload", registerPayload);
-
-    const res = await register(registerPayload);
-    console.log("res", res);
+    const res = await register({ bodyData, lang });
 
     if (!res.success) {
       setError("root", {

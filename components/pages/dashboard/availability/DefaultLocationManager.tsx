@@ -68,8 +68,6 @@ export function DefaultLocationManager({
 
   const mutation = useMutation({
     mutationFn: async (data: LocationFormValues) => {
-      console.log("data", data);
-
       if (editingId) {
         return updateDoctorLocation({
           lang,
@@ -221,6 +219,12 @@ export function DefaultLocationManager({
                 ))}
               </div>
             ))}
+          </div>
+        ) : locations.length === 0 ? (
+          <div className="text-center py-6">
+            <Typography size="sm" color="muted_foreground">
+              You have no default location added.
+            </Typography>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">

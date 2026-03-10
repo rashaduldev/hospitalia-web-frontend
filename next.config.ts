@@ -19,12 +19,17 @@ const nextConfig: NextConfig = {
       hmrRefreshes: true,
     },
   },
-  allowedDevOrigins: ["localhost:3000", "hospitalia-api.dhrubok.xyz"],
+  allowedDevOrigins: [
+    "localhost:3000",
+    "localhost:8081",
+    "hospitalia-api.dhrubok.xyz",
+  ],
   experimental: {
     serverActions: {
       allowedOrigins: [
-        "http://localhost:3000",
-        "https://hospitalia-api.dhrubok.xyz",
+        "localhost:3000",
+        "localhost:8081",
+        "hospitalia-api.dhrubok.xyz",
       ],
     },
     serverComponentsHmrCache: true,

@@ -3,13 +3,24 @@ import z from "zod";
 
 export type LocationFormValues = z.infer<typeof locationSchema>;
 
+export type LocationOption = {
+  label: string;
+  value: number;
+};
 export type Location = {
   locationId: number;
   locationName: string;
   addressLine1: string;
+  addressLine2?: string;
+  doctorUserId?: number;
+  latitude?: string;
+  longitude?: string;
+  country?: string;
+  state?: string;
   city: string;
   postalCode: string;
 };
+
 export type UpdateLocationParams = {
   lang: string;
   locationId: number;
