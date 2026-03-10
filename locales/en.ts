@@ -168,6 +168,7 @@ export default {
       designation: "Designation is required",
       speciality: "Speciality is required",
       onmsRegistrationNumber: "Onms Registration Number is required",
+      professionalStatementLong: "Professional statement is too long.",
     },
   },
   appoinment: {

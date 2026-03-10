@@ -62,7 +62,10 @@ export const RegisterFormSchema = (t: (key: string) => string) =>
     onmsRegistrationNumber: z
       .string()
       .min(2, t("register.errors.onmsRegistrationNumber")),
-    professionalStatement: z.string().optional(),
+    professionalStatement: z
+      .string()
+      .max(5000, t("register.errors.professionalStatementLong"))
+      .optional(),
   });
 
 export type RegisterFormValues = z.infer<ReturnType<typeof RegisterFormSchema>>;
