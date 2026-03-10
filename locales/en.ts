@@ -63,7 +63,7 @@ export default {
     noAccount: "Don't have an account? Sign up",
     forgotPassword: "Forgot your password?",
     errors: {
-      countryRequired: "Country code is required",
+      invalidPhone: "Invalid phone number",
       phoneRequired: "Mobile number is required",
       phoneShort: "Phone number is too short",
       phoneLong: "Phone number is too long",
