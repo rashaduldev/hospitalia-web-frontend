@@ -105,7 +105,7 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)} className="pb-3">
       {/* PERSONAL INFO */}
       <div className="rounded-lg border bg-card p-6 space-y-5">
         <Typography size="2xl" as="h3" color="foreground">
@@ -303,7 +303,7 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
       {/* Submit Button */}
       <div className="flex flex-col items-center gap-4 mt-6 mb-12">
         <AppButton
-          className="w-full max-w-md"
+          className="w-full max-w-md dark:text-foreground"
           type="submit"
           isLoading={isSubmitting}
           loadingText={t("register.creating")}

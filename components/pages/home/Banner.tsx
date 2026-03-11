@@ -12,14 +12,14 @@ const Banner = async () => {
     >
       <div className="absolute bottom-0 w-full bg-primary/75 px-4 py-8 lg:px-14.5 text-muted font-extrabold md:tracking-[-1.8px] text-xl leading-tight sm:text-4xl lg:text-[75px] lg:leading-16.25">
         <Typography
-          className="text-muted font-extrabold text-xl sm:text-4xl lg:text-[60px] leading-tight"
+          className="text-muted dark:text-foreground font-extrabold text-xl sm:text-4xl lg:text-[60px] leading-tight"
           as="h1"
         >
           {t("banner.titleMain")}
         </Typography>
         <Typography
           color="muted"
-          className="font-bold text-sm sm:text-2xl lg:text-[38px]"
+          className="font-bold dark:text-foreground/60 text-sm sm:text-2xl lg:text-[38px]"
           as="h2"
         >
           {t("banner.titleSub")}

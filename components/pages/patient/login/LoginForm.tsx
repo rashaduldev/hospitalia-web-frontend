@@ -131,7 +131,7 @@ const PatientLoginForm = () => {
             size="sm"
             weight="medium"
             color="secondary"
-            className="hover:underline"
+            className="hover:underline dark:text-foreground"
           >
             {t("login.noAccount")}
           </Typography>
@@ -142,7 +142,7 @@ const PatientLoginForm = () => {
             size="sm"
             weight="medium"
             color="primary"
-            className="hover:underline"
+            className="hover:underline dark:text-foreground"
           >
             {t("login.forgotPassword")}
           </Typography>

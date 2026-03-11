@@ -88,14 +88,15 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
   --ghost-foreground: #404040;
+  --ghost-foreground: #404040;
 }
 
 .dark {
   --font-plus-jakarta-sans: font-plus-jakarta-sans;
   --font-plus-jakarta-sans: font-inter;
   --background: oklch(0.145 0 0);
-  --foreground: #020618;
-  --card: oklch(0.205 0 0);
+  --foreground: #ffffff;
+  --card: oklch(8.811% 0.00455 17.93);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);

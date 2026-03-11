@@ -1,11 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { useI18n } from "@/locales/client";
 import { usePathname } from "next/navigation";
-import { siteConfig } from "@/config/siteConfig";
 import { cn } from "@/lib/utils";
 import DashboardLogo from "@/public/icons/dashLogo";
 
@@ -29,7 +27,7 @@ export default function Header() {
   ];
 
   return (
-    <header className="relative bg-back px-4 md:px-10 py-4 z-50">
+    <header className="relative bg-back px-4 md:px-10 py-4 z-50 border-b">
       <div className="mx-auto flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center">

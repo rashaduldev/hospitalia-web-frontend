@@ -16,7 +16,7 @@ export default async function LoginPage() {
     <div className="flex flex-col min-h-screen">
       <Header />
       <main className={cn("flex-1 flex flex-col md:grid md:grid-cols-2 gap-8")}>
-        <div className="relative w-full h-75 md:h-full bg-muted">
+        <div className="relative w-full h-75 md:h-full">
           <Image
             src={patientLoginImg}
             alt="Patient Login"

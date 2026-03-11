@@ -198,7 +198,7 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
       )}
       <div className="flex flex-col items-center gap-4 mt-6 mb-12">
         <AppButton
-          className="w-full max-w-md"
+          className="w-full max-w-md dark:text-foreground"
           type="submit"
           isLoading={isSubmitting}
           loadingText={t("register.creating")}

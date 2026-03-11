@@ -109,7 +109,7 @@ const LoginForm = ({ isPatient }: { isPatient: boolean }) => {
         )}
 
         <AppButton
-          className="w-full"
+          className="w-full dark:text-foreground"
           type="submit"
           isLoading={isSubmitting}
           loadingText={t("login.loginLoading")}
@@ -124,7 +124,7 @@ const LoginForm = ({ isPatient }: { isPatient: boolean }) => {
             size="sm"
             weight="medium"
             color="secondary"
-            className="hover:underline"
+            className="hover:underline dark:text-foreground"
           >
             {t("login.noAccount")}
           </Typography>
@@ -135,7 +135,7 @@ const LoginForm = ({ isPatient }: { isPatient: boolean }) => {
             size="sm"
             weight="medium"
             color="primary"
-            className="hover:underline"
+            className="hover:underline dark:text-foreground"
           >
             {t("login.forgotPassword")}
           </Typography>
