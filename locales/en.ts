@@ -238,4 +238,32 @@ export default {
       postalTooLong: "Postal code is too long",
     },
   },
+  booking: {
+    booking_appoinment: "Book Appointment",
+    booking_des:
+      "AVAILABLE ON REQUEST: Confirmation of availability may need further processing of your request with the doctor.",
+    available_dates: "Available Dates",
+    available_slots: "Available Slots",
+    select_date_first: "Please select a date first",
+    no_slot_available:
+      "No slots available for this date. Please try another day.",
+    select_location: "Select Location",
+    confirm_booking: "Confirm Booking",
+    patient_types: {
+      new: "New Patient: 25,000 CFA",
+      returning: "Returning Patient: 10,000 CFA",
+    },
+    login: {
+      title: "Authentication Required",
+      des: "Please login to your account to confirm this booking. Only registered patients can book appointments.",
+      cancel_btn: "Cancel",
+      login_btn: "Go to Login",
+    },
+    errors: {
+      locationRequired: "Please select a location",
+      dateRequired: "Please select an appointment date",
+      slotRequired: "Please select a time slot",
+      patientTypeRequired: "Please select your patient status",
+    },
+  },
 };

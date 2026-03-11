@@ -1,12 +1,17 @@
-import * as z from "zod";
+import { z } from "zod";
+import { useI18n } from "@/locales/client";
+type TFunction = ReturnType<typeof useI18n>;
 
-export const doctorBookingSchema = z.object({
-  location: z.string().min(1, "Please select a location"),
-  availableDates: z.string().min(1, "Please select an appointment date"),
-  availableSlots: z.string().min(1, "Please select a time slot"),
-  patientType: z.enum(["new", "returning"], {
-    message: "Please select your patient status",
-  }),
-});
+export const doctorBookingSchema = (t: TFunction) =>
+  z.object({
+    location: z.string().min(1, t("booking.errors.locationRequired")),
+    availableDates: z.string().min(1, t("booking.errors.dateRequired")),
+    availableSlots: z.string().min(1, t("booking.errors.slotRequired")),
+    patientType: z.enum(["new", "returning"], {
+      message: t("booking.errors.patientTypeRequired"),
+    }),
+  });
 
-export type DoctorBookingFormValues = z.infer<typeof doctorBookingSchema>;
+export type DoctorBookingFormValues = z.infer<
+  ReturnType<typeof doctorBookingSchema>
+>;
