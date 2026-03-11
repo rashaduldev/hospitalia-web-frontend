@@ -14,6 +14,8 @@ export default {
     selectCity: "Select City",
     searchHere: "Search Here",
     searchBtn: "Search",
+    searching: "Searching...",
+    searchSchema: "Please enter a name or keyword",
   },
   stats: {
     patients: "Patient Served",

@@ -16,7 +16,15 @@ import { ControlledInput } from "@/components/common/FormUIControllers/Controlle
 import { DynamicHeading } from "@/components/common/DynamicHeading";
 import { useTransition } from "react";
 import { SearchFormProps, SearchFormValues } from "@/types/search.type";
-import { searchSchema } from "@/schema/search.schema";
+import { useI18n } from "@/locales/client";
+import { SearchFormSchema } from "@/schema/search.schema";
+
+const typeKeys = {
+  DOCTOR: "banner.doctor",
+  HOSPITAL: "banner.hospital",
+} as const;
+
+const SEARCH_OPTIONS = ["DOCTOR", "HOSPITAL"] as const;
 
 export const SearchForm = ({
   formWidth = "w-full sm:w-105 lg:w-121",
@@ -27,16 +35,16 @@ export const SearchForm = ({
   initialValues,
 }: SearchFormProps) => {
   const router = useRouter();
+  const t = useI18n();
   const [isPending, startTransition] = useTransition();
 
   const { control, handleSubmit, setValue } = useForm<SearchFormValues>({
-    resolver: zodResolver(searchSchema),
+    resolver: zodResolver(SearchFormSchema(t)),
     defaultValues: {
       searchType: initialValues?.searchType || "DOCTOR",
       searchKeyword: initialValues?.searchKeyword || "",
     },
   });
-
   const currentType = useWatch({
     control,
     name: "searchType",
@@ -49,7 +57,6 @@ export const SearchForm = ({
     }
 
     const params = new URLSearchParams();
-
     params.set("searchKeyword", data.searchKeyword);
     params.set("searchType", data.searchType);
 
@@ -78,10 +85,10 @@ export const SearchForm = ({
         value={currentType}
         className="flex mb-6 gap-4"
         onValueChange={(val) =>
-          setValue("searchType", val as "DOCTOR" | "HOSPITAL")
+          setValue("searchType", val as (typeof SEARCH_OPTIONS)[number])
         }
       >
-        {["DOCTOR", "HOSPITAL"].map((item) => (
+        {SEARCH_OPTIONS.map((item) => (
           <FieldLabel
             key={item}
             htmlFor={`${item}-plan`}
@@ -95,7 +102,7 @@ export const SearchForm = ({
               />
               <FieldContent>
                 <FieldTitle className="capitalize">
-                  {item.toLowerCase()}
+                  {t(typeKeys[item])}
                 </FieldTitle>
               </FieldContent>
             </Field>
@@ -105,12 +112,12 @@ export const SearchForm = ({
 
       {/* Search Input */}
       <div className="mb-4">
-        <Label className="mb-2 block">Search</Label>
+        <Label className="mb-2 block">{t("banner.searchHere")}</Label>
 
         <ControlledInput
           name="searchKeyword"
           control={control}
-          placeholder={`Search ${currentType.toLowerCase()} by name...`}
+          placeholder={`${t("banner.searchHere")} ${t(typeKeys[currentType])}...`}
         />
       </div>
 
@@ -123,7 +130,7 @@ export const SearchForm = ({
           className="w-full sm:w-fit text-muted px-10"
           disabled={isPending}
         >
-          {isPending ? "Searching..." : "Search"}
+          {isPending ? t("banner.searching") : t("banner.searchBtn")}
         </AppButton>
       </div>
     </form>
