@@ -46,11 +46,12 @@ export function DefaultLocationManager({
 
   const { handleSubmit, reset, setValue, control } =
     useForm<LocationFormValues>({
-      resolver: zodResolver(locationSchema) as any,
+      resolver: zodResolver(locationSchema(t)),
       defaultValues: {
         locationName: "",
         addressLine1: "",
         city: "",
+        postalCode: "",
       },
     });
 
@@ -223,7 +224,7 @@ export function DefaultLocationManager({
         ) : locations.length === 0 ? (
           <div className="text-center py-6">
             <Typography size="sm" color="muted_foreground">
-              You have no default location added.
+              {t("availability.no_deafult_location")}
             </Typography>
           </div>
         ) : (

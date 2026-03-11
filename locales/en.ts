@@ -185,6 +185,7 @@ export default {
     title: "Default Locations and Time Slots",
     description: "Default Locations and Time Slots",
     deafult_location: "Default Locations",
+    no_deafult_location: "You have no default location added.",
     hospital_name_search: "Enter Hospital/Clinic Name",
     hospital_location_search: "Enter Hospital/Clinic Address",
     postal_code_placeh: "Enter Your Postal Code (number)",
@@ -224,5 +225,17 @@ export default {
     undo_btn: "Make Available",
     confirmed_slots: "Confirmed Slots",
     confirmed_slots_des: "All your confirmed time slots",
+  },
+  location: {
+    errors: {
+      nameRequired: "Location name is required",
+      nameTooLong: "Location name is too long",
+      addressRequired: "Location address is required",
+      addressTooLong: "Location address is too long",
+      cityRequired: "City is required",
+      cityTooLong: "City is too long",
+      postalRequired: "Postal code is required",
+      postalTooLong: "Postal code is too long",
+    },
   },
 };
