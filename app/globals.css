@@ -47,6 +47,7 @@
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
   --color-ghost-foreground: var(--ghost-foreground);
+  --dark-mode: class;
 }
 
 :root {
@@ -125,7 +126,7 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
-  --ghost-foreground: #404040;
+  --ghost-foreground: oklch(0.985 0 0);
 }
 
 @layer base {
