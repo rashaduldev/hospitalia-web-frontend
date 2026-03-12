@@ -101,7 +101,7 @@ export default function AuthResetPassword({ onSubmit, isLoading }: any) {
           )}
 
           <AppButton
-            className="w-full"
+            className="w-full dark:text-foreground"
             type="submit"
             isLoading={isLoading}
             loadingText="Updating..."

@@ -45,12 +45,13 @@ export default function AuthForgotPassword({
             label="Email Address"
             placeholder="Enter your email"
           />
-          <AppButton className="w-full" disabled={isLoading} type="submit">
+          <AppButton
+            className="w-full dark:text-foreground"
+            disabled={isLoading}
+            type="submit"
+          >
             {isLoading ? (
-              <div className="flex items-center gap-1">
-                Sending
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              </div>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
               "Send OTP"
             )}

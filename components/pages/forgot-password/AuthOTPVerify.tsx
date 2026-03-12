@@ -55,15 +55,12 @@ export default function AuthOTPVerify({
           </InputOTP>
         </div>
         <AppButton
-          className="w-full"
+          className="w-full dark:text-foreground"
           disabled={code.length !== 6 || isLoading}
           onClick={() => onSubmit(code)}
         >
           {isLoading ? (
-            <div className="flex items-center gap-1">
-              varifying
-              <Loader2 className="animate-spin mr-2 h-4 w-4" />
-            </div>
+            <Loader2 className="animate-spin mr-2 h-4 w-4" />
           ) : (
             "Verify Code"
           )}
