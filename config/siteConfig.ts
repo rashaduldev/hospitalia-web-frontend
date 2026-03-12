@@ -2,11 +2,14 @@ export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
   logo: "/assets/logo.svg",
-  name: "",
-  description: ".",
-  ogTitle: "",
+  name: "Hospitalia",
+  description:
+    "Advanced healthcare solutions providing seamless patient management, appointments, and medical records.",
+  ogTitle: "Hospitalia - Modern Healthcare Management",
   ogImage: "/brand/og-image.jpg",
-  url: process.env.NEXT_PUBLIC_API_URL || "",
+  url: process.env.BASE_URL || "https://hospitalia-web.dhrubok.xyz",
+  backend_url:
+    process.env.NEXT_PUBLIC_API_URL || "https://hospitalia-api.dhrubok.xyz",
   supportEmail: process.env.NEXT_PUBLIC_SUPPORT_URL || "",
   appStoreUrl: " ",
   playStoreUrl: "",
