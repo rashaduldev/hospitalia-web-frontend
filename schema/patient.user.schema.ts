@@ -38,7 +38,7 @@ export const PatientRegisterFormSchema = (t: (key: string) => string) =>
         .min(1, t("register.errors.confirmPasswordRequired")),
     })
     .refine((data) => data.password === data.confirmPassword, {
-      message: t("register.errors.passwordMismatch"),
+      message: t("register.errors.passwordNotMatch"),
       path: ["confirmPassword"],
     });
 
