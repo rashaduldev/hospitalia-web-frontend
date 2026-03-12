@@ -10,40 +10,45 @@ const Sections = [
   {
     title: "Product",
     links: [
-      { title: "Overview", href: "#" },
-      { title: "Features", href: "#" },
-      { title: "Solutions", href: "#" },
-      { title: "Tutorials", href: "#" },
-      { title: "Pricing", href: "#" },
-      { title: "Releases", href: "#" },
+      { title: "DX Platform", href: "#" },
+      { title: "Infrastructure", href: "#" },
+      { title: "Storage", href: "#" },
       { title: "Analytics", href: "#" },
-      { title: "Security", href: "#" },
-      { title: "Integrations", href: "#" },
-      { title: "Automations", href: "#" },
-      { title: "Mobile App", href: "#" },
-      { title: "Desktop", href: "#" },
-    ],
-  },
-  {
-    title: "Company",
-    links: [
-      { title: "About us", href: "#" },
-      { title: "Careers", href: "#" },
-      { title: "Press", href: "#" },
-      { title: "News", href: "#" },
-      { title: "Media kit", href: "#" },
-      { title: "Contact", href: "#" },
+      { title: "Changelog", href: "#" },
+      { title: "Next.js", href: "#" },
+      { title: "v0", href: "#" },
+      { title: "Turbo", href: "#" },
+      { title: "Enterprise", href: "#" },
+      { title: "CLI & API", href: "#" },
     ],
   },
   {
     title: "Resources",
     links: [
+      { title: "Docs", href: "#" },
+      { title: "Pricing", href: "#" },
+      { title: "Customers", href: "#" },
+      { title: "Integrations", href: "#" },
+      { title: "Templates", href: "#" },
+      { title: "Experts", href: "#" },
+      { title: "Guides", href: "#" },
+      { title: "Help", href: "#" },
+      { title: "K", href: "#" },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
+      { title: "About", href: "#" },
+      { title: "Careers", href: "#" },
+      { title: "Next.js Conf", href: "#" },
+      { title: "Partners", href: "#" },
+      { title: "Privacy Policy", href: "#" },
       { title: "Blog", href: "#" },
-      { title: "Newsletter", href: "#" },
-      { title: "Events", href: "#" },
-      { title: "Help centre", href: "#" },
-      { title: "Tutorials", href: "#" },
-      { title: "Support", href: "#" },
+      { title: "Contact Us", href: "#" },
+      { title: "Open Source", href: "#" },
+      { title: "Security", href: "#" },
+      { title: "Legal", href: "#" },
     ],
   },
 ];
@@ -57,14 +62,13 @@ const FooterSection = () => {
           <div className="flex flex-col gap-4 min-w-50">
             <div className="flex items-center gap-2 text-foreground font-bold">
               <Triangle className="fill-primary text-primary" size={24} />
-              <span>BrandName</span>
+              <span>© {new Date().getFullYear()}</span>
             </div>
             <div className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} — All rights reserved.
-              <Typography className="mt-1 flex items-center gap-2">
+              <Typography className="mt-1 flex items-center gap-2 text-foreground/60 dark:text-foreground/30">
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-primary"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
                 </span>
                 All systems normal
               </Typography>
@@ -72,7 +76,7 @@ const FooterSection = () => {
           </div>
 
           {/* Links Grid */}
-          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+          <div className="flex-1 grid grid-cols-2 justify-between w-full sm:grid-cols-2 md:grid-cols-3 gap-8">
             {Sections.map(({ title, links }) => (
               <div key={title} className="space-y-4">
                 <h6 className="font-semibold text-foreground">{title}</h6>
@@ -80,7 +84,7 @@ const FooterSection = () => {
                   {links.map(({ title, href }, index) => (
                     <li key={index}>
                       <Link
-                        className="text-sm text-muted-foreground transition-colors hover:text-primary"
+                        className="text-sm text-muted-foreground dark:text-foreground/40 transition-colors hover:text-primary"
                         href={href}
                       >
                         {title}
@@ -93,10 +97,8 @@ const FooterSection = () => {
           </div>
 
           {/* Preferences Column */}
-          <div className="flex flex-col gap-3 text-sm md:items-end min-w-37.5">
-            <Label className="text-muted-foreground font-medium">
-              Appearance
-            </Label>
+          <div className="flex flex-col gap-3 text-sm min-w-37.5">
+            <Label className="text-foreground font-medium">Preferences</Label>
             <ThemeToggle />
           </div>
         </div>
