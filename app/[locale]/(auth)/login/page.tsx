@@ -1,3 +1,4 @@
+import Header from "@/components/pages/home/Header";
 import LoginForm from "@/components/pages/login/LoginForm";
 import { Metadata } from "next";
 
@@ -9,9 +10,12 @@ export const metadata: Metadata = {
 
 const LoginPage = () => {
   return (
-    <div className="flex flex-col min-h-screen justify-center">
-      <LoginForm />
-    </div>
+    <>
+      <Header />
+      <div className="flex flex-col min-h-screen justify-center">
+        <LoginForm />
+      </div>
+    </>
   );
 };
 export default LoginPage;

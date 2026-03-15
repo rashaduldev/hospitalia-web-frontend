@@ -1,4 +1,5 @@
 import AuthResetPassword from "@/components/pages/forgot-password/AuthResetPassword";
+import Header from "@/components/pages/home/Header";
 import { getCurrentLocale } from "@/locales/server";
 import { Metadata } from "next";
 
@@ -10,9 +11,12 @@ export const metadata: Metadata = {
 const ResetPasswordPage = async () => {
   const lang = await getCurrentLocale();
   return (
-    <div className="flex min-h-screen items-center justify-center max-w-sm w-full mx-auto">
-      <AuthResetPassword lang={lang} email={""} otp="" />
-    </div>
+    <>
+      <Header />
+      <div className="flex min-h-screen items-center justify-center max-w-sm w-full mx-auto">
+        <AuthResetPassword lang={lang} email={""} otp="" />
+      </div>
+    </>
   );
 };
 export default ResetPasswordPage;

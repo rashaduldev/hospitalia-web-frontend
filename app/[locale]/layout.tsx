@@ -5,7 +5,6 @@ import AppClientProvider from "@/providers/AppClientProvider";
 import AppQueryProvider from "@/providers/ReactQueryProvider";
 import { getStaticParams } from "@/locales/server";
 import { ThemeProvider } from "next-themes";
-import Header from "@/components/pages/home/Header";
 
 const PlusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-plus-jakarta-sans",
@@ -44,10 +43,7 @@ export default async function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AppClientProvider locale={locale}>
-            <AppQueryProvider>
-              <Header />
-              {children}
-            </AppQueryProvider>
+            <AppQueryProvider>{children}</AppQueryProvider>
           </AppClientProvider>
         </ThemeProvider>
       </body>
