@@ -14,6 +14,8 @@ export default {
     selectCity: "Select City",
     searchHere: "Search Here",
     searchBtn: "Search",
+    searching: "Searching...",
+    searchSchema: "Please enter a name or keyword",
   },
   stats: {
     patients: "Patient Served",
@@ -183,6 +185,7 @@ export default {
     title: "Default Locations and Time Slots",
     description: "Default Locations and Time Slots",
     deafult_location: "Default Locations",
+    no_deafult_location: "You have no default location added.",
     hospital_name_search: "Enter Hospital/Clinic Name",
     hospital_location_search: "Enter Hospital/Clinic Address",
     postal_code_placeh: "Enter Your Postal Code (number)",
@@ -222,5 +225,45 @@ export default {
     undo_btn: "Make Available",
     confirmed_slots: "Confirmed Slots",
     confirmed_slots_des: "All your confirmed time slots",
+  },
+  location: {
+    errors: {
+      nameRequired: "Location name is required",
+      nameTooLong: "Location name is too long",
+      addressRequired: "Location address is required",
+      addressTooLong: "Location address is too long",
+      cityRequired: "City is required",
+      cityTooLong: "City is too long",
+      postalRequired: "Postal code is required",
+      postalTooLong: "Postal code is too long",
+    },
+  },
+  booking: {
+    booking_appoinment: "Book Appointment",
+    booking_des:
+      "AVAILABLE ON REQUEST: Confirmation of availability may need further processing of your request with the doctor.",
+    available_dates: "Available Dates",
+    available_slots: "Available Slots",
+    select_date_first: "Please select a date first",
+    no_slot_available:
+      "No slots available for this date. Please try another day.",
+    select_location: "Select Location",
+    confirm_booking: "Confirm Booking",
+    patient_types: {
+      new: "New Patient: 25,000 CFA",
+      returning: "Returning Patient: 10,000 CFA",
+    },
+    login: {
+      title: "Authentication Required",
+      des: "Please login to your account to confirm this booking. Only registered patients can book appointments.",
+      cancel_btn: "Cancel",
+      login_btn: "Go to Login",
+    },
+    errors: {
+      locationRequired: "Please select a location",
+      dateRequired: "Please select an appointment date",
+      slotRequired: "Please select a time slot",
+      patientTypeRequired: "Please select your patient status",
+    },
   },
 };

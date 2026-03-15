@@ -1,8 +1,12 @@
-import * as z from "zod";
+import { useI18n } from "@/locales/client";
+import { z } from "zod";
 
-export const searchSchema = z.object({
-  searchType: z.enum(["DOCTOR", "HOSPITAL"]),
-  searchKeyword: z.string().min(1, "Please enter a name or keyword"),
-});
+type TFunction = ReturnType<typeof useI18n>;
 
-export type searchFormValues = z.infer<typeof searchSchema>;
+export const SearchFormSchema = (t: TFunction) =>
+  z.object({
+    searchType: z.enum(["DOCTOR", "HOSPITAL"]),
+    searchKeyword: z.string().min(1, t("banner.searchSchema")),
+  });
+
+export type SearchFormValues = z.infer<ReturnType<typeof SearchFormSchema>>;

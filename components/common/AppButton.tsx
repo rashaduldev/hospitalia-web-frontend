@@ -5,6 +5,7 @@ import { Button, type buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { VariantProps } from "class-variance-authority";
 import React, { forwardRef } from "react";
+import Link from "next/link";
 
 type AppButtonProps = React.ComponentPropsWithoutRef<"button"> &
   VariantProps<typeof buttonVariants> & {
@@ -12,7 +13,7 @@ type AppButtonProps = React.ComponentPropsWithoutRef<"button"> &
     loadingText?: string;
     leftIcon?: React.ReactNode;
     rightIcon?: React.ReactNode;
-    asChild?: boolean;
+    href?: string;
   };
 
 const AppButton = forwardRef<HTMLButtonElement, AppButtonProps>(
@@ -27,22 +28,13 @@ const AppButton = forwardRef<HTMLButtonElement, AppButtonProps>(
       rightIcon,
       children,
       disabled,
+      href,
       ...props
     },
     ref,
   ) => {
-    return (
-      <Button
-        ref={ref}
-        variant={variant}
-        size={size}
-        disabled={isLoading || disabled}
-        className={cn(
-          "relative gap-2 transition-all active:scale-[0.97]",
-          className,
-        )}
-        {...props}
-      >
+    const content = (
+      <>
         {isLoading && (
           <Loader2
             className={cn(
@@ -71,6 +63,38 @@ const AppButton = forwardRef<HTMLButtonElement, AppButtonProps>(
             )}
           </>
         )}
+      </>
+    );
+
+    if (href) {
+      return (
+        <Button
+          asChild
+          variant={variant}
+          size={size}
+          className={cn(
+            "relative gap-2 transition-all active:scale-[0.97]",
+            className,
+          )}
+        >
+          <Link href={href}>{content}</Link>
+        </Button>
+      );
+    }
+
+    return (
+      <Button
+        ref={ref}
+        variant={variant}
+        size={size}
+        disabled={isLoading || disabled}
+        className={cn(
+          "relative gap-2 transition-all active:scale-[0.97]",
+          className,
+        )}
+        {...props}
+      >
+        {content}
       </Button>
     );
   },

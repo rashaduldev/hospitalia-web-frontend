@@ -16,7 +16,7 @@ export default async function RegisterPage() {
       <h2 className="text-2xl text-card-foreground text-center p-7">
         Join Rendewou as a Provider
       </h2>
-      <div className="min-h-screen bg-muted/40 px-4">
+      <div className="px-4">
         <div className="container mx-auto">
           <PatinetRegistrationForm lang={lang} />
         </div>

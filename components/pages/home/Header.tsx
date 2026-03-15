@@ -1,12 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { useI18n } from "@/locales/client";
 import { usePathname } from "next/navigation";
-import { siteConfig } from "@/config/siteConfig";
 import { cn } from "@/lib/utils";
+import DashboardLogo from "@/public/icons/dashLogo";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,16 +27,11 @@ export default function Header() {
   ];
 
   return (
-    <header className="relative bg-back px-4 md:px-10 py-4 z-50">
+    <header className="relative bg-back px-4 md:px-10 py-4 z-50 border-b">
       <div className="mx-auto flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center">
-          <Image
-            src={siteConfig.logo}
-            alt="Hospitalia logo"
-            width={130}
-            height={25}
-          />
+          <DashboardLogo className="text-primary dark:text-card-foreground transition-colors duration-300" />
         </Link>
 
         {/* Desktop Menu */}
@@ -48,7 +42,7 @@ export default function Header() {
                 <Link
                   key={link.label}
                   href={link.href}
-                  className="hover:text-primary transition"
+                  className="hover:text-primary text-ghost-foreground transition"
                 >
                   {link.label}
                 </Link>

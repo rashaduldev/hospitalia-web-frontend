@@ -47,6 +47,7 @@
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
   --color-ghost-foreground: var(--ghost-foreground);
+  --dark-mode: class;
 }
 
 :root {
@@ -87,14 +88,15 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
   --ghost-foreground: #404040;
+  --ghost-foreground: #404040;
 }
 
 .dark {
   --font-plus-jakarta-sans: font-plus-jakarta-sans;
   --font-plus-jakarta-sans: font-inter;
   --background: oklch(0.145 0 0);
-  --foreground: #020618;
-  --card: oklch(0.205 0 0);
+  --foreground: #ffffff;
+  --card: oklch(8.811% 0.00455 17.93);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
@@ -125,7 +127,7 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
-  --ghost-foreground: #404040;
+  --ghost-foreground: oklch(0.985 0 0);
 }
 
 @layer base {

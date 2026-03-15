@@ -28,6 +28,7 @@ import { getAvailableSlots } from "@/actions/doctor/slot";
 import { UnavailableDate } from "@/types/doctor.unavailable";
 import { SingleDoctorInfo } from "@/types/doctor";
 import { usePathname, useRouter } from "next/navigation";
+import { useI18n } from "@/locales/client";
 
 const DoctorBooking = ({
   locationOptions,
@@ -35,7 +36,7 @@ const DoctorBooking = ({
   currentUserId,
   token,
   doctorUnAvailable = [],
-  lang = "en",
+  lang,
   onBookingSuccess,
 }: {
   locationOptions: { label: string; value: number }[];
@@ -46,6 +47,7 @@ const DoctorBooking = ({
   lang: string;
   onBookingSuccess?: (info: any) => void;
 }) => {
+  const t = useI18n();
   const [showLoginDialog, setShowLoginDialog] = useState(false);
   const doctorUserId = doctor.userId;
 
@@ -56,7 +58,7 @@ const DoctorBooking = ({
     setError,
     formState: { errors, isSubmitting },
   } = useForm<DoctorBookingFormValues>({
-    resolver: zodResolver(doctorBookingSchema),
+    resolver: zodResolver(doctorBookingSchema(t)),
     defaultValues: {
       location: "",
       availableDates: "",
@@ -234,7 +236,7 @@ const DoctorBooking = ({
           color="secondary"
           className="text-center"
         >
-          Book Appointment
+          {t("booking.booking_appoinment")}
         </Typography>
 
         {/* Location Select */}
@@ -242,7 +244,7 @@ const DoctorBooking = ({
           className="text-left"
           name="location"
           control={control}
-          placeholder="Select Location"
+          placeholder={t("booking.select_location")}
           options={locationOptions}
           onChange={(value) => {
             setValue("location", value);
@@ -285,8 +287,8 @@ const DoctorBooking = ({
                   className={`w-full block rounded-sm text-muted font-medium text-sm ${bgColor} ${isSelected ? `border-2 ${borderColor}` : "border border-transparent"} transition-all`}
                 >
                   {type === "new"
-                    ? "New Patient: 25,000 CFA"
-                    : "Returning Patient: 10,000 CFA"}
+                    ? t("booking.patient_types.new")
+                    : t("booking.patient_types.returning")}
                 </AppButton>
               );
             })}
@@ -295,8 +297,7 @@ const DoctorBooking = ({
             color="foreground"
             className="py-2 bg-primary/20 px-10 rounded-sm leading-4 text-[0.625rem]"
           >
-            AVAILABLE ON REQUEST: Confirmation of availability may need further
-            processing of your request with the doctor.
+            {t("booking.booking_des")}
           </Typography>
         </div>
         {/* Calendar */}
@@ -306,7 +307,7 @@ const DoctorBooking = ({
               <CalendarCheck2 size={24} className="text-primary h-6 w-6" />
             </div>
             <Typography size="xl" weight="semiBold" color="secondary">
-              Available Dates
+              {t("booking.available_dates")}
             </Typography>
           </div>
           {isLoadingAvailability ? (
@@ -350,7 +351,7 @@ const DoctorBooking = ({
               <Clock size={24} className="text-primary h-6 w-6" />
             </div>
             <Typography size="xl" weight="semiBold" color="secondary">
-              Available Slots
+              {t("booking.available_slots")}
             </Typography>
           </div>
 
@@ -361,7 +362,7 @@ const DoctorBooking = ({
               weight="semiBold"
               className="text-center"
             >
-              Please select a date first
+              {t("booking.select_date_first")}
             </Typography>
           ) : isLoadingSlots ? (
             <div className="flex flex-wrap gap-2">
@@ -377,7 +378,7 @@ const DoctorBooking = ({
             </div>
           ) : !hasSlots ? (
             <Typography size="sm" className="text-destructive font-medium">
-              No slots available for this date. Please try another day.
+              {t("booking.no_slot_available")}
             </Typography>
           ) : (
             /* 3. SHOW SLOTS IF THEY EXIST */
@@ -455,7 +456,7 @@ const DoctorBooking = ({
           {isSubmitting ? (
             <Loader2 className="animate-spin" />
           ) : (
-            "Confirm Booking"
+            t("booking.confirm_booking")
           )}
         </AppButton>
       </form>
@@ -468,21 +469,20 @@ const DoctorBooking = ({
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-2xl">
-              Authentication Required
+              {t("booking.login.title")}
             </DialogTitle>
-            <DialogDescription>
-              Please login to your account to confirm this booking. Only
-              registered patients can book appointments.
-            </DialogDescription>
+            <DialogDescription>{t("booking.login.des")}</DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex flex-row gap-2 sm:justify-end">
             <AppButton
               variant="outline"
               onClick={() => setShowLoginDialog(false)}
             >
-              Cancel
+              {t("booking.login.cancel_btn")}
             </AppButton>
-            <AppButton onClick={redirectToLogin}>Go to Login</AppButton>
+            <AppButton onClick={redirectToLogin}>
+              {t("booking.login.login_btn")}
+            </AppButton>
           </DialogFooter>
         </DialogContent>
       </Dialog>
