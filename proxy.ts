@@ -19,6 +19,7 @@ const PUBLIC_ROUTES = [
   "/hospital",
   "/forgot-password",
   "/verify-otp",
+  "/reset-password",
 ];
 
 const publicPathnameRegex = new RegExp(

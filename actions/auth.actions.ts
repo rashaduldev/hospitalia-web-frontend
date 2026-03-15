@@ -150,10 +150,9 @@ export const verifyOtp = async ({
   return res;
 };
 
-// Reset Password API
+// Reset Password
 export const resetPassword = async ({
   email,
-  otp,
   newPassword,
   lang,
 }: {
@@ -167,7 +166,7 @@ export const resetPassword = async ({
     method: "POST",
     headers: { "Content-Type": "application/json" },
     params: { lang },
-    body: { email, otp, newPassword },
+    body: { email, newPassword },
   });
 
   return res;

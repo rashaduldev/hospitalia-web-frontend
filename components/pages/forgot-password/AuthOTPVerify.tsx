@@ -45,7 +45,7 @@ const AuthOTPVerify = ({ email, lang }: { email: string; lang: string }) => {
       setError("code", { type: "manual", message: res.message });
       return;
     }
-    router.push("/auth/reset-password");
+    router.push("/reset-password");
   };
 
   return (

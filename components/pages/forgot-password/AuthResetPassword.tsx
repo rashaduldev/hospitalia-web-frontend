@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { DynamicHeading } from "@/components/common/DynamicHeading";
 import AppButton from "@/components/common/AppButton";
@@ -14,16 +16,28 @@ import {
 } from "@/schema/forgotPassword.schema";
 import { Typography } from "@/components/ui/Typography";
 import { useI18n } from "@/locales/client";
+import { resetPassword } from "@/actions/auth.actions";
 
-export default function AuthResetPassword({ onSubmit, isLoading }: any) {
+export default function AuthResetPassword({
+  email,
+  otp,
+  lang,
+}: {
+  email: string;
+  otp: string;
+  lang: string;
+}) {
+  const router = useRouter();
   const t = useI18n();
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    setError,
+    formState: { errors, isSubmitting },
   } = useForm<ResetPasswordValues>({
     resolver: zodResolver(resetPasswordSchema(t)),
     defaultValues: {
@@ -31,6 +45,25 @@ export default function AuthResetPassword({ onSubmit, isLoading }: any) {
       confirmPassword: "",
     },
   });
+
+  const onSubmit = async (data: ResetPasswordValues) => {
+    const res = await resetPassword({
+      email,
+      otp,
+      newPassword: data.password,
+      lang,
+    });
+
+    if (!res.success) {
+      setError("root", {
+        type: "manual",
+        message: res.message,
+      });
+      return;
+    }
+
+    router.replace("/login");
+  };
 
   return (
     <Card className="w-full max-w-sm">
@@ -40,6 +73,7 @@ export default function AuthResetPassword({ onSubmit, isLoading }: any) {
           description="Enter your new password below"
         />
       </CardHeader>
+
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Password */}
@@ -52,6 +86,7 @@ export default function AuthResetPassword({ onSubmit, isLoading }: any) {
               control={control}
               placeholder="••••••••"
             />
+
             <button
               type="button"
               onClick={() => setShowPassword((p) => !p)}
@@ -75,6 +110,7 @@ export default function AuthResetPassword({ onSubmit, isLoading }: any) {
               control={control}
               placeholder="••••••••"
             />
+
             <button
               type="button"
               onClick={() => setShowConfirmPassword((p) => !p)}
@@ -88,7 +124,7 @@ export default function AuthResetPassword({ onSubmit, isLoading }: any) {
             </button>
           </div>
 
-          {/* Error Message */}
+          {/* API Error */}
           {errors.root && (
             <Typography
               color="destructive"
@@ -103,10 +139,16 @@ export default function AuthResetPassword({ onSubmit, isLoading }: any) {
           <AppButton
             className="w-full dark:text-foreground"
             type="submit"
-            isLoading={isLoading}
-            loadingText="Updating..."
+            disabled={isSubmitting}
           >
-            Update Password
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Updating...
+              </>
+            ) : (
+              "Update Password"
+            )}
           </AppButton>
         </form>
       </CardContent>
