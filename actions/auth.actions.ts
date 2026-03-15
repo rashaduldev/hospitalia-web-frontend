@@ -53,13 +53,14 @@ export const Patientregister = async ({
   bodyData: PatientRegisterRequestData;
   lang: string;
 }) => {
-  return apiClient({
+  const res = apiClient({
     endpoint: "/api/auth/sign-up",
     method: "POST",
     headers: { "Content-Type": "application/json" },
     params: { lang },
-    body: { bodyData },
+    body: bodyData,
   });
+  return res;
 };
 // Register
 export const register = async ({

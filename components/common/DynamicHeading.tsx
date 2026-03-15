@@ -28,7 +28,7 @@ export const DynamicHeading: FC<DynamicTextProps> = ({
           as="h2"
           size="2xl"
           weight="semiBold"
-          className="text-primary dark:text-foreground"
+          className="dark:text-foreground"
           {...titleProps}
         >
           {title}
