@@ -284,7 +284,7 @@ const DoctorBooking = ({
                   key={type}
                   type="button"
                   onClick={() => setValue("patientType", type)}
-                  className={`w-full block rounded-sm text-muted font-medium text-sm ${bgColor} ${isSelected ? `border-2 ${borderColor}` : "border border-transparent"} transition-all`}
+                  className={`w-full block rounded-sm text-muted font-medium text-sm ${bgColor} ${isSelected ? `border-4 font-bold ${borderColor}` : "border"} transition-all`}
                 >
                   {type === "new"
                     ? t("booking.patient_types.new")
@@ -330,9 +330,9 @@ const DoctorBooking = ({
                 unavailable: (date) => isDateUnavailable(date),
               }}
               modifiersClassNames={{
-                available: "bg-secondary-foreground text-foreground",
+                available: "bg-secondary-foreground/80 text-foreground",
                 unavailable: "bg-destructive text-muted!",
-                selected: "border-1 border-secondary",
+                selected: "border-1 border-secondary bg-secondary",
               }}
             />
           )}
