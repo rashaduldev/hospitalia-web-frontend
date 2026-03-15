@@ -1,4 +1,3 @@
-import Header from "@/components/pages/home/Header";
 import PatinetRegistrationForm from "@/components/pages/patient/register/RegisterForm";
 import { getCurrentLocale } from "@/locales/server";
 import { Metadata } from "next";
@@ -11,8 +10,7 @@ export const metadata: Metadata = {
 export default async function RegisterPage() {
   const lang = await getCurrentLocale();
   return (
-    <div>
-      <Header />
+    <>
       <h2 className="text-2xl text-card-foreground text-center p-7">
         Join Rendewou as a Provider
       </h2>
@@ -21,6 +19,6 @@ export default async function RegisterPage() {
           <PatinetRegistrationForm lang={lang} />
         </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -1,4 +1,3 @@
-import Header from "@/components/pages/home/Header";
 import { Metadata } from "next";
 import Image from "next/image";
 import patientLoginImg from "../../../../../public/assets/patient-login.png";
@@ -14,7 +13,6 @@ export const metadata: Metadata = {
 export default async function LoginPage() {
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
       <main className={cn("flex-1 flex flex-col md:grid md:grid-cols-2 gap-8")}>
         <div className="relative w-full h-75 md:h-full">
           <Image

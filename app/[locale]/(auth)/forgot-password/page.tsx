@@ -1,5 +1,4 @@
 import ForgotPasswordFlow from "@/components/pages/forgot-password/ForgotPasswordController";
-import Header from "@/components/pages/home/Header";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -9,11 +8,8 @@ export const metadata: Metadata = {
 
 const ForgotPasswordPage = () => {
   return (
-    <div>
-      <Header />
-      <div className="flex items-center justify-center min-h-screen">
-        <ForgotPasswordFlow />
-      </div>
+    <div className="flex items-center justify-center min-h-screen">
+      <ForgotPasswordFlow />
     </div>
   );
 };
