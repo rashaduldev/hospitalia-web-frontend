@@ -47,7 +47,7 @@ export default function AuthResetPassword({ onSubmit, isLoading }: any) {
             <ControlledInput
               name="password"
               requiredMark="*"
-              label="Password"
+              label="New Password"
               type={showPassword ? "text" : "password"}
               control={control}
               placeholder="••••••••"

@@ -16,7 +16,7 @@ import AppButton from "@/components/common/AppButton";
 import { ControlledPhoneInput } from "@/components/common/FormUIControllers/ControlledPhoneInput";
 import { getCleanPhoneData } from "@/lib/phone-utils";
 
-const LoginForm = ({ isPatient }: { isPatient: boolean }) => {
+const LoginForm = () => {
   const t = useI18n();
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
@@ -59,7 +59,10 @@ const LoginForm = ({ isPatient }: { isPatient: boolean }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="w-full max-w-112.5 mx-auto"
+    >
       <DynamicHeading
         title={t("login.title")}
         description={t("login.description")}
@@ -119,7 +122,7 @@ const LoginForm = ({ isPatient }: { isPatient: boolean }) => {
       </div>
 
       <div className="mt-8 space-y-4 flex flex-col gap-2">
-        <Link href={isPatient ? "/register?userType=patient" : "/register"}>
+        <Link href="/register">
           <Typography
             size="sm"
             weight="medium"

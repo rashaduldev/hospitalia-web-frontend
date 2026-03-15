@@ -1,17 +1,34 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+
 import AuthForgotPassword from "./AuthForgotPassword";
 import AuthOTPVerify from "./AuthOTPVerify";
 import AuthResetPassword from "./AuthResetPassword";
 
-type FlowStep = "FORGOT_PASSWORD" | "VERIFY_OTP" | "RESET_PASSWORD" | "SUCCESS";
+type FlowStep = "FORGOT_PASSWORD" | "VERIFY_OTP" | "reset_pass";
 
 export default function ForgotPasswordFlow() {
-  const [step, setStep] = useState<FlowStep>("FORGOT_PASSWORD");
-  const [email, setEmail] = useState("");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const stepParam = searchParams.get("step") as FlowStep;
+  const emailParam = searchParams.get("email") || "";
+
+  const [step, setStep] = useState<FlowStep>(stepParam || "FORGOT_PASSWORD");
+  const [email, setEmail] = useState(emailParam);
   const [isLoading, setIsLoading] = useState(false);
   const [serverErrors, setServerErrors] = useState<any>(null);
+
+  const updateUrl = (newStep: FlowStep, emailValue?: string) => {
+    const params = new URLSearchParams();
+    params.set("step", newStep);
+
+    if (emailValue) params.set("email", emailValue);
+
+    router.replace(`?${params.toString()}`);
+  };
 
   const handleForgotSubmit = async (submittedEmail: string) => {
     setIsLoading(true);
@@ -19,28 +36,34 @@ export default function ForgotPasswordFlow() {
 
     setTimeout(() => {
       setEmail(submittedEmail);
-      setIsLoading(false);
       setStep("VERIFY_OTP");
+      updateUrl("VERIFY_OTP", submittedEmail);
+      setIsLoading(false);
     }, 1500);
   };
 
   const handleOTPVerify = async (code: string) => {
     setIsLoading(true);
+
     setTimeout(() => {
       if (code === "123456") {
+        setStep("reset_pass");
+        updateUrl("reset_pass", email);
         setIsLoading(false);
-        setStep("RESET_PASSWORD");
       } else {
-        setIsLoading(false);
         setServerErrors({ code: "Invalid verification code. Try 123456" });
+        setIsLoading(false);
       }
     }, 1500);
   };
+
   const handlePasswordReset = async () => {
     setIsLoading(true);
+
     setTimeout(() => {
-      setIsLoading(false);
       setStep("FORGOT_PASSWORD");
+      updateUrl("FORGOT_PASSWORD");
+      setIsLoading(false);
     }, 1500);
   };
 
@@ -63,7 +86,7 @@ export default function ForgotPasswordFlow() {
         />
       )}
 
-      {step === "RESET_PASSWORD" && (
+      {step === "reset_pass" && (
         <AuthResetPassword
           onSubmit={handlePasswordReset}
           isLoading={isLoading}
