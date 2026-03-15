@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, Mail } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Card,
   CardContent,
@@ -16,14 +19,34 @@ import {
 } from "@/components/ui/input-otp";
 import { DynamicHeading } from "@/components/common/DynamicHeading";
 import AppButton from "@/components/common/AppButton";
+import {
+  VerifyOtpFormValues,
+  verifyOtpSchema,
+} from "@/schema/forgotPassword.schema";
+import { verifyOtp } from "@/actions/auth.actions";
+import { Typography } from "@/components/ui/Typography";
 
-export default function AuthOTPVerify({
-  deliveryAddress,
-  onSubmit,
-  isLoading,
-  errors,
-}: any) {
+const AuthOTPVerify = ({ email, lang }: { email: string; lang: string }) => {
+  const router = useRouter();
   const [code, setCode] = useState("");
+
+  const {
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<VerifyOtpFormValues>({
+    resolver: zodResolver(verifyOtpSchema),
+    defaultValues: { code: "" },
+  });
+
+  const onSubmit = async (otpCode: string) => {
+    const res = await verifyOtp({ email, otp: otpCode, lang });
+    if (!res.success) {
+      setError("code", { type: "manual", message: res.message });
+      return;
+    }
+    router.push("/auth/reset-password");
+  };
 
   return (
     <Card className="w-full max-w-sm">
@@ -32,19 +55,10 @@ export default function AuthOTPVerify({
           <DynamicHeading title="Verify Email" />
         </CardTitle>
         <CardDescription className="flex items-center gap-2">
-          Sent to{" "}
-          <span className="flex items-center gap-1 font-semibold">
-            <Mail size={12} />
-            {deliveryAddress}
-          </span>
+          Please enter your OTP and verify
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        {errors?.code && (
-          <div className="p-3 text-sm bg-destructive/10 text-destructive rounded-md">
-            {errors.code}
-          </div>
-        )}
         <div className="flex justify-center">
           <InputOTP maxLength={6} value={code} onChange={setCode}>
             <InputOTPGroup>
@@ -54,12 +68,19 @@ export default function AuthOTPVerify({
             </InputOTPGroup>
           </InputOTP>
         </div>
+        {/* error */}
+        {errors.code && (
+          <Typography size="xs" color="destructive">
+            {errors.code.message}
+          </Typography>
+        )}
+
         <AppButton
           className="w-full dark:text-foreground"
-          disabled={code.length !== 6 || isLoading}
-          onClick={() => onSubmit(code)}
+          disabled={code.length !== 6 || isSubmitting}
+          onClick={handleSubmit(() => onSubmit(code))}
         >
-          {isLoading ? (
+          {isSubmitting ? (
             <Loader2 className="animate-spin mr-2 h-4 w-4" />
           ) : (
             "Verify Code"
@@ -68,4 +89,5 @@ export default function AuthOTPVerify({
       </CardContent>
     </Card>
   );
-}
+};
+export default AuthOTPVerify;
