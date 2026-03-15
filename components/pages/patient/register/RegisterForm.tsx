@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
-import { CountryAndPhoneInput } from "@/components/common/Country&PhoneInput";
 import { useRouter } from "next/navigation";
 import { ControlledInput } from "@/components/common/FormUIControllers/ControlledInput";
 import { ControlledSelect } from "@/components/common/FormUIControllers/ControlledSelect";
@@ -18,6 +17,8 @@ import {
 } from "@/schema/patient.user.schema";
 import { PatientRegisterRequestData } from "@/types/patient.user.type";
 import AppButton from "@/components/common/AppButton";
+import { getCleanPhoneData } from "@/lib/phone-utils";
+import { ControlledPhoneInput } from "@/components/common/FormUIControllers/ControlledPhoneInput";
 
 export default function PatinetRegistrationForm({ lang }: { lang: string }) {
   const t = useI18n();
@@ -29,6 +30,8 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
     handleSubmit,
     control,
     setError,
+    reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<PatientRegisterFormValues>({
     resolver: zodResolver(
@@ -50,6 +53,9 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
   const router = useRouter();
 
   const onSubmit = async (data: PatientRegisterFormValues) => {
+    const { countryCode, number: mobileNumber } = getCleanPhoneData(
+      data.mobileNumber,
+    );
     const bodyData: PatientRegisterRequestData = {
       firstName: data.firstName,
       lastName: data.lastName,
@@ -57,8 +63,8 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
       email: data.email || "",
       dateOfBirth: data.dateOfBirth,
       userType: data.userType,
-      countryCode: data.countryCode,
-      mobileNumber: data.mobileNumber,
+      countryCode,
+      mobileNumber,
       password: data.password,
     };
 
@@ -72,7 +78,8 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
       return;
     }
 
-    router.push("/patient/login");
+    router.replace("/patient/login");
+    reset();
   };
 
   return (
@@ -85,7 +92,7 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           <ControlledInput
             name="firstName"
-            required="*"
+            requiredMark="*"
             label={t("register.firstName")}
             control={control}
             placeholder="Enter your first name"
@@ -117,7 +124,7 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
           />
           <ControlledInput
             name="email"
-            required="*"
+            requiredMark="*"
             label={t("register.email")}
             type="email"
             control={control}
@@ -128,23 +135,23 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
             name="dateOfBirth"
             label={t("register.dateOfBirth")}
             control={control}
-            disableFuture
             error={errors.dateOfBirth?.message}
+            disableFuture
           />
 
-          <CountryAndPhoneInput
+          <ControlledPhoneInput
+            name="mobileNumber"
             control={control}
-            required="*"
-            countrycode="countryCode"
-            mobileNumber="mobileNumber"
-            label={t("register.phone")}
-            errors={errors}
+            requiredMark="*"
+            label={t("login.phoneLabel")}
+            setValue={setValue}
+            defaultCountry="SN"
           />
 
           <div className="relative">
             <ControlledInput
               name="password"
-              required="*"
+              requiredMark="*"
               label={t("register.password")}
               type={showPassword ? "text" : "password"}
               control={control}
@@ -165,7 +172,7 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
           <div className="relative">
             <ControlledInput
               name="confirmPassword"
-              required="*"
+              requiredMark="*"
               label={t("register.confirmPassword")}
               type={showConfirmPassword ? "text" : "password"}
               control={control}

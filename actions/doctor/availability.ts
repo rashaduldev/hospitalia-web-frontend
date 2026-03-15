@@ -12,10 +12,12 @@ export const getDoctorAvailability = async ({
   doctorUserId: number;
   lang: string;
 }) => {
+  const token = await getAccessToken();
   const res = await apiClient({
     endpoint: `/api/doctors/availability/all/doctorUserId/${doctorUserId}/status`,
     method: "GET",
     params: { lang },
+    headers: { Authorization: `Bearer ${token}` },
   });
   return res;
 };

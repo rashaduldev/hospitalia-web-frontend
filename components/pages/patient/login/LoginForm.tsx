@@ -3,7 +3,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { CountryAndPhoneInput } from "@/components/common/Country&PhoneInput";
 import { ControlledInput } from "@/components/common/FormUIControllers/ControlledInput";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
@@ -14,16 +13,22 @@ import { Typography } from "@/components/ui/Typography";
 import { useI18n } from "@/locales/client";
 import { loginFormSchema, LoginFormValues } from "@/schema/ueser.schema";
 import AppButton from "@/components/common/AppButton";
+import { getCleanPhoneData } from "@/lib/phone-utils";
+import { ControlledPhoneInput } from "@/components/common/FormUIControllers/ControlledPhoneInput";
 
 const PatientLoginForm = () => {
+  const router = useRouter();
   const t = useI18n();
   const searchParams = useSearchParams();
   const callback = searchParams.get("callback");
   const [showPassword, setShowPassword] = useState(false);
+
   const {
     handleSubmit,
     control,
     setError,
+    reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(
@@ -35,16 +40,15 @@ const PatientLoginForm = () => {
       phoneNumber: "",
     },
   });
-  const router = useRouter();
-  const onSubmit = async ({
-    countryCode,
-    phoneNumber,
-    password,
-  }: LoginFormValues) => {
+
+  const onSubmit = async (data: LoginFormValues) => {
+    const { countryCode, number: phoneNumber } = getCleanPhoneData(
+      data.phoneNumber,
+    );
     const res = await login({
       countryCode,
       phoneNumber,
-      password,
+      password: data.password,
     });
 
     if (!res.success) {
@@ -54,7 +58,9 @@ const PatientLoginForm = () => {
       });
       return;
     }
-    router.push(callback || "/dashboard");
+
+    router.replace(callback || "/dashboard");
+    reset();
   };
 
   return (
@@ -69,20 +75,20 @@ const PatientLoginForm = () => {
 
       <div className="space-y-4">
         {/* Country and Phone */}
-        <CountryAndPhoneInput
+        <ControlledPhoneInput
+          name="phoneNumber"
           control={control}
-          required="*"
-          countrycode="countryCode"
-          mobileNumber="phoneNumber"
+          requiredMark="*"
           label={t("login.phoneLabel")}
-          errors={errors}
+          setValue={setValue}
+          defaultCountry="SN"
         />
 
         {/* Password */}
         <div className="relative">
           <ControlledInput
             name="password"
-            required="*"
+            requiredMark="*"
             label={t("login.passwordLabel")}
             type={showPassword ? "text" : "password"}
             control={control}

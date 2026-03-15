@@ -63,7 +63,7 @@ export default {
     noAccount: "Don't have an account? Sign up",
     forgotPassword: "Forgot your password?",
     errors: {
-      countryRequired: "Country code is required",
+      invalidPhone: "Invalid phone number",
       phoneRequired: "Mobile number is required",
       phoneShort: "Phone number is too short",
       phoneLong: "Phone number is too long",
@@ -168,6 +168,7 @@ export default {
       designation: "Designation is required",
       speciality: "Speciality is required",
       onmsRegistrationNumber: "Onms Registration Number is required",
+      professionalStatementLong: "Professional statement is too long.",
     },
   },
   appoinment: {

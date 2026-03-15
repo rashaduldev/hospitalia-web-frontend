@@ -1,15 +1,17 @@
 import { z } from "zod";
+import { isValidPhoneNumber } from "react-phone-number-input";
 
+// Login schema
 export const loginFormSchema = (t: (key: string) => string) =>
   z.object({
-    countryCode: z.string().nonempty(t("login.errors.countryRequired")),
+    countryCode: z.string(),
     phoneNumber: z
       .string()
-      .nonempty(t("login.errors.phoneRequired"))
-      .min(4, t("login.errors.phoneShort"))
-      .max(15, t("login.errors.phoneLong")),
-
-    password: z.string().min(6, t("login.errors.passwordMin")),
+      .min(1, { message: t("login.errors.phoneRequired") })
+      .refine((val) => isValidPhoneNumber(val), {
+        message: t("login.errors.invalidPhone"),
+      }),
+    password: z.string().min(6, { message: t("login.errors.passwordMin") }),
   });
 
 export type LoginFormValues = z.infer<ReturnType<typeof loginFormSchema>>;
@@ -62,7 +64,10 @@ export const RegisterFormSchema = (t: (key: string) => string) =>
     onmsRegistrationNumber: z
       .string()
       .min(2, t("register.errors.onmsRegistrationNumber")),
-    professionalStatement: z.string().optional(),
+    professionalStatement: z
+      .string()
+      .max(5000, t("register.errors.professionalStatementLong"))
+      .optional(),
   });
 
 export type RegisterFormValues = z.infer<ReturnType<typeof RegisterFormSchema>>;
