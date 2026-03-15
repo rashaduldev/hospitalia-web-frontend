@@ -64,7 +64,7 @@ export const appointmentColumns: ColumnDef<Appointment>[] = [
     cell: ({ row }) => (
       <div className="flex items-center gap-2">
         <Typography as="span" size="xs" color="foreground">
-          {row.original?.locationName || "Clinic"}
+          {row.original?.locationName || ""}
         </Typography>
       </div>
     ),

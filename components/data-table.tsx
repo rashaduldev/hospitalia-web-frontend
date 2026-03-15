@@ -76,21 +76,26 @@ export function DataTableWithExport<TData, TValue>({
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: (row, filterValue) => {
-      const searchValue = filterValue.toLowerCase();
-      const location = String(
-        (row.original as any)?.locationName ?? "",
-      ).toLowerCase();
 
-      const dateObj = (row.original as any)?.appointmentDate
-        ? new Date((row.original as any).appointmentDate)
-        : null;
-      const formattedDate = dateObj
-        ? format(dateObj, "dd MMM yyyy").toLowerCase()
+    globalFilterFn: (row, columnId, filterValue) => {
+      const searchValue = String(filterValue).toLowerCase();
+      const original = row.original as any;
+      const location = original.locationName
+        ? String(original.locationName).toLowerCase()
         : "";
-
+      const patient = original.patientName
+        ? String(original.patientName).toLowerCase()
+        : "";
+      let formattedDate = "";
+      if (Array.isArray(original.appointmentDate)) {
+        const [year, month, day] = original.appointmentDate;
+        const dateObj = new Date(year, month - 1, day);
+        formattedDate = format(dateObj, "dd MMM yyyy").toLowerCase();
+      }
       return (
-        location.includes(searchValue) || formattedDate.includes(searchValue)
+        location.includes(searchValue) ||
+        patient.includes(searchValue) ||
+        formattedDate.includes(searchValue)
       );
     },
     state: {
