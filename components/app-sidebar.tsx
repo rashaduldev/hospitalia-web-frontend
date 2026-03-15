@@ -44,7 +44,7 @@ export function AppSidebar({ lang, userRole, ...props }: AppSidebarProps) {
             href="/dashboard"
             className="w-full bg-primary py-5 flex justify-center"
           >
-            <DashboardLogo className="w-32 h-6" />
+            <DashboardLogo className="w-32 h-6 text-muted dark:text-card-foreground transition-colors duration-300" />
           </Link>
           <div className="flex items-center justify-center gap-3 pb-14 pt-9">
             <CircleUserRound className="size-10 text-muted-foreground" />

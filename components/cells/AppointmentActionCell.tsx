@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/Typography";
-import { useI18n } from "@/locales/client";
+import { useCurrentLocale, useI18n } from "@/locales/client";
 import {
   Dialog,
   DialogContent,
@@ -47,6 +47,7 @@ export const AppointmentActionCell = ({
   appointment: Appointment;
 }) => {
   const t = useI18n();
+  const lang = useCurrentLocale();
   const [isViewOpen, setIsViewOpen] = useState(false);
   const [isCancelOpen, setIsCancelOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -71,12 +72,11 @@ export const AppointmentActionCell = ({
 
     setValidationError(null);
     setLoading(true);
-
     const res = await cancelAppointment({
       appointmentId: appointment.appointmentId,
       cancelledByUserId: Number(appointment.doctorUserId),
       cancellationReason: reason,
-      lang: "en",
+      lang,
     });
 
     if (res?.success) {

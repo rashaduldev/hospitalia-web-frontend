@@ -29,6 +29,7 @@ import { DoctorAvailabilitySlot } from "@/types/doctor.slot";
 import { ControlledInput } from "../common/FormUIControllers/ControlledInput";
 import { getDoctorLocations } from "@/actions/doctor/location";
 import { Location } from "@/types/doctor.location.type";
+import { useCurrentLocale } from "@/locales/client";
 
 const TIME_SLOTS = [
   { label: "10 Minutes", value: "10" },
@@ -65,6 +66,7 @@ type FormDataType = {
 };
 
 export const SlotActionCell = ({ slot }: { slot: DoctorAvailabilitySlot }) => {
+  const lang = useCurrentLocale();
   const queryClient = useQueryClient();
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -84,7 +86,7 @@ export const SlotActionCell = ({ slot }: { slot: DoctorAvailabilitySlot }) => {
     queryKey: ["doctor-locations", slot.doctorUserId],
     queryFn: () =>
       getDoctorLocations({
-        lang: "en",
+        lang,
         doctorUserId: slot.doctorUserId,
       }),
   });
