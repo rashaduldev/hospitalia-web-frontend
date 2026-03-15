@@ -67,10 +67,8 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
       mobileNumber,
       password: data.password,
     };
-    console.log("bodyData", bodyData);
 
     const res = await Patientregister({ bodyData, lang });
-    console.log("res", res);
 
     if (!res.success) {
       setError("root", {

@@ -15,3 +15,12 @@ export const doctorBookingSchema = (t: TFunction) =>
 export type DoctorBookingFormValues = z.infer<
   ReturnType<typeof doctorBookingSchema>
 >;
+
+export const cancelAppointmentSchema = z.object({
+  reason: z
+    .string()
+    .min(5, "Reason must be at least 5 characters")
+    .max(300, "Reason is too long"),
+});
+
+export type CancelAppointmentForm = z.infer<typeof cancelAppointmentSchema>;

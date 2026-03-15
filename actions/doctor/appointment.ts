@@ -13,7 +13,7 @@ export const getUpcomingAppointments = async ({
   sortBy = "creationDate",
   ascOrDesc = "asc",
   lang,
-}:{
+}: {
   doctorUserId: number;
   pageNo?: number;
   pageSize?: number;
@@ -25,10 +25,10 @@ export const getUpcomingAppointments = async ({
   const res = await apiClient<Paginated<Appointment>>({
     endpoint: `/api/appointments/all/upcoming/doctorUserId/${doctorUserId}`,
     method: "GET",
-    params: { 
-      pageNo, 
-      pageSize, 
-      sortBy, 
+    params: {
+      pageNo,
+      pageSize,
+      sortBy,
       ascOrDesc,
       lang,
     },
@@ -47,7 +47,7 @@ export const getTodaysAppointments = async ({
   sortBy = "creationDate",
   ascOrDesc = "asc",
   lang,
-}:{
+}: {
   doctorUserId: number;
   pageNo?: number;
   pageSize?: number;
@@ -59,10 +59,10 @@ export const getTodaysAppointments = async ({
   const res = await apiClient<Paginated<Appointment>>({
     endpoint: `/api/appointments/all/today/doctorUserId/${doctorUserId}`,
     method: "GET",
-    params: { 
-      pageNo, 
-      pageSize, 
-      sortBy, 
+    params: {
+      pageNo,
+      pageSize,
+      sortBy,
       ascOrDesc,
       ...(lang && { lang }),
     },
@@ -70,5 +70,32 @@ export const getTodaysAppointments = async ({
       Authorization: `Bearer ${token}`,
     },
   });
+  return res;
+};
+
+// Cancel appointment
+export const cancelAppointment = async ({
+  appointmentId,
+  cancelledByUserId,
+  cancellationReason,
+  lang,
+}: {
+  appointmentId: number;
+  cancelledByUserId: number;
+  cancellationReason: string;
+  lang: string;
+}) => {
+  const token = await getAccessToken();
+
+  const res = await apiClient({
+    endpoint: `/api/appointments/cancel-appointment/appointmentId${appointmentId}`,
+    method: "POST",
+    params: { lang },
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: { appointmentId, cancelledByUserId, cancellationReason },
+  });
+
   return res;
 };
