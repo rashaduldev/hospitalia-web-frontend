@@ -108,3 +108,67 @@ export async function handleLogout({ lang }: { lang: string }) {
   await deleteAuthCookies();
   redirect("/");
 }
+
+// Forgot password
+
+export const forgotPassword = async ({
+  email,
+  lang,
+}: {
+  email: string;
+  lang: string;
+}) => {
+  const res = await apiClient({
+    endpoint: "/api/auth/forgot-password",
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    params: { lang },
+    body: { email },
+  });
+
+  return res;
+};
+
+// Verify OTP
+export const verifyOtp = async ({
+  email,
+  otp,
+  lang,
+}: {
+  email: string;
+  otp: string;
+  lang: string;
+}) => {
+  const res = await apiClient({
+    endpoint: "/api/auth/verify-otp",
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    params: { lang },
+    body: { email, otp },
+  });
+
+  return res;
+};
+
+// Reset Password API
+export const resetPassword = async ({
+  email,
+  otp,
+  newPassword,
+  lang,
+}: {
+  email: string;
+  otp: string;
+  newPassword: string;
+  lang: string;
+}) => {
+  const res = await apiClient({
+    endpoint: "/api/auth/reset-password",
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    params: { lang },
+    body: { email, otp, newPassword },
+  });
+
+  return res;
+};

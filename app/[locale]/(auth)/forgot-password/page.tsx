@@ -1,15 +1,17 @@
-import ForgotPasswordFlow from "@/components/pages/forgot-password/ForgotPasswordController";
+import AuthForgotPassword from "@/components/pages/forgot-password/AuthForgotPassword";
+import { getCurrentLocale } from "@/locales/server";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Hospitalia - Forgot Password",
-  description: "Reset your password to regain access to your account.",
+  description: "Enter your email to receive OTP and reset your password",
 };
 
-const ForgotPasswordPage = () => {
+const ForgotPasswordPage = async () => {
+  const lang = await getCurrentLocale();
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <ForgotPasswordFlow />
+    <div className="flex min-h-screen items-center justify-center max-w-sm w-full mx-auto">
+      <AuthForgotPassword lang={lang} />
     </div>
   );
 };
