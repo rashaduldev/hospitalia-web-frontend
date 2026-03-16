@@ -1,6 +1,7 @@
 export default {
   nav: {
     home: "Home",
+    logout: "Logout",
     patient: "Patient Login",
     doctor: "Doctor / Secretary Login",
   },
