@@ -3,7 +3,7 @@ import {
   ChartBarIcon,
   FolderIcon,
   Settings2Icon,
-  UserRoundPlus,
+  // UserRoundPlus,
   Clock,
 } from "lucide-react";
 
@@ -19,11 +19,11 @@ export const ROUTES = {
       url: "/availability",
       icon: Clock,
     },
-    {
-      name: "Add Secretary",
-      url: "/secretary",
-      icon: UserRoundPlus,
-    },
+    // {
+    //   name: "Add Secretary",
+    //   url: "/secretary",
+    //   icon: UserRoundPlus,
+    // },
   ],
   HOSPITAL: [
     {

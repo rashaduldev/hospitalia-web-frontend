@@ -1,10 +1,12 @@
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
+import ConfirmSlotsColumns from "@/components/common/ConfirmSlotsColumns";
 import { DataTableWithExport } from "@/components/data-table";
+import { TableSkeleton } from "@/components/common/TableSkeleton";
 import { DynamicHeading } from "@/components/common/DynamicHeading";
 import { getDoctorAvailability } from "@/actions/doctor/availability";
-import ConfirmSlotsColumns from "@/components/common/ConfirmSlotsColumns";
-import { Suspense } from "react";
-import { getI18n } from "@/locales/server";
-import { TableSkeleton } from "@/components/common/TableSkeleton";
+import { getDoctorLocations } from "@/actions/doctor/location";
 import {
   parse,
   format,
@@ -13,23 +15,45 @@ import {
   eachDayOfInterval,
   isBefore,
 } from "date-fns";
+import { Location } from "@/types/doctor.location.type";
 import { DoctorAvailabilitySlot } from "@/types/doctor.slot";
 
-const ConfirmSlotsTable = async ({
-  lang,
-  doctorUserId,
-}: {
-  lang: string;
+type ConfirmSlotsTableProps = {
   doctorUserId: number;
-}) => {
-  const t = await getI18n();
+  lang: string;
+};
 
-  const data = await getDoctorAvailability({ lang, doctorUserId });
+const ConfirmSlotsTable: React.FC<ConfirmSlotsTableProps> = ({
+  doctorUserId,
+  lang,
+}) => {
+  // slotsData
+  const { data: slotsData, isLoading: slotsLoading } = useQuery({
+    queryKey: ["doctorAvailability", doctorUserId, lang],
+    queryFn: () => getDoctorAvailability({ doctorUserId, lang }),
+  });
+
+  // locationsData
+  const { data: locationsData, isLoading: locationsLoading } = useQuery({
+    queryKey: ["doctorLocations", doctorUserId, lang],
+    queryFn: () => getDoctorLocations({ doctorUserId, lang }),
+  });
+
+  // TableSkeleton
+  if (slotsLoading || locationsLoading)
+    return <TableSkeleton columnCount={6} />;
+
+  const slots = slotsData?.payload?.content || [];
+  const locations = locationsData?.payload || [];
+
+  const locationMap: Record<number, string> = {};
+  locations.forEach((loc: Location) => {
+    locationMap[Number(loc.locationId)] = loc.locationName;
+  });
 
   const getFutureWeekdaysOfMonth = (dayOfWeek: string, referenceDate: Date) => {
     const start = startOfMonth(referenceDate);
     const end = endOfMonth(referenceDate);
-
     const days = eachDayOfInterval({ start, end });
 
     return days.filter(
@@ -39,7 +63,6 @@ const ConfirmSlotsTable = async ({
     );
   };
 
-  const slots = data?.payload?.content || [];
   const expandedSlots = slots.flatMap((slot: DoctorAvailabilitySlot) => {
     const referenceDate = parse(
       slot.lastModifiedDate,
@@ -58,20 +81,20 @@ const ConfirmSlotsTable = async ({
       ],
     }));
   });
+
   return (
     <div className="border rounded-sm p-6 space-y-6 mt-8">
       <DynamicHeading
-        title={t("unavailability.confirmed_slots")}
-        description={t("unavailability.confirmed_slots_des")}
+        title="Confirmed Slots"
+        description="All confirmed availability slots"
         titleProps={{ size: "2xl", weight: "bold", color: "secondary" }}
         descriptionProps={{ size: "sm" }}
       />
-      <Suspense fallback={<TableSkeleton columnCount={5} />}>
-        <DataTableWithExport
-          columns={ConfirmSlotsColumns}
-          data={expandedSlots}
-        />
-      </Suspense>
+
+      <DataTableWithExport
+        columns={ConfirmSlotsColumns(locationMap)}
+        data={expandedSlots}
+      />
     </div>
   );
 };

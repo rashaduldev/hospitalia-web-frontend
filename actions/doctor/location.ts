@@ -21,6 +21,24 @@ export const getDoctorLocations = async ({
   return res;
 };
 
+//  Get a doctor's location by location ID
+
+export const getDoctorLocationById = async ({
+  lang,
+  locationId,
+}: {
+  lang: string;
+  locationId: number;
+}) => {
+  const res = await apiClient({
+    endpoint: `/api/doctors/location/${locationId}`,
+    method: "GET",
+    params: { lang, locationId },
+  });
+
+  return res;
+};
+
 // Create a new default location
 export const createDoctorLocation = async ({
   lang,
