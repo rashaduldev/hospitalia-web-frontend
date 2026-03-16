@@ -1,12 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Appointment } from "@/types/appointment.type";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import {
   Eye,
   Trash,
-  CheckCircle2,
   MoreVertical,
   User,
   Stethoscope,
@@ -14,8 +12,10 @@ import {
   Clock,
   MapPin,
   Banknote,
-  FileText,
+  AlertCircle,
+  Loader2,
 } from "lucide-react";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/Typography";
-import { useI18n } from "@/locales/client";
+import { useCurrentLocale, useI18n } from "@/locales/client";
 import {
   Dialog,
   DialogContent,
@@ -34,35 +34,62 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "../ui/dialog";
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import { DetailItem } from "./DetailItemHelper";
+import { cancelAppointment } from "@/actions/doctor/appointment";
+import { cancelAppointmentSchema } from "@/schema/doctor.booking.schema";
+import { Appointment } from "@/types/appointment.type";
 
-type Props = {
+export const AppointmentActionCell = ({
+  appointment,
+}: {
   appointment: Appointment;
-};
-
-export const AppointmentActionCell = ({ appointment }: Props) => {
-
+}) => {
   const t = useI18n();
+  const lang = useCurrentLocale();
   const [isViewOpen, setIsViewOpen] = useState(false);
   const [isCancelOpen, setIsCancelOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [reason, setReason] = useState<string | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
+
+  const closeCancelModal = () => {
+    if (loading) return;
+    setIsCancelOpen(false);
+    setReason(null);
+    setValidationError(null);
+  };
 
   const handleCancel = async () => {
+    const result = cancelAppointmentSchema.safeParse({ reason });
+
+    if (!result.success) {
+      const errorMessage = result.error.message;
+      setValidationError(errorMessage);
+      return;
+    }
+
+    if (!reason) {
+      setValidationError("Reason is required");
+      return;
+    }
+
+    setValidationError(null);
     setLoading(true);
-    // try {
-    //   const res = await deleteAppointment(appointment.id);
-    //   if (res.status === 200 || res.status === 201) {
-    //     toast.success(t("message.success_cancel"));
-    //     setIsCancelOpen(false);
-    //   } else {
-    //     toast.error(res.message || "Failed to cancel");
-    //   }
-    // } catch (error) {
-    //   toast.error("An error occurred");
-    // } finally {
-    //   setLoading(false);
-    // }
+    const res = await cancelAppointment({
+      appointmentId: appointment.appointmentId,
+      cancelledByUserId: Number(appointment.doctorUserId),
+      cancellationReason: reason,
+      lang,
+    });
+
+    if (res?.success) {
+      closeCancelModal();
+    } else {
+      setValidationError(res?.message);
+    }
+    setLoading(false);
   };
 
   return (
@@ -73,26 +100,20 @@ export const AppointmentActionCell = ({ appointment }: Props) => {
             <MoreVertical className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-40">
+
+        <DropdownMenuContent align="end" className="w-48">
           <DropdownMenuLabel>{t("table.actions")}</DropdownMenuLabel>
           <DropdownMenuSeparator />
-
-          <DropdownMenuItem onClick={() => setIsViewOpen(true)}>
+          <DropdownMenuItem
+            onClick={() => setIsViewOpen(true)}
+            className="cursor-pointer"
+          >
             <Eye className="mr-2 h-4 w-4" /> {t("table.view_details")}
           </DropdownMenuItem>
-
-          <DropdownMenuItem
-            onClick={() => console.log("Complete", appointment.id)}
-          >
-            <CheckCircle2 className="mr-2 h-4 w-4" />{" "}
-            {t("table.mark_completed")}
-          </DropdownMenuItem>
-
           <DropdownMenuSeparator />
-
           <DropdownMenuItem
             onClick={() => setIsCancelOpen(true)}
-            className="text-destructive focus:text-destructive"
+            className="text-destructive focus:text-destructive cursor-pointer"
           >
             <Trash className="mr-2 h-4 w-4" /> {t("table.cancel")}
           </DropdownMenuItem>
@@ -101,23 +122,14 @@ export const AppointmentActionCell = ({ appointment }: Props) => {
 
       {/* View Details Modal */}
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
-        <DialogContent className="sm:max-w-125 p-0 overflow-hidden border-none shadow-2xl text-foreground!">
-          {/* Header with Background Accent */}
+        <DialogContent className="sm:max-w-125 p-0 overflow-hidden border-none shadow-2xl">
           <div className="bg-primary/5 p-6 border-b">
-            <div className="flex justify-between items-start">
-              <div>
-                <DialogTitle className="text-2xl font-bold text-foreground">
-                  {t("table.appointment_details")}
-                </DialogTitle>
-                <Typography size="xs" color="foreground" className="mt-1">
-                  PatietId: {appointment.patientUserId}
-                </Typography>
-              </div>
-            </div>
+            <DialogTitle className="text-2xl font-bold text-foreground">
+              {t("table.appointment_details")}
+            </DialogTitle>
           </div>
 
           <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
-            {/* Patient & Doctor Info Section */}
             <div className="grid grid-cols-2 gap-6">
               <DetailItem
                 icon={<User className="w-4 h-4 text-primary" />}
@@ -133,38 +145,40 @@ export const AppointmentActionCell = ({ appointment }: Props) => {
 
             <hr className="border-border" />
 
-            {/* Schedule Section */}
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4 text-sm bg-muted/30 p-4 rounded-lg">
-                <div className="flex flex-col gap-1">
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Calendar className="w-4 h-4" /> <span>Date</span>
-                  </div>
-                  <Typography size="xs" color="foreground" className="px-6">
-                    {appointment?.appointmentDate
-                      ? format(
-                          appointment?.appointmentDate,
-                          "EEEE, dd MMM yyyy",
-                        )
-                      : "N/A"}
-                  </Typography>
+            <div className="grid grid-cols-2 gap-4 bg-muted/30 p-4 rounded-lg">
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-2 text-muted-foreground text-sm font-medium">
+                  <Calendar className="w-4 h-4" /> Date
                 </div>
-                <div className="flex flex-col gap-1 border-l pl-4">
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Clock className="w-4 h-4" /> <span>Time Slot</span>
-                  </div>
-                  <Typography
-                    size="xs"
-                    color="foreground"
-                    className="font-semibold"
-                  >
-                    {appointment.startTime} - {appointment.endTime}
-                  </Typography>
+                <Typography
+                  size="xs"
+                  color="foreground"
+                  className="font-semibold"
+                >
+                  {appointment?.appointmentDate
+                    ? format(
+                        new Date(appointment.appointmentDate),
+                        "EEEE, dd MMM yyyy",
+                      )
+                    : "N/A"}
+                </Typography>
+              </div>
+              <div className="flex flex-col gap-1 border-l pl-4">
+                <div className="flex items-center gap-2 text-muted-foreground text-sm font-medium">
+                  <Clock className="w-4 h-4" /> Time Slot
                 </div>
+                <Typography
+                  size="xs"
+                  color="foreground"
+                  className="font-semibold"
+                >
+                  {appointment.startTime && appointment.endTime
+                    ? `${format(parseISO(`1970-01-01T${appointment.startTime}`), "hh:mm a")} - ${format(parseISO(`1970-01-01T${appointment.endTime}`), "hh:mm a")}`
+                    : "N/A"}
+                </Typography>
               </div>
             </div>
 
-            {/* Location & Payment Section */}
             <div className="grid grid-cols-2 gap-6">
               <DetailItem
                 icon={<MapPin className="w-4 h-4 text-primary" />}
@@ -174,50 +188,90 @@ export const AppointmentActionCell = ({ appointment }: Props) => {
               <DetailItem
                 icon={<Banknote className="w-4 h-4 text-secondary" />}
                 label="Consultation Fee"
-                value={`${appointment.fees} BDT`}
+                value={`${appointment.fees} CFA`}
               />
             </div>
-
-            {/* Notes Section */}
-            {appointment.notes && (
-              <div className="bg-chart-5/10 p-4 rounded-lg border">
-                <div className="flex items-center gap-2 text-chart-5 text-xs font-bold uppercase mb-1">
-                  <FileText className="w-3 h-3" /> Notes
-                </div>
-                <p className="text-sm text-chart-5 italic">
-                  &quot;{appointment.notes}&quot;
-                </p>
-              </div>
-            )}
           </div>
         </DialogContent>
       </Dialog>
 
       {/* Cancel Confirmation Modal */}
-      <Dialog open={isCancelOpen} onOpenChange={setIsCancelOpen}>
+      <Dialog open={isCancelOpen} onOpenChange={closeCancelModal}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-xl">
+            <DialogTitle className="text-xl flex items-center gap-2 text-destructive">
+              <AlertCircle className="w-5 h-5" />
               {t("table.con_cancel")}
             </DialogTitle>
             <DialogDescription>
               {t("table.sureText")} <b>{appointment.patientName}</b>?
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="gap-2">
+
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <Typography size="xs" className="font-semibold">
+                  Reason for Cancellation{" "}
+                  <span className="text-destructive">*</span>
+                </Typography>
+                <span
+                  className={`text-[10px] ${reason && reason?.length < 5 ? "text-muted-foreground" : "text-primary"}`}
+                >
+                  {reason && reason.length}/300
+                </span>
+              </div>
+
+              <Textarea
+                placeholder="Explain the reason (minimum 5 characters)..."
+                value={reason || ""}
+                onChange={(e) => {
+                  setReason(e.target.value);
+                  if (validationError) setValidationError(null);
+                }}
+                className={
+                  validationError
+                    ? "border-destructive focus-visible:ring-destructive"
+                    : "resize-none"
+                }
+                disabled={loading}
+                rows={4}
+              />
+            </div>
+
+            {validationError && (
+              <div className="p-3 rounded-md bg-destructive/10 border border-destructive/20 animate-in fade-in zoom-in duration-200">
+                <p className="text-xs text-destructive font-medium flex items-start gap-2">
+                  <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                  <span>{validationError}</span>
+                </p>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="gap-2 sm:gap-0">
             <Button
               variant="outline"
-              onClick={() => setIsCancelOpen(false)}
+              onClick={closeCancelModal}
               disabled={loading}
             >
-              {t("table.nokeepit")} No, Keep it
+              No, Keep it
             </Button>
+
             <Button
               variant="destructive"
               onClick={handleCancel}
-              disabled={loading}
+              disabled={loading || (reason?.trim().length ?? 0) < 5}
+              className="min-w-25"
             >
-              {loading ? "Cancelling..." : "Yes, Cancel"}
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Cancelling...
+                </>
+              ) : (
+                "Yes, Cancel"
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>

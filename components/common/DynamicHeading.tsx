@@ -28,7 +28,7 @@ export const DynamicHeading: FC<DynamicTextProps> = ({
           as="h2"
           size="2xl"
           weight="semiBold"
-          color="primary"
+          className="dark:text-foreground"
           {...titleProps}
         >
           {title}
@@ -39,8 +39,7 @@ export const DynamicHeading: FC<DynamicTextProps> = ({
         <Typography
           size="sm"
           weight="normal"
-          color="muted_foreground"
-          className={title ? spacing : ""}
+          className={`text-muted-foreground dark:text-foreground/60 ${title ? spacing : ""}`}
           {...descriptionProps}
         >
           {description}

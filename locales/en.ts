@@ -53,7 +53,7 @@ export default {
     checkBtn: "Check Details",
   },
   login: {
-    title: "Login as a Provider",
+    title: "Login as a Patient",
     description: "Enter your details below to login",
 
     phoneLabel: "Phone",

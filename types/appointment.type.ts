@@ -3,6 +3,7 @@ export type Appointment = {
   designation: string;
   doctorName: string;
   id: string;
+  appointmentId: number;
   doctorUserId: string;
   patientUserId: number;
   patientName: string;
