@@ -129,7 +129,7 @@ const PatientLoginForm = () => {
         <Link
           href={{
             pathname: "/patient/register",
-            query: callback ? { callback } : undefined,
+            query: callback && { callback },
           }}
         >
           <Typography

@@ -64,7 +64,7 @@ const LoginForm = () => {
       className="w-full max-w-112.5 mx-auto"
     >
       <DynamicHeading
-        title={t("login.title")}
+        title={t("login.doctortitle")}
         description={t("login.description")}
         titleProps={{ size: "2xl", weight: "semiBold", color: "foreground" }}
         className="mb-6"

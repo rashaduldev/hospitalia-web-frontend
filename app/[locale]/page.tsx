@@ -1,13 +1,15 @@
+import { getCurrentUser } from "@/actions/user.actions";
 import FooterSection from "@/components/common/Footer";
 import Banner from "@/components/pages/home/Banner";
 import Header from "@/components/pages/home/Header";
 import OurPackages from "@/components/pages/home/OurPackages";
 import Stats from "@/components/pages/home/Stats";
 import WhyChooseUs from "@/components/pages/home/WhyChooseUs";
+import { getCurrentLocale } from "@/locales/server";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Home | Hospitalia - Comprehensive Healthcare & Medical Packages",
+  title: "Hospitalia - Comprehensive Healthcare",
   description:
     "Explore Hospitalia's premium healthcare services, flexible medical packages, and state-of-the-art facilities. Your health is our priority.",
   keywords: [
@@ -36,7 +38,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  const lang = await getCurrentLocale();
+  const currentUser = await getCurrentUser({ lang });
   return (
     <>
       <Header />

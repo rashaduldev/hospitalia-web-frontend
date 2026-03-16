@@ -54,6 +54,7 @@ export default {
   },
   login: {
     title: "Login as a Patient",
+    doctortitle: "Login as a Provider",
     description: "Enter your details below to login",
 
     phoneLabel: "Phone",
