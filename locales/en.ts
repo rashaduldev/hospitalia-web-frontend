@@ -81,7 +81,7 @@ export default {
     noData: "No appointments found",
     showing: "Showing",
     of: "of",
-    results: "products",
+    results: "data",
     previous: "Previous",
     next: "Next",
     appointment_details: "Appointment Details",
