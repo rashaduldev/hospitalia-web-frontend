@@ -36,6 +36,7 @@ export default function Header() {
     queryFn: () => getCurrentUser({ lang }),
     refetchOnWindowFocus: true,
     refetchInterval: 60 * 1000,
+    staleTime: 0,
   });
 
   const profileImage =
@@ -63,6 +64,7 @@ export default function Header() {
   // Logout
   const logoutHandler = async () => {
     await handleLogout({ lang });
+    queryClient.setQueryData(["currentUser", lang], undefined);
     queryClient.invalidateQueries({ queryKey: ["currentUser", lang] });
   };
 
@@ -91,39 +93,41 @@ export default function Header() {
 
           {/* User Avatar Menu */}
           {isLoading ? (
-            <div className="w-9 h-9 rounded-full bg-gray-200 animate-pulse" />
-          ) : currentUser ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Avatar className="w-9 h-9 cursor-pointer">
-                  <AvatarImage
-                    src={
-                      typeof profileImage === "string"
-                        ? profileImage
-                        : profileImage.src
-                    }
-                    alt={currentUser?.userDetails?.firstName}
-                  />
-                </Avatar>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>{currentUser.userType}</DropdownMenuLabel>
-                <DropdownMenuItem className="pointer-events-none font-medium">
-                  {currentUser?.userDetails?.firstName}
-                </DropdownMenuItem>
-                <DropdownMenuItem className="pointer-events-none text-xs text-muted-foreground">
-                  {currentUser.email}
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={logoutHandler}
-                  className="text-destructive cursor-pointer hover:text-destructive"
-                >
-                  {t("nav.logout")}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : null}
+            <div className="w-9 h-9 rounded-full bg-background animate-pulse" />
+          ) : (
+            currentUser && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Avatar className="w-9 h-9 cursor-pointer">
+                    <AvatarImage
+                      src={
+                        typeof profileImage === "string"
+                          ? profileImage
+                          : profileImage.src
+                      }
+                      alt={currentUser?.userDetails?.firstName}
+                    />
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>{currentUser.userType}</DropdownMenuLabel>
+                  <DropdownMenuItem className="pointer-events-none font-medium">
+                    {currentUser?.userDetails?.firstName}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="pointer-events-none text-xs text-muted-foreground">
+                    {currentUser.email}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={logoutHandler}
+                    className="text-destructive cursor-pointer hover:text-destructive"
+                  >
+                    {t("nav.logout")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )
+          )}
         </nav>
 
         {/* Mobile Menu Button */}
@@ -183,47 +187,49 @@ export default function Header() {
             {/* Mobile User Info */}
             {isLoading ? (
               <div className="w-full h-16 bg-background animate-pulse rounded-lg" />
-            ) : currentUser ? (
-              <li>
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-center gap-2">
-                    <Avatar className="w-8 h-8">
-                      <AvatarImage
-                        src={
-                          typeof profileImage === "string"
-                            ? profileImage
-                            : profileImage.src
-                        }
-                        alt={currentUser?.userDetails?.firstName}
-                      />
-                    </Avatar>
-                    <div className="flex flex-col">
-                      <Typography weight="medium" color="foreground">
-                        {currentUser?.userDetails?.firstName}
-                      </Typography>
-                      <Typography
-                        size="xs"
-                        color="muted_foreground"
-                        className="my-1"
-                      >
-                        {currentUser.email}
-                      </Typography>
-                      <Typography size="xs" color="muted_foreground">
-                        {currentUser.userType}
-                      </Typography>
+            ) : (
+              currentUser && (
+                <li>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                      <Avatar className="w-8 h-8">
+                        <AvatarImage
+                          src={
+                            typeof profileImage === "string"
+                              ? profileImage
+                              : profileImage.src
+                          }
+                          alt={currentUser?.userDetails?.firstName}
+                        />
+                      </Avatar>
+                      <div className="flex flex-col">
+                        <Typography weight="medium" color="foreground">
+                          {currentUser?.userDetails?.firstName}
+                        </Typography>
+                        <Typography
+                          size="xs"
+                          color="muted_foreground"
+                          className="my-1"
+                        >
+                          {currentUser.email}
+                        </Typography>
+                        <Typography size="xs" color="muted_foreground">
+                          {currentUser.userType}
+                        </Typography>
+                      </div>
                     </div>
+                    <AppButton
+                      variant="ghost"
+                      size="sm"
+                      className="text-destructive cursor-pointer hover:text-destructive! mt-2"
+                      onClick={logoutHandler}
+                    >
+                      {t("nav.logout")}
+                    </AppButton>
                   </div>
-                  <AppButton
-                    variant="ghost"
-                    size="sm"
-                    className="text-destructive cursor-pointer hover:text-destructive! mt-2"
-                    onClick={logoutHandler}
-                  >
-                    {t("nav.logout")}
-                  </AppButton>
-                </div>
-              </li>
-            ) : null}
+                </li>
+              )
+            )}
           </ul>
         </nav>
       </div>
