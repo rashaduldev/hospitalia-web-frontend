@@ -126,7 +126,12 @@ const PatientLoginForm = () => {
 
       {/* Links */}
       <div className="mt-8 space-y-4 flex flex-col gap-2">
-        <Link href="/patient/register">
+        <Link
+          href={{
+            pathname: "/patient/register",
+            query: callback ? { callback } : undefined,
+          }}
+        >
           <Typography
             size="sm"
             weight="medium"

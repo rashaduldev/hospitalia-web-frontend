@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ControlledInput } from "@/components/common/FormUIControllers/ControlledInput";
 import { ControlledSelect } from "@/components/common/FormUIControllers/ControlledSelect";
 import { ControlledDateInput } from "@/components/common/FormUIControllers/ControlledDateInput";
@@ -22,6 +22,8 @@ import { ControlledPhoneInput } from "@/components/common/FormUIControllers/Cont
 
 export default function PatinetRegistrationForm({ lang }: { lang: string }) {
   const t = useI18n();
+  const searchParams = useSearchParams();
+  const callback = searchParams.get("callback");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [success] = useState(false);
@@ -77,8 +79,7 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
       });
       return;
     }
-
-    router.replace("/patient/login");
+    router.replace(callback ? `/login?callback=${callback}` : "/patient/login");
     reset();
   };
 
@@ -208,7 +209,10 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
         </AppButton>
 
         <Link
-          href="/patient/login"
+          href={{
+            pathname: "/patient/login",
+            query: callback && { callback },
+          }}
           className="text-sm font-medium text-primary hover:underline"
         >
           {t("register.alreadyAccount")}

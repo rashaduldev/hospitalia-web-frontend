@@ -51,13 +51,13 @@ export const AppointmentActionCell = ({
   const [isViewOpen, setIsViewOpen] = useState(false);
   const [isCancelOpen, setIsCancelOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [reason, setReason] = useState("");
+  const [reason, setReason] = useState<string | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
 
   const closeCancelModal = () => {
     if (loading) return;
     setIsCancelOpen(false);
-    setReason("");
+    setReason(null);
     setValidationError(null);
   };
 
@@ -67,6 +67,11 @@ export const AppointmentActionCell = ({
     if (!result.success) {
       const errorMessage = result.error.message;
       setValidationError(errorMessage);
+      return;
+    }
+
+    if (!reason) {
+      setValidationError("Reason is required");
       return;
     }
 
@@ -211,15 +216,15 @@ export const AppointmentActionCell = ({
                   <span className="text-destructive">*</span>
                 </Typography>
                 <span
-                  className={`text-[10px] ${reason.length < 5 ? "text-muted-foreground" : "text-primary"}`}
+                  className={`text-[10px] ${reason && reason?.length < 5 ? "text-muted-foreground" : "text-primary"}`}
                 >
-                  {reason.length}/300
+                  {reason && reason.length}/300
                 </span>
               </div>
 
               <Textarea
                 placeholder="Explain the reason (minimum 5 characters)..."
-                value={reason}
+                value={reason || ""}
                 onChange={(e) => {
                   setReason(e.target.value);
                   if (validationError) setValidationError(null);
@@ -256,7 +261,7 @@ export const AppointmentActionCell = ({
             <Button
               variant="destructive"
               onClick={handleCancel}
-              disabled={loading || reason.trim().length < 5}
+              disabled={loading || (reason?.trim().length ?? 0) < 5}
               className="min-w-25"
             >
               {loading ? (

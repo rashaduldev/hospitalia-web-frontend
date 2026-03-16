@@ -9,10 +9,18 @@ import { Typography } from "@/components/ui/Typography";
 import { useI18n } from "@/locales/client";
 import { AppointmentActionCell } from "../cells/AppointmentActionCell";
 
-const TranslatedHeader = ({ labelKey }: { labelKey: string }) => {
+type TableLabelKey =
+  | "table.column.appointmentDate"
+  | "table.column.location"
+  | "table.column.patientName"
+  | "table.column.duration"
+  | "table.column.timeslot";
+
+const TranslatedHeader = ({ labelKey }: { labelKey: TableLabelKey }) => {
   const t = useI18n();
-  return <>{t(`table.${labelKey}` as any, {})}</>;
+  return <>{t(labelKey)}</>;
 };
+
 export const appointmentColumns: ColumnDef<Appointment>[] = [
   {
     id: "select",
@@ -40,7 +48,7 @@ export const appointmentColumns: ColumnDef<Appointment>[] = [
     accessorKey: "appointmentDate",
     header: () => (
       <Typography size="sm" weight="medium" color="foreground">
-        <TranslatedHeader labelKey="column.appointmentDate" />
+        <TranslatedHeader labelKey="table.column.appointmentDate" />
       </Typography>
     ),
     cell: ({ row }) => {
@@ -58,13 +66,13 @@ export const appointmentColumns: ColumnDef<Appointment>[] = [
     accessorKey: "location",
     header: () => (
       <Typography size="sm" weight="medium" color="foreground">
-        <TranslatedHeader labelKey="column.location" />
+        <TranslatedHeader labelKey="table.column.location" />
       </Typography>
     ),
     cell: ({ row }) => (
       <div className="flex items-center gap-2">
         <Typography as="span" size="xs" color="foreground">
-          {row.original?.locationName || ""}
+          {row.original?.locationName || "N/A"}
         </Typography>
       </div>
     ),
@@ -73,7 +81,7 @@ export const appointmentColumns: ColumnDef<Appointment>[] = [
     accessorKey: "patientName",
     header: () => (
       <Typography size="sm" weight="medium" color="foreground">
-        <TranslatedHeader labelKey="column.patientName" />
+        <TranslatedHeader labelKey="table.column.patientName" />
       </Typography>
     ),
     cell: ({ row }) => (
@@ -86,7 +94,7 @@ export const appointmentColumns: ColumnDef<Appointment>[] = [
     accessorKey: "duration",
     header: () => (
       <Typography size="sm" weight="medium" color="foreground">
-        <TranslatedHeader labelKey="column.duration" />
+        <TranslatedHeader labelKey="table.column.duration" />
       </Typography>
     ),
     cell: ({ row }) => {
@@ -110,7 +118,7 @@ export const appointmentColumns: ColumnDef<Appointment>[] = [
     accessorKey: "slotDuration",
     header: () => (
       <Typography size="sm" weight="medium" color="foreground">
-        <TranslatedHeader labelKey="column.timeslot" />
+        <TranslatedHeader labelKey="table.column.timeslot" />
       </Typography>
     ),
     cell: ({ row }) => (

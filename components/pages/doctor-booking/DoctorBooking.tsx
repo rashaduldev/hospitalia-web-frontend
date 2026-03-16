@@ -29,6 +29,7 @@ import { UnavailableDate } from "@/types/doctor.unavailable";
 import { SingleDoctorInfo } from "@/types/doctor";
 import { usePathname, useRouter } from "next/navigation";
 import { useI18n } from "@/locales/client";
+import { cn } from "@/lib/utils";
 
 const DoctorBooking = ({
   locationOptions,
@@ -284,7 +285,11 @@ const DoctorBooking = ({
                   key={type}
                   type="button"
                   onClick={() => setValue("patientType", type)}
-                  className={`w-full block rounded-sm text-muted font-medium text-sm ${bgColor} ${isSelected ? `border-4 font-bold ${borderColor}` : "border"} transition-all`}
+                  className={cn(
+                    "w-full block rounded-sm text-muted font-medium text-sm transition-all",
+                    bgColor,
+                    isSelected ? `border-4 font-bold ${borderColor}` : "border",
+                  )}
                 >
                   {type === "new"
                     ? t("booking.patient_types.new")
@@ -325,14 +330,18 @@ const DoctorBooking = ({
                 isDateUnavailable(date)
               }
               modifiers={{
+                today: new Date(),
                 available: (date) =>
                   isDayAvailable(date) && !isDateUnavailable(date),
                 unavailable: (date) => isDateUnavailable(date),
               }}
               modifiersClassNames={{
-                available: "bg-secondary-foreground/80 text-foreground",
+                today: "rounded-sm",
+                available:
+                  "bg-secondary-foreground/80 text-foreground font-normal",
                 unavailable: "bg-destructive text-muted!",
-                selected: "border-1 border-secondary bg-secondary",
+                selected:
+                  "border border-secondary bg-secondary text-foreground !font-bold",
               }}
             />
           )}
@@ -395,11 +404,13 @@ const DoctorBooking = ({
                               key={idx}
                               type="button"
                               onClick={() => slotField.onChange(slot.startTime)}
-                              className={`flex flex-col items-center justify-center p-2 h-auto rounded-sm border bg-secondary-foreground hover:bg-secondary-foreground transition-all ${
-                                isSelected
-                                  ? "border-secondary"
-                                  : "border-transparent bg-secondary-foreground"
-                              }`}
+                              className={cn(
+                                "flex flex-col items-center justify-center p-2 h-auto rounded-sm border bg-secondary-foreground hover:bg-secondary-foreground transition-all",
+                                {
+                                  "border-secondary": isSelected,
+                                  "border-transparent": !isSelected,
+                                },
+                              )}
                             >
                               <Typography
                                 size="xs"
