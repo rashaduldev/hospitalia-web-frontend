@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
 
   title: {
-    template: "%s | Hospitalia",
+    template: "%s",
     default: "Hospitalia - Modern Healthcare Management",
   },
   description: siteConfig.description,
