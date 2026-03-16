@@ -5,6 +5,15 @@ import ConfirmSlotsColumns from "@/components/common/ConfirmSlotsColumns";
 import { Suspense } from "react";
 import { getI18n } from "@/locales/server";
 import { TableSkeleton } from "@/components/common/TableSkeleton";
+import {
+  parse,
+  format,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  isBefore,
+} from "date-fns";
+import { DoctorAvailabilitySlot } from "@/types/doctor.slot";
 
 const ConfirmSlotsTable = async ({
   lang,
@@ -16,8 +25,39 @@ const ConfirmSlotsTable = async ({
   const t = await getI18n();
 
   const data = await getDoctorAvailability({ lang, doctorUserId });
-  const slots = data?.payload?.content || [];
 
+  const getFutureWeekdaysOfMonth = (dayOfWeek: string, referenceDate: Date) => {
+    const start = startOfMonth(referenceDate);
+    const end = endOfMonth(referenceDate);
+
+    const days = eachDayOfInterval({ start, end });
+
+    return days.filter(
+      (date) =>
+        format(date, "EEEE").toUpperCase() === dayOfWeek &&
+        !isBefore(date, referenceDate),
+    );
+  };
+
+  const slots = data?.payload?.content || [];
+  const expandedSlots = slots.flatMap((slot: DoctorAvailabilitySlot) => {
+    const referenceDate = parse(
+      slot.lastModifiedDate,
+      "dd-MM-yyyy HH:mm:ss",
+      new Date(),
+    );
+    const futureDates = getFutureWeekdaysOfMonth(slot.dayOfWeek, referenceDate);
+
+    return futureDates.map((date) => ({
+      ...slot,
+      displayDate: date,
+      appointmentDate: [
+        date.getFullYear(),
+        date.getMonth() + 1,
+        date.getDate(),
+      ],
+    }));
+  });
   return (
     <div className="border rounded-sm p-6 space-y-6 mt-8">
       <DynamicHeading
@@ -27,7 +67,10 @@ const ConfirmSlotsTable = async ({
         descriptionProps={{ size: "sm" }}
       />
       <Suspense fallback={<TableSkeleton columnCount={5} />}>
-        <DataTableWithExport columns={ConfirmSlotsColumns} data={slots} />
+        <DataTableWithExport
+          columns={ConfirmSlotsColumns}
+          data={expandedSlots}
+        />
       </Suspense>
     </div>
   );

@@ -1,6 +1,7 @@
 export default {
   nav: {
     home: "Home",
+    logout: "Logout",
     patient: "Patient Login",
     doctor: "Doctor / Secretary Login",
   },
@@ -54,6 +55,7 @@ export default {
   },
   login: {
     title: "Login as a Patient",
+    doctortitle: "Login as a Provider",
     description: "Enter your details below to login",
 
     phoneLabel: "Phone",
@@ -80,7 +82,7 @@ export default {
     noData: "No appointments found",
     showing: "Showing",
     of: "of",
-    results: "products",
+    results: "data",
     previous: "Previous",
     next: "Next",
     appointment_details: "Appointment Details",

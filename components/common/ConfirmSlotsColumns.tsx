@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { SlotActionCell } from "../cells/SlotActionCell";
 import { Checkbox } from "../ui/checkbox";
-import { parse, format } from "date-fns";
+import { format } from "date-fns";
 
 const ConfirmSlotsColumns: ColumnDef<any>[] = [
   {
@@ -27,30 +27,18 @@ const ConfirmSlotsColumns: ColumnDef<any>[] = [
     ),
   },
   {
-    accessorKey: "lastModifiedDate",
+    accessorKey: "displayDate",
     header: "Date",
-    cell: ({ row }) => {
-      const dateStr = row.getValue("lastModifiedDate") as string;
-      try {
-        const parsedDate = parse(dateStr, "dd-MM-yyyy HH:mm:ss", new Date());
-        return (
-          <div className="text-foreground">{format(parsedDate, "do MMMM")}</div>
-        );
-      } catch {
-        return <div className="text-foreground">{dateStr}</div>;
-      }
-    },
+    cell: ({ row }) => (
+      <div>{format(row.getValue("displayDate"), "do MMMM")}</div>
+    ),
+    accessorFn: (row) => format(row.displayDate, "yyyy-MM-dd"),
   },
   {
     accessorKey: "doctorLocationId",
     header: "Location",
-    cell: ({ row }) => (
-      <div className="flex items-center gap-2">
-        <span className="text-xs">
-          Clinic {row.getValue("doctorLocationId")}
-        </span>
-      </div>
-    ),
+    cell: ({ row }) => <div>Clinic {row.getValue("doctorLocationId")}</div>,
+    accessorFn: (row) => row.doctorLocationId.toString(),
   },
   {
     header: "Time Duration",

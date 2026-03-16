@@ -7,7 +7,7 @@ import WhyChooseUs from "@/components/pages/home/WhyChooseUs";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Home | Hospitalia - Comprehensive Healthcare & Medical Packages",
+  title: "Hospitalia - Comprehensive Healthcare",
   description:
     "Explore Hospitalia's premium healthcare services, flexible medical packages, and state-of-the-art facilities. Your health is our priority.",
   keywords: [
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function HomePage() {
+export default async function HomePage() {
   return (
     <>
       <Header />

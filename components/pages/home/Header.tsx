@@ -2,29 +2,69 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useI18n } from "@/locales/client";
+import { useCurrentLocale, useI18n } from "@/locales/client";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import DashboardLogo from "@/public/icons/dashLogo";
+import maleAvater from "@/public/assets/male-avater.jpg";
+import feMaleAvater from "@/public/assets/female-avater.jpg";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import AppButton from "@/components/common/AppButton";
+import { getCurrentUser } from "@/actions/user.actions";
+import { handleLogout } from "@/actions/auth.actions";
+import { Typography } from "@/components/ui/Typography";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const t = useI18n();
   const pathname = usePathname();
+  const lang = useCurrentLocale();
+  const queryClient = useQueryClient();
+
+  const { data: currentUser, isLoading } = useQuery({
+    queryKey: ["currentUser", lang],
+    queryFn: () => getCurrentUser({ lang }),
+    refetchOnWindowFocus: true,
+    refetchInterval: 60 * 1000,
+  });
+
+  const profileImage =
+    currentUser?.profileImage ??
+    (currentUser?.userDetails?.gender === "MALE" ? maleAvater : feMaleAvater);
 
   const NAV_LINKS = [
     { href: "/", label: t("nav.home") },
     {
       href: "/patient/login",
       label: t("nav.patient"),
-      hidden: pathname === "/patient/login" || pathname === "/patient/register",
+      hidden:
+        pathname === "/patient/login" ||
+        pathname === "/patient/register" ||
+        !!currentUser,
     },
     {
       href: "/login",
       label: t("nav.doctor"),
-      hidden: pathname === "/login" || pathname === "/register",
+      hidden:
+        pathname === "/login" || pathname === "/register" || !!currentUser,
     },
   ];
+
+  // Logout
+  const logoutHandler = async () => {
+    await handleLogout({ lang });
+    queryClient.invalidateQueries({ queryKey: ["currentUser", lang] });
+  };
 
   return (
     <header className="relative bg-back px-4 md:px-10 py-4 z-50 border-b">
@@ -48,6 +88,42 @@ export default function Header() {
                 </Link>
               ),
           )}
+
+          {/* User Avatar Menu */}
+          {isLoading ? (
+            <div className="w-9 h-9 rounded-full bg-gray-200 animate-pulse" />
+          ) : currentUser ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Avatar className="w-9 h-9 cursor-pointer">
+                  <AvatarImage
+                    src={
+                      typeof profileImage === "string"
+                        ? profileImage
+                        : profileImage.src
+                    }
+                    alt={currentUser?.userDetails?.firstName}
+                  />
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>{currentUser.userType}</DropdownMenuLabel>
+                <DropdownMenuItem className="pointer-events-none font-medium">
+                  {currentUser?.userDetails?.firstName}
+                </DropdownMenuItem>
+                <DropdownMenuItem className="pointer-events-none text-xs text-muted-foreground">
+                  {currentUser.email}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={logoutHandler}
+                  className="text-destructive cursor-pointer hover:text-destructive"
+                >
+                  {t("nav.logout")}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : null}
         </nav>
 
         {/* Mobile Menu Button */}
@@ -59,26 +135,19 @@ export default function Header() {
           <span
             className={cn(
               "h-0.5 w-6 bg-card-foreground transition-all duration-300",
-              {
-                "rotate-45 translate-y-2": isOpen,
-              },
+              { "rotate-45 translate-y-2": isOpen },
             )}
           />
           <span
             className={cn(
               "h-0.5 w-6 bg-card-foreground transition-all duration-300",
-              {
-                "opacity-0": isOpen,
-                "opacity-100": !isOpen,
-              },
+              { "opacity-0": isOpen, "opacity-100": !isOpen },
             )}
           />
           <span
             className={cn(
               "h-0.5 w-6 bg-card-foreground transition-all duration-300",
-              {
-                "-rotate-45 -translate-y-2": isOpen,
-              },
+              { "-rotate-45 -translate-y-2": isOpen },
             )}
           />
         </button>
@@ -110,6 +179,51 @@ export default function Header() {
                   </li>
                 ),
             )}
+
+            {/* Mobile User Info */}
+            {isLoading ? (
+              <div className="w-full h-16 bg-background animate-pulse rounded-lg" />
+            ) : currentUser ? (
+              <li>
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <Avatar className="w-8 h-8">
+                      <AvatarImage
+                        src={
+                          typeof profileImage === "string"
+                            ? profileImage
+                            : profileImage.src
+                        }
+                        alt={currentUser?.userDetails?.firstName}
+                      />
+                    </Avatar>
+                    <div className="flex flex-col">
+                      <Typography weight="medium" color="foreground">
+                        {currentUser?.userDetails?.firstName}
+                      </Typography>
+                      <Typography
+                        size="xs"
+                        color="muted_foreground"
+                        className="my-1"
+                      >
+                        {currentUser.email}
+                      </Typography>
+                      <Typography size="xs" color="muted_foreground">
+                        {currentUser.userType}
+                      </Typography>
+                    </div>
+                  </div>
+                  <AppButton
+                    variant="ghost"
+                    size="sm"
+                    className="text-destructive cursor-pointer hover:text-destructive! mt-2"
+                    onClick={logoutHandler}
+                  >
+                    {t("nav.logout")}
+                  </AppButton>
+                </div>
+              </li>
+            ) : null}
           </ul>
         </nav>
       </div>

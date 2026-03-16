@@ -1,6 +1,7 @@
 export default {
   nav: {
     home: "Accueil",
+    logout: "Déconnexion",
     patient: "Connexion Patient",
     doctor: "Connexion Docteur / Secrétaire",
   },
@@ -60,6 +61,7 @@ export default {
 
   login: {
     title: "Connexion en tant que prestataire",
+    doctortitle: "Connexion en tant que Prestataire",
     description: "Entrez vos informations ci-dessous pour vous connecter",
 
     phoneLabel: "Téléphone",
