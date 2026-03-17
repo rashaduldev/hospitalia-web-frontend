@@ -1,6 +1,7 @@
 "use server";
 
 import { ApiResponse } from "@/types/user.type";
+import { REQUEST_TIMEOUT_MS } from "@/lib/constants";
 
 type ApiRequestParams = {
   endpoint: string;
@@ -41,6 +42,8 @@ export async function apiClient<T = any>({
 }: ApiRequestParams): Promise<ApiResponse<T>> {
   const makeRequest = async (attempt: number): Promise<ApiResponse<T>> => {
     let response: Response | null = null;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
     try {
       const url = new URL(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}`);
@@ -62,6 +65,7 @@ export async function apiClient<T = any>({
         next: {
           tags,
         },
+        signal: controller.signal,
       };
 
       // Attach body
@@ -74,6 +78,7 @@ export async function apiClient<T = any>({
       console.debug("Request Options:", requestOptions);
 
       response = await fetch(url.toString(), requestOptions);
+      clearTimeout(timeoutId);
 
       // Handle file response
       if (fileData) {
@@ -103,8 +108,10 @@ export async function apiClient<T = any>({
         success: false,
         message: data.message || "Something went wrong!",
         payload: data.payload || null,
+        statusCode: response.status,
       };
     } catch (error: any) {
+      clearTimeout(timeoutId);
       console.error(
         `[${new Date().toISOString()}] 🚨 API Exception: ${endpoint} (Attempt: ${attempt})`,
         error,
@@ -124,10 +131,22 @@ export async function apiClient<T = any>({
         return makeRequest(attempt + 1);
       }
 
+      const isNetworkError =
+        error instanceof TypeError &&
+        (error.message.toLowerCase().includes("fetch") ||
+          error.message.toLowerCase().includes("network") ||
+          error.message.toLowerCase().includes("load failed"));
+
+      const friendlyMessage = isNetworkError
+        ? "Unable to reach the server. Please check your internet connection and try again."
+        : error.name === "AbortError"
+          ? "The request timed out. The server took too long to respond. Please try again."
+          : error.message || "Oops! there was an error";
+
       return {
         success: false,
         status: "error",
-        message: error.message || "Oops! there was an error",
+        message: friendlyMessage,
         payload: null,
       };
     }

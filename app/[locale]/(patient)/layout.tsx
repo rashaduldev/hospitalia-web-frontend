@@ -5,21 +5,27 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { getCurrentLocale } from "@/locales/server";
 import { ErrorHandle } from "@/components/common/ErrorHandle";
+import Unauthorized from "@/components/common/Unauthorized";
 
-export default async function UserLayout({
+export default async function PatientLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const lang = await getCurrentLocale();
   const res = await getCurrentUser({ lang });
+
   if (!res) {
     return (
       <ErrorHandle
-        message={res?.message || "Unauthorized access. Please log in."}
-        status={res?.statusCode}
+        message="Unauthorized access. Please log in."
+        status={401}
       />
     );
+  }
+
+  if (res.userType !== "PATIENT") {
+    return <Unauthorized />;
   }
 
   return (
@@ -33,7 +39,7 @@ export default async function UserLayout({
             } as React.CSSProperties
           }
         >
-          <AppSidebar variant="inset" userRole={res?.userType} lang={lang} user={res} />
+          <AppSidebar variant="inset" userRole="PATIENT" lang={lang} user={res} />
           <SidebarInset>
             <SiteHeader user={res} />
             <div className="flex flex-1 flex-col bg-dashboard-bg">

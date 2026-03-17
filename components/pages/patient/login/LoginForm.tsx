@@ -59,7 +59,7 @@ const PatientLoginForm = () => {
       return;
     }
 
-    router.replace(callback || "/dashboard");
+    router.replace(callback || "/patient/dashboard");
     reset();
   };
 
@@ -67,8 +67,8 @@ const PatientLoginForm = () => {
     <form onSubmit={handleSubmit(onSubmit)}>
       {/* Dynamic Title & Description */}
       <DynamicHeading
-        title={t("login.title")}
-        description={t("login.description")}
+        title={t("patientLogin.title")}
+        description={t("patientLogin.description")}
         titleProps={{ size: "2xl", weight: "semiBold", color: "foreground" }}
         className="mb-6"
       />
@@ -82,6 +82,7 @@ const PatientLoginForm = () => {
           label={t("login.phoneLabel")}
           setValue={setValue}
           defaultCountry="SN"
+          readOnlyCountryCode
         />
 
         {/* Password */}
@@ -95,6 +96,7 @@ const PatientLoginForm = () => {
             placeholder="••••••••"
           />
           <button
+            type="button"
             onClick={() => setShowPassword((p) => !p)}
             className="absolute cursor-pointer top-7 right-3"
           >
@@ -125,7 +127,7 @@ const PatientLoginForm = () => {
       </div>
 
       {/* Links */}
-      <div className="mt-8 space-y-4 flex flex-col gap-2">
+      <div className="mt-8 flex flex-col gap-3">
         <Link
           href={{
             pathname: "/patient/register",
@@ -135,10 +137,10 @@ const PatientLoginForm = () => {
           <Typography
             size="sm"
             weight="medium"
-            color="secondary"
-            className="hover:underline dark:text-foreground"
+            color="primary"
+            className="hover:underline"
           >
-            {t("login.noAccount")}
+            {t("patientLogin.noAccount")}
           </Typography>
         </Link>
 
@@ -146,8 +148,8 @@ const PatientLoginForm = () => {
           <Typography
             size="sm"
             weight="medium"
-            color="primary"
-            className="hover:underline dark:text-foreground"
+            color="muted_foreground"
+            className="hover:underline hover:text-foreground"
           >
             {t("login.forgotPassword")}
           </Typography>

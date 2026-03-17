@@ -23,6 +23,7 @@ export type ApiResponse<T> = {
   message: string;
   payload: T | null;
   error?: string | null;
+  statusCode?: number;
 };
 
 export interface Paginated<T> {
@@ -77,7 +78,7 @@ export type NewUser = {
 };
 
 export type LoginRequestData = {
-  countryCode?: string;
+  countryCode: string;
   phoneNumber: string;
   password: string;
 };

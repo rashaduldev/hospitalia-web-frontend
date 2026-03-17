@@ -1,3 +1,9 @@
+export type Beneficiary = {
+  id: number;
+  name: string;
+  relation: string;
+};
+
 export type PatientRegisterRequestData = {
   firstName: string;
   lastName?: string;

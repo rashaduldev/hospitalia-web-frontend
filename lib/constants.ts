@@ -1,11 +1,14 @@
 import {
   LayoutDashboardIcon,
   ChartBarIcon,
-  FolderIcon,
   Settings2Icon,
   UserRoundPlus,
   Clock,
+  CalendarPlus,
+  MessageSquare,
 } from "lucide-react";
+
+export const REQUEST_TIMEOUT_MS = 10_000;
 
 export const ROUTES = {
   DOCTOR: [
@@ -40,18 +43,18 @@ export const ROUTES = {
   PATIENT: [
     {
       name: "Dashboard",
-      url: "/dashboard",
+      url: "/patient/dashboard",
       icon: LayoutDashboardIcon,
     },
     {
       name: "Get Appointment",
-      url: "/appointment",
-      icon: FolderIcon,
+      url: "/patient/get-appointment",
+      icon: CalendarPlus,
     },
     {
-      name: "Message",
-      url: "/message",
-      icon: ChartBarIcon,
+      name: "Messages",
+      url: "/patient/messages",
+      icon: MessageSquare,
     },
   ],
   COMMON: [

@@ -2,6 +2,7 @@ export default {
   nav: {
     home: "Home",
     logout: "Logout",
+    dashboard: "Patient Dashboard",
     patient: "Patient Login",
     doctor: "Doctor / Secretary Login",
   },
@@ -52,6 +53,20 @@ export default {
     cholesterol: "Cholesterol Test",
 
     checkBtn: "Check Details",
+  },
+  patientLogin: {
+    title: "Welcome Back",
+    description: "Sign in to manage your appointments and health records.",
+    noAccount: "Don't have an account? Create one",
+  },
+  patientRegister: {
+    pageTitle: "Create Your Patient Account",
+    pageSubtitle: "Join thousands of patients already using Hospitalia.",
+    sectionTitle: "Your Personal Information",
+    phoneLabel: "Mobile Number",
+    submit: "Create Patient Account",
+    creating: "Creating your account...",
+    alreadyAccount: "Already have an account? Sign in",
   },
   login: {
     title: "Login as a Patient",

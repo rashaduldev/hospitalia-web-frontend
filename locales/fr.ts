@@ -2,6 +2,7 @@ export default {
   nav: {
     home: "Accueil",
     logout: "Déconnexion",
+    dashboard: "Tableau de bord patient",
     patient: "Connexion Patient",
     doctor: "Connexion Docteur / Secrétaire",
   },
@@ -59,6 +60,20 @@ export default {
     checkBtn: "Voir les détails",
   },
 
+  patientLogin: {
+    title: "Bienvenue",
+    description: "Connectez-vous pour gérer vos rendez-vous et dossiers de santé.",
+    noAccount: "Pas encore de compte ? Créer un compte",
+  },
+  patientRegister: {
+    pageTitle: "Créer votre compte patient",
+    pageSubtitle: "Rejoignez des milliers de patients qui utilisent déjà Hospitalia.",
+    sectionTitle: "Vos informations personnelles",
+    phoneLabel: "Numéro de téléphone",
+    submit: "Créer mon compte patient",
+    creating: "Création de votre compte...",
+    alreadyAccount: "Vous avez déjà un compte ? Se connecter",
+  },
   login: {
     title: "Connexion en tant que prestataire",
     doctortitle: "Connexion en tant que Prestataire",
