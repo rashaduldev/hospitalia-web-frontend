@@ -4,6 +4,7 @@ import { apiClient } from "@/lib/api";
 import { Appointment } from "@/types/appointment.type";
 import { Paginated } from "@/types/user.type";
 import { getAccessToken } from "../auth";
+import { revalidatePath } from "next/cache";
 
 // Doctor upcoming appointments by doctor user id
 export const getUpcomingAppointments = async ({
@@ -96,6 +97,9 @@ export const cancelAppointment = async ({
     },
     body: { appointmentId, cancelledByUserId, cancellationReason },
   });
+  if (res?.success) {
+    revalidatePath("/dashboard");
+  }
 
   return res;
 };

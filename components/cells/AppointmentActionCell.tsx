@@ -40,6 +40,7 @@ import { DetailItem } from "./DetailItemHelper";
 import { cancelAppointment } from "@/actions/doctor/appointment";
 import { cancelAppointmentSchema } from "@/schema/doctor.booking.schema";
 import { Appointment } from "@/types/appointment.type";
+import { useRouter } from "next/navigation";
 
 export const AppointmentActionCell = ({
   appointment,
@@ -47,6 +48,7 @@ export const AppointmentActionCell = ({
   appointment: Appointment;
 }) => {
   const t = useI18n();
+  const router = useRouter();
   const lang = useCurrentLocale();
   const [isViewOpen, setIsViewOpen] = useState(false);
   const [isCancelOpen, setIsCancelOpen] = useState(false);
@@ -86,6 +88,7 @@ export const AppointmentActionCell = ({
 
     if (res?.success) {
       closeCancelModal();
+      router.refresh();
     } else {
       setValidationError(res?.message);
     }
