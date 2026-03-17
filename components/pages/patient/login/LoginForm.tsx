@@ -10,15 +10,19 @@ import { login } from "@/actions/auth.actions";
 import { useRouter, useSearchParams } from "next/navigation";
 import { DynamicHeading } from "@/components/common/DynamicHeading";
 import { Typography } from "@/components/ui/Typography";
-import { useI18n } from "@/locales/client";
+import { useCurrentLocale, useI18n } from "@/locales/client";
 import { loginFormSchema, LoginFormValues } from "@/schema/ueser.schema";
 import AppButton from "@/components/common/AppButton";
 import { getCleanPhoneData } from "@/lib/phone-utils";
 import { ControlledPhoneInput } from "@/components/common/FormUIControllers/ControlledPhoneInput";
+import { useQueryClient } from "@tanstack/react-query";
+import { getCurrentUser } from "@/actions/user.actions";
 
 const PatientLoginForm = () => {
   const router = useRouter();
   const t = useI18n();
+  const queryClient = useQueryClient();
+  const lang = useCurrentLocale();
   const searchParams = useSearchParams();
   const callback = searchParams.get("callback");
   const [showPassword, setShowPassword] = useState(false);
@@ -59,7 +63,21 @@ const PatientLoginForm = () => {
       return;
     }
 
-    router.replace(callback || "/dashboard");
+    const user = await queryClient.fetchQuery({
+      queryKey: ["currentUser"],
+      queryFn: () => getCurrentUser({ lang }),
+    });
+
+    if (callback) {
+      if (user?.userType === "PATIENT") {
+        router.replace(callback);
+      } else {
+        router.replace("/dashboard");
+      }
+    } else {
+      router.replace("/dashboard");
+    }
+
     reset();
   };
 
