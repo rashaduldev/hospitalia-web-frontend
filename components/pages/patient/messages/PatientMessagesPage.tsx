@@ -32,11 +32,15 @@ interface Message {
   timestamp: Date;
 }
 
-const formatDate = (dateStr: string) => {
+const formatDate = (dateStr: string | number[]) => {
   try {
-    return format(parseISO(dateStr), "do MMMM");
+    if (Array.isArray(dateStr)) {
+      const [year, month, day] = dateStr;
+      return format(new Date(year, month - 1, day), "d MMMM yyyy");
+    }
+    return format(parseISO(dateStr), "d MMMM yyyy");
   } catch {
-    return dateStr;
+    return String(dateStr);
   }
 };
 

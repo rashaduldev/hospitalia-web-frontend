@@ -35,7 +35,7 @@ export const changePatientPassword = async ({
       "Content-Type": "application/json",
     },
     params: { lang },
-    body,
+    body: body as any,
   });
 };
 

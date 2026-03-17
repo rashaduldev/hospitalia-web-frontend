@@ -157,7 +157,13 @@ export const AppointmentActionCell = ({
                 >
                   {appointment?.appointmentDate
                     ? format(
-                        new Date(appointment.appointmentDate),
+                        Array.isArray(appointment.appointmentDate)
+                          ? new Date(
+                              appointment.appointmentDate[0],
+                              appointment.appointmentDate[1] - 1,
+                              appointment.appointmentDate[2],
+                            )
+                          : new Date(appointment.appointmentDate),
                         "EEEE, dd MMM yyyy",
                       )
                     : "N/A"}

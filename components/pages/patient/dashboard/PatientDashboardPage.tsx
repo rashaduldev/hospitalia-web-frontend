@@ -439,7 +439,7 @@ export default function PatientDashboardPage({
                     </td>
                     <td className="py-3.5 px-4 min-w-[130px]">
                       <p className="text-sm font-medium text-foreground">{formatApptDate(appt.appointmentDate)}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5 capitalize">{appt.dayOfWeek?.charAt(0) + appt.dayOfWeek?.slice(1).toLowerCase()}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5 capitalize">{appt.dayOfWeek ? appt.dayOfWeek.charAt(0) + appt.dayOfWeek.slice(1).toLowerCase() : ""}</p>
                     </td>
                     <td className="py-3.5 px-4 min-w-[150px]">
                       <p className="text-sm font-medium text-foreground whitespace-normal">{appt.doctorName}</p>

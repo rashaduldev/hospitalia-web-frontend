@@ -88,7 +88,7 @@ function PasswordField({
 interface ChangePasswordDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onChangePassword: (newPassword: string) => Promise<void>;
+  onChangePassword: (newPassword: string) => Promise<unknown>;
 }
 
 export default function ChangePasswordDialog({
