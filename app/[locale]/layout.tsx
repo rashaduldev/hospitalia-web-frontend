@@ -68,7 +68,7 @@ export default async function RootLayout({
   const { locale } = await params;
 
   return (
-    <html lang={locale}>
+    <html lang={locale} suppressHydrationWarning>
       <body
         className={`${PlusJakartaSans.variable} ${inter.variable} antialiased`}
       >

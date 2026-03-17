@@ -101,18 +101,19 @@ const DoctorBooking = ({
 
   // Slots Query
   const { data: slotData, isLoading: isLoadingSlots } = useQuery({
-    queryKey: ["availableSlots", doctorUserId, selectedDate],
+    queryKey: ["availableSlots", doctorUserId, selectedLocation, selectedDate],
     queryFn: async () => {
       if (!selectedDate) return [];
       const res = await getAvailableSlots({
         doctorUserId: doctorUserId,
+        doctorLocationId: Number(selectedLocation),
         lang,
         requestedDate: format(parseISO(selectedDate), "yyyy-MM-dd"),
       });
 
       return res.payload || [];
     },
-    enabled: Boolean(selectedDate && doctorUserId),
+    enabled: Boolean(selectedDate && doctorUserId && selectedLocation),
   });
 
   // --- Helper Functions ---

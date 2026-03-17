@@ -25,16 +25,28 @@ export const getPatientUpcomingAppointments = async ({
 
 export const cancelPatientAppointment = async ({
   appointmentId,
+  cancelledByUserId,
+  cancellationReason = "",
   lang,
 }: {
   appointmentId: string;
+  cancelledByUserId: number;
+  cancellationReason?: string;
   lang: string;
 }) => {
   const token = await getAccessToken();
   return await apiClient({
-    endpoint: `/api/appointments/cancel/${appointmentId}`,
-    method: "PUT",
-    headers: { Authorization: `Bearer ${token}` },
+    endpoint: `/api/appointments/cancel-appointment/appointmentId${appointmentId}`,
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
     params: { lang },
+    body: {
+      appointmentId: Number(appointmentId),
+      cancelledByUserId,
+      cancellationReason,
+    },
   });
 };

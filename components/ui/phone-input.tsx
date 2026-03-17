@@ -68,7 +68,7 @@ const InputComponent = forwardRef<HTMLInputElement, ComponentProps<"input">>(
 );
 InputComponent.displayName = "InputComponent";
 
-type CountryEntry = { label: string; value: RPNInput.Country | undefined };
+export type CountryEntry = { label: string; value: RPNInput.Country | undefined };
 
 type CountrySelectProps = {
   disabled?: boolean;
@@ -77,7 +77,7 @@ type CountrySelectProps = {
   onChange: (country: RPNInput.Country) => void;
 };
 
-const CountrySelect = ({
+export const CountrySelect = ({
   disabled,
   value: selectedCountry,
   options: countryList,

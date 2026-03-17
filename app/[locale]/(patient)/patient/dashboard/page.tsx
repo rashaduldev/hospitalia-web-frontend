@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { getCurrentLocale } from "@/locales/server";
+import { getCurrentUser } from "@/actions/user.actions";
 import PatientDashboardPage from "@/components/pages/patient/dashboard/PatientDashboardPage";
 
 export const metadata: Metadata = {
@@ -9,5 +10,6 @@ export const metadata: Metadata = {
 
 export default async function PatientDashboard() {
   const lang = await getCurrentLocale();
-  return <PatientDashboardPage lang={lang} />;
+  const user = await getCurrentUser({ lang });
+  return <PatientDashboardPage lang={lang} patientUserId={user?.id ?? null} />;
 }

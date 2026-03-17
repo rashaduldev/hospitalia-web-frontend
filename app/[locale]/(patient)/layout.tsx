@@ -39,7 +39,7 @@ export default async function PatientLayout({
             } as React.CSSProperties
           }
         >
-          <AppSidebar variant="inset" userRole="PATIENT" lang={lang} />
+          <AppSidebar variant="inset" userRole="PATIENT" lang={lang} user={res} />
           <SidebarInset>
             <SiteHeader user={res} />
             <div className="flex flex-1 flex-col bg-dashboard-bg">

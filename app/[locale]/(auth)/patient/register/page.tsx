@@ -4,19 +4,16 @@ import { getCurrentLocale } from "@/locales/server";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Hospitalia | Registration",
+  title: "Hospitalia - Create Patient Account",
   description:
-    "Create your Hospitalia account to access hospital services, manage appointments, and connect with healthcare professionals securely.",
+    "Create your Hospitalia patient account to book appointments, access health services, and manage your care securely.",
 };
 export default async function RegisterPage() {
   const lang = await getCurrentLocale();
   return (
     <>
       <Header />
-      <h2 className="text-2xl text-card-foreground text-center p-7">
-        Join Rendewou as a Provider
-      </h2>
-      <div className="px-4">
+      <div className="px-4 pt-10">
         <div className="container mx-auto">
           <PatinetRegistrationForm lang={lang} />
         </div>
