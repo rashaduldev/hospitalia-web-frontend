@@ -78,7 +78,7 @@ export function SearchResultCard({
             {item.locationName?.length > 0 && (
               <div className="flex items-start gap-1.5 mt-2 text-sm text-muted-foreground">
                 <MapPin className="w-3.5 h-3.5 shrink-0 mt-0.5 text-secondary" />
-                <span className="min-w-0">
+                <span className="min-w-0 break-all">
                   {item.locationName[0]}
                   {item.locationName.length > 1 && (
                     <span className="text-xs ml-1.5">

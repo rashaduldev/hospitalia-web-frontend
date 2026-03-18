@@ -228,28 +228,39 @@ const DoctorBooking = ({
         {/* Patient Type */}
         <div>
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
-            Patient Type
+            Consultation Fees
           </p>
-          <div className="flex gap-2 p-1 bg-muted rounded-lg">
-            {(["new", "returning"] as const).map((type) => (
-              <button
-                key={type}
-                type="button"
-                onClick={() => setValue("patientType", type)}
-                className={cn(
-                  "flex-1 py-2 px-3 rounded-md text-sm font-semibold transition-all duration-200",
-                  patientType === type
-                    ? type === "new"
-                      ? "bg-secondary text-white shadow-sm"
-                      : "bg-primary text-white shadow-sm"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                {type === "new"
-                  ? `${t("booking.patient_types.new")} — 25,000 CFA`
-                  : `${t("booking.patient_types.returning")} — 10,000 CFA`}
-              </button>
-            ))}
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => setValue("patientType", "new")}
+              className={cn(
+                "rounded-lg px-3 py-2.5 text-center border transition-all duration-200",
+                patientType === "new"
+                  ? "bg-secondary/20 border-secondary"
+                  : "bg-secondary/10 border-secondary/20 hover:border-secondary/50",
+              )}
+            >
+              <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide mb-1">
+                {t("booking.patient_types.new")}
+              </p>
+              <p className="text-sm font-bold text-secondary">25,000 CFA</p>
+            </button>
+            <button
+              type="button"
+              onClick={() => setValue("patientType", "returning")}
+              className={cn(
+                "rounded-lg px-3 py-2.5 text-center border transition-all duration-200",
+                patientType === "returning"
+                  ? "bg-primary/20 border-primary"
+                  : "bg-primary/10 border-primary/20 hover:border-primary/50",
+              )}
+            >
+              <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide mb-1">
+                {t("booking.patient_types.returning")}
+              </p>
+              <p className="text-sm font-bold text-primary">10,000 CFA</p>
+            </button>
           </div>
         </div>
 

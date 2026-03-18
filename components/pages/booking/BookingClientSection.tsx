@@ -92,7 +92,10 @@ const BookingClientSection = ({
 
   return (
     <div className="flex flex-col md:flex-row items-start gap-4">
-      <DoctorProfile doctor={doctor} doctorLocations={doctorLocations} />
+      <div className="w-full md:w-3/5">
+        <DoctorProfile doctor={doctor} doctorLocations={doctorLocations} />
+      </div>
+      <div className="w-full md:w-2/5">
       <DoctorBooking
         lang={lang}
         doctor={doctor}
@@ -105,6 +108,7 @@ const BookingClientSection = ({
           setIsSuccess(true);
         }}
       />
+      </div>
     </div>
   );
 };

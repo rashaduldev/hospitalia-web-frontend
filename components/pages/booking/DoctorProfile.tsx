@@ -65,7 +65,7 @@ const DoctorProfile = ({
         </h2>
 
         {doctor.professionalInfoResponse?.designation && (
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-sm text-muted-foreground mt-1 px-4 break-all">
             {doctor.professionalInfoResponse.designation}
           </p>
         )}
@@ -119,7 +119,7 @@ const DoctorProfile = ({
               {doctorLocations.map((loc) => (
                 <li
                   key={loc.locationId}
-                  className="text-sm text-muted-foreground flex items-start gap-1.5"
+                  className="text-sm text-muted-foreground flex items-start gap-1.5 break-all"
                 >
                   <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-secondary shrink-0" />
                   {loc.locationName}

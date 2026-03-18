@@ -44,7 +44,7 @@ const DoctorBookingPage = async ({ params }: Props) => {
 
   const locationOptions =
     doctorLocations?.payload?.map((item: Location) => ({
-      label: item.locationName,
+      label: item.locationName.length > 60 ? item.locationName.slice(0, 60) + "…" : item.locationName,
       value: item.locationId,
     })) || [];
   const locations = doctorLocations?.payload || [];
