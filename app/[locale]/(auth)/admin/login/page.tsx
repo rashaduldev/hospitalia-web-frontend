@@ -1,5 +1,5 @@
 import Header from "@/components/pages/home/Header";
-import LoginForm from "@/components/pages/login/LoginForm";
+import AdminLoginForm from "@/components/pages/admin/login/AdminLoginForm";
 import { Metadata } from "next";
 import Image from "next/image";
 import patientLoginImg from "../../../../../public/assets/patient-login.png";
@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = {
   title: "Hospitalia - Admin Login",
   description:
-    "Login to your Hospitalia admin account to manage the platform.",
+    "Sign in to the Hospitalia admin portal to manage the platform.",
 };
 
 const AdminLoginPage = () => {
@@ -31,10 +31,10 @@ const AdminLoginPage = () => {
             <div className="w-full max-w-112.5">
               <div className="mb-5">
                 <span className="inline-flex items-center text-xs font-semibold uppercase tracking-widest text-primary bg-primary/10 px-3 py-1.5 rounded-full">
-                  Admin Login
+                  Admin Portal
                 </span>
               </div>
-              <LoginForm />
+              <AdminLoginForm />
             </div>
           </div>
         </main>
