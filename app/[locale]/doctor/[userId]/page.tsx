@@ -8,6 +8,7 @@ import { getCurrentUser } from "@/actions/user.actions";
 import { getAccessToken } from "@/actions/auth";
 import BookingClientSection from "@/components/pages/booking/BookingClientSection";
 import { Metadata } from "next";
+import { notFound } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Hospitalia - Book Appointment",
@@ -33,7 +34,7 @@ const DoctorBookingPage = async ({ params }: Props) => {
   const doctorUserId = singleDoctor?.payload?.userId;
 
   if (!doctorUserId) {
-    throw new Error("Doctor not found or invalid doctor ID");
+    notFound();
   }
   const doctorLocations = await getDoctorLocations({ lang, doctorUserId });
   const doctorUnAvailable = await getDoctorUnAvailability({

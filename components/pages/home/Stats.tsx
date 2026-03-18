@@ -1,26 +1,32 @@
 "use client";
 import { useI18n } from "@/locales/client";
 
-const stats: { count: string; key: "patients" | "monthlyUsers" | "doctors" }[] = [
-  { count: "100k+", key: "patients" },
-  { count: "10k", key: "monthlyUsers" },
-  { count: "5k", key: "doctors" },
+const stats: { count: string; key: "patients" | "monthlyUsers" | "doctors"; color: string }[] = [
+  { count: "100k+", key: "patients", color: "text-secondary" },
+  { count: "10k", key: "monthlyUsers", color: "text-primary" },
+  { count: "5k", key: "doctors", color: "text-secondary" },
 ];
 
 const Stats = () => {
   const t = useI18n();
 
   return (
-    <section className="max-w-191.5 mx-auto flex flex-col md:flex-row items-center pt-20 px-4 pb-4.5 gap-10 text-center justify-between">
-      {stats.map((stat, index) => (
-        <div
-          key={index}
-          className={`${index !== 0 ? "md:border-l md:pl-14" : ""}`}
-        >
-          <h3 className="h3">{stat.count}</h3>
-          <p>{t(`stats.${stat.key}`)}</p>
-        </div>
-      ))}
+    <section className="bg-background border-b">
+      <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center py-10 px-6 gap-8 md:gap-0 text-center justify-around">
+        {stats.map((stat, index) => (
+          <div
+            key={index}
+            className={`flex-1 ${index !== 0 ? "md:border-l border-border" : ""} flex flex-col items-center gap-1`}
+          >
+            <span className={`text-4xl sm:text-5xl font-extrabold tracking-tight ${stat.color}`}>
+              {stat.count}
+            </span>
+            <span className="text-sm sm:text-base text-muted-foreground font-medium">
+              {t(`stats.${stat.key}`)}
+            </span>
+          </div>
+        ))}
+      </div>
     </section>
   );
 };
