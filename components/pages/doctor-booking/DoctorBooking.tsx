@@ -69,6 +69,7 @@ const DoctorBooking = ({
   });
 
   const selectedLocation = useWatch({ control, name: "location" });
+  const doctorLocationId = Number(selectedLocation);
   const selectedDate = useWatch({ control, name: "availableDates" });
   const patientType = useWatch({ control, name: "patientType" });
   const queryClient = useQueryClient();
@@ -104,6 +105,7 @@ const DoctorBooking = ({
     queryKey: ["availableSlots", doctorUserId, selectedLocation, selectedDate],
     queryFn: async () => {
       if (!selectedDate) return [];
+
       const res = await getAvailableSlots({
         doctorUserId: doctorUserId,
         doctorLocationId: Number(selectedLocation),
@@ -248,13 +250,12 @@ const DoctorBooking = ({
           control={control}
           placeholder={t("booking.select_location")}
           options={locationOptions}
-          onChange={(value) => {
-            setValue("location", value);
+          onChange={() => {
             setValue("availableDates", "");
             setValue("availableSlots", "");
 
             queryClient.removeQueries({
-              queryKey: ["availableSlots"],
+              queryKey: ["availableDates", "availableSlots"],
             });
           }}
         />
@@ -269,6 +270,7 @@ const DoctorBooking = ({
                 locationOptions.map((item) => item.label).join(", ")}
             </Typography>
           </div>
+
           {/* Patient Type Select */}
           <div className="grid grid-cols-2 gap-3">
             {(["new", "returning"] as const).map((type, index) => {
@@ -320,9 +322,14 @@ const DoctorBooking = ({
             <div className="mx-auto border rounded-sm w-full max-w-sm h-70 bg-muted-foreground/10 animate-pulse"></div>
           ) : (
             <Calendar
+              key={selectedLocation}
               mode="single"
               className="mx-auto border rounded-sm"
-              selected={dateField.value ? new Date(dateField.value) : undefined}
+              selected={
+                dateField.value && !isNaN(new Date(dateField.value).getTime())
+                  ? new Date(dateField.value)
+                  : undefined
+              }
               onSelect={(date) => dateField.onChange(date?.toISOString())}
               disabled={(date) =>
                 !selectedLocation ||

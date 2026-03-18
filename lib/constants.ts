@@ -2,7 +2,7 @@ import {
   LayoutDashboardIcon,
   ChartBarIcon,
   Settings2Icon,
-  UserRoundPlus,
+  // UserRoundPlus,
   Clock,
   CalendarPlus,
   MessageSquare,
@@ -22,11 +22,11 @@ export const ROUTES = {
       url: "/availability",
       icon: Clock,
     },
-    {
-      name: "Add Secretary",
-      url: "/secretary",
-      icon: UserRoundPlus,
-    },
+    // {
+    //   name: "Add Secretary",
+    //   url: "/secretary",
+    //   icon: UserRoundPlus,
+    // },
   ],
   HOSPITAL: [
     {

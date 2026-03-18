@@ -36,6 +36,7 @@ export default async function DoctorDashboardPage() {
 
   return (
     <div className="space-y-10 mt-5">
+      {/* today appoinments */}
       <div className="bg-background p-6 rounded-sm">
         <DynamicHeading
           title={t("appoinment.today")}
@@ -54,6 +55,7 @@ export default async function DoctorDashboardPage() {
         </Suspense>
       </div>
 
+      {/* upcomming appoinments */}
       <div className="bg-background p-6 rounded-sm">
         <DynamicHeading
           title={t("appoinment.upcoming")}

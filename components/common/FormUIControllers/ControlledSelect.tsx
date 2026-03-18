@@ -36,6 +36,7 @@ export const ControlledSelect: FC<ControlledSelectProps> = ({
   placeholder,
   renderOption,
   options,
+  onChange,
   className,
 }) => {
   return (
@@ -57,7 +58,13 @@ export const ControlledSelect: FC<ControlledSelectProps> = ({
             )}
           </div>
 
-          <Select value={field.value || ""} onValueChange={field.onChange}>
+          <Select
+            value={field.value || ""}
+            onValueChange={(value) => {
+              field.onChange(value);
+              if (onChange) onChange(value);
+            }}
+          >
             <SelectTrigger
               className={cn("w-full border rounded-lg", className)}
             >

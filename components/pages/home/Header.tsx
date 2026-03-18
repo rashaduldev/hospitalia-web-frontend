@@ -59,6 +59,11 @@ export default function Header() {
       hidden:
         pathname === "/login" || pathname === "/register" || !!currentUser,
     },
+    {
+      href: "/dashboard",
+      label: t("nav.dashboard"),
+      hidden: !currentUser,
+    },
   ];
 
   // Logout
@@ -98,7 +103,7 @@ export default function Header() {
             currentUser && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Avatar className="w-9 h-9 cursor-pointer">
+                  <Avatar className="w-8 h-8 cursor-pointer">
                     <AvatarImage
                       src={
                         typeof profileImage === "string"
