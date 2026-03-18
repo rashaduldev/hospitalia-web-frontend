@@ -1,14 +1,9 @@
-import { getDoctorInfobyUserid } from "@/actions/doctor/doctordata";
-import { getDoctorLocations } from "@/actions/doctor/location";
 import Header from "@/components/pages/home/Header";
-import DoctorProfile from "@/components/pages/booking/DoctorProfile";
 import { getCurrentLocale } from "@/locales/server";
-import { Location } from "@/types/doctor.location.type";
 import { CheckCircle2, CalendarDays, Clock, MapPin, Banknote, Info } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 
 export const metadata = { title: "Hospitalia - Booking Confirmed" };
 
@@ -29,20 +24,8 @@ const DetailRow = ({ label, value }: { label: string; value: string }) => (
 );
 
 const BookingConfirmationPage = async ({ searchParams }: { searchParams: Promise<any> }) => {
-  const lang = await getCurrentLocale();
+  await getCurrentLocale();
   const sParams = await searchParams;
-
-  const doctorUserId = Number(sParams.doctorUserId);
-  if (!doctorUserId) notFound();
-
-  const [singleDoctor, doctorLocations] = await Promise.all([
-    getDoctorInfobyUserid({ lang, SignleDoctorUserId: doctorUserId }),
-    getDoctorLocations({ lang, doctorUserId }),
-  ]);
-
-  if (!singleDoctor?.payload?.userId) notFound();
-
-  const locations = doctorLocations?.payload || [];
 
   const bookingInfo = {
     doctorName: sParams.doctorName || "",
@@ -57,57 +40,47 @@ const BookingConfirmationPage = async ({ searchParams }: { searchParams: Promise
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <div className="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row items-start gap-4">
-          {/* Left: doctor profile */}
-          <div className="w-full md:w-3/5">
-            <DoctorProfile doctor={singleDoctor.payload} doctorLocations={locations} />
+      <div className="flex items-center justify-center px-4 py-16">
+        <div className="border border-border rounded-xl bg-card shadow-sm w-full max-w-md overflow-hidden">
+          {/* Success header */}
+          <div className="flex flex-col items-center text-center px-6 pt-8 pb-6 bg-secondary/5 border-b border-border">
+            <div className="p-3 bg-secondary/15 rounded-full mb-4">
+              <CheckCircle2 className="w-8 h-8 text-secondary" />
+            </div>
+            <h2 className="text-base font-bold text-foreground">Appointment Booked!</h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Your request has been submitted successfully.
+            </p>
           </div>
 
-          {/* Right: confirmation card */}
-          <div className="w-full md:w-2/5">
-            <div className="border border-border rounded-xl bg-card shadow-sm overflow-hidden">
-              {/* Success header */}
-              <div className="flex flex-col items-center text-center px-6 pt-8 pb-6 bg-secondary/5 border-b border-border">
-                <div className="p-3 bg-secondary/15 rounded-full mb-4">
-                  <CheckCircle2 className="w-8 h-8 text-secondary" />
-                </div>
-                <h2 className="text-base font-bold text-foreground">Appointment Booked!</h2>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Your request has been submitted successfully.
-                </p>
-              </div>
-
-              {/* Summary */}
-              <div className="px-6 py-6">
-                <SectionHeading icon={CalendarDays} label="Appointment Summary" />
-                <div>
-                  <DetailRow label="Doctor" value={bookingInfo.doctorName} />
-                  {bookingInfo.designation && (
-                    <DetailRow label="Designation" value={bookingInfo.designation} />
-                  )}
-                  <DetailRow label="Location" value={bookingInfo.location} />
-                  <DetailRow label="Date" value={bookingInfo.date} />
-                  <DetailRow label="Time" value={`${bookingInfo.startTime} – ${bookingInfo.endTime}`} />
-                  <DetailRow label="Fee" value={bookingInfo.price} />
-                </div>
-              </div>
-
-              <Separator />
-
-              {/* Note + CTA */}
-              <div className="px-6 py-5 space-y-4">
-                <div className="flex items-start gap-2 rounded-lg bg-muted/60 border border-border px-4 py-3">
-                  <Info className="w-3.5 h-3.5 text-muted-foreground shrink-0 mt-0.5" />
-                  <p className="text-[11px] text-muted-foreground leading-relaxed">
-                    Availability is subject to confirmation by the doctor.
-                  </p>
-                </div>
-                <Button asChild className="w-full font-semibold h-11">
-                  <Link href="/patient/dashboard">View My Appointments</Link>
-                </Button>
-              </div>
+          {/* Summary */}
+          <div className="px-6 py-6">
+            <SectionHeading icon={CalendarDays} label="Appointment Summary" />
+            <div>
+              <DetailRow label="Doctor" value={bookingInfo.doctorName} />
+              {bookingInfo.designation && (
+                <DetailRow label="Designation" value={bookingInfo.designation} />
+              )}
+              <DetailRow label="Location" value={bookingInfo.location} />
+              <DetailRow label="Date" value={bookingInfo.date} />
+              <DetailRow label="Time" value={`${bookingInfo.startTime} – ${bookingInfo.endTime}`} />
+              <DetailRow label="Fee" value={bookingInfo.price} />
             </div>
+          </div>
+
+          <Separator />
+
+          {/* Note + CTA */}
+          <div className="px-6 py-5 space-y-4">
+            <div className="flex items-start gap-2 rounded-lg bg-muted/60 border border-border px-4 py-3">
+              <Info className="w-3.5 h-3.5 text-muted-foreground shrink-0 mt-0.5" />
+              <p className="text-[11px] text-muted-foreground leading-relaxed">
+                Availability is subject to confirmation by the doctor.
+              </p>
+            </div>
+            <Button asChild className="w-full font-semibold h-11">
+              <Link href="/patient/dashboard">View My Appointments</Link>
+            </Button>
           </div>
         </div>
       </div>
