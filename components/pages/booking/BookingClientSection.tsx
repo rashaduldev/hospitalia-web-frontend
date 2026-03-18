@@ -92,7 +92,7 @@ const BookingClientSection = ({
                 </p>
               </div>
               <Button asChild className="w-full font-semibold h-11">
-                <Link href="/patient/appointments">View My Appointments</Link>
+                <Link href="/patient/dashboard">View My Appointments</Link>
               </Button>
             </div>
           </div>
