@@ -1,5 +1,6 @@
 export type SearchFormValues = {
   searchType: "DOCTOR" | "HOSPITAL";
+  city?: string;
   searchKeyword: string;
 };
 

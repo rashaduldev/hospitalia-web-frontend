@@ -15,11 +15,13 @@ const SearchPage = async ({ searchParams }: { searchParams: Promise<any> }) => {
 
   const searchKeyword = sParams.searchKeyword || "";
   const searchType = sParams.searchType || "DOCTOR";
+  const city = sParams.city || "ALL";
 
   const response = await globalSearch({
     lang,
     searchType,
     searchKeyword,
+    city,
   });
 
   const SearchResultData = response?.payload?.content || [];
@@ -33,7 +35,7 @@ const SearchPage = async ({ searchParams }: { searchParams: Promise<any> }) => {
             headingTitle="Get Appointment"
             headingSubtitle="Nice to see you again!"
             className="w-full!"
-            initialValues={{ searchKeyword, searchType }}
+            initialValues={{ searchKeyword, searchType, city }}
           />
         </div>
 
