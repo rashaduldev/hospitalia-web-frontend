@@ -68,14 +68,10 @@ const PatientLoginForm = () => {
       queryFn: () => getCurrentUser({ lang }),
     });
 
-    if (callback) {
-      if (user?.userType === "PATIENT") {
-        router.replace(callback || "/patient/dashboard");
-      } else {
-        router.replace("/dashboard");
-      }
+    if (user?.userType === "PATIENT") {
+      router.replace(callback || "/patient/dashboard");
     } else {
-      router.replace("/dashboard");
+      router.replace(callback || "/dashboard");
     }
     reset();
   };
