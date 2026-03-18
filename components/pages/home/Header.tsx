@@ -123,6 +123,15 @@ export default function Header() {
                     {currentUser.email}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link
+                      href={currentUser.userType === "PATIENT" ? "/patient/dashboard" : "/dashboard"}
+                      className="cursor-pointer"
+                    >
+                      {t("nav.dashboard")}
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onClick={logoutHandler}
                     className="text-destructive cursor-pointer hover:text-destructive"
@@ -223,6 +232,13 @@ export default function Header() {
                         </Typography>
                       </div>
                     </div>
+                    <Link
+                      href={currentUser.userType === "PATIENT" ? "/patient/dashboard" : "/dashboard"}
+                      onClick={() => setIsOpen(false)}
+                      className="text-sm font-medium text-primary hover:underline"
+                    >
+                      {t("nav.dashboard")}
+                    </Link>
                     <AppButton
                       variant="ghost"
                       size="sm"

@@ -35,6 +35,11 @@ export default async function LoginPage() {
             )}
           >
             <div className="w-full max-w-112.5">
+              <div className="mb-5">
+                <span className="inline-flex items-center text-xs font-semibold uppercase tracking-widest text-primary bg-primary/10 px-3 py-1.5 rounded-full">
+                  Patient Login
+                </span>
+              </div>
               <PatientLoginForm />
             </div>
           </div>

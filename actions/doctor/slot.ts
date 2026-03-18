@@ -1,7 +1,9 @@
+"use server";
+
 import { apiClient } from "@/lib/api";
 import { getAccessToken } from "../auth";
 
-// Get available slots by doctor user id and date
+// Get available slots by doctor user id, location id and date
 export const getAvailableSlots = async ({
   doctorUserId,
   doctorLocationId,

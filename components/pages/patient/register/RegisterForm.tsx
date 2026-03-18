@@ -26,7 +26,6 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
   const callback = searchParams.get("callback");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [success] = useState(false);
 
   const {
     handleSubmit,
@@ -79,15 +78,24 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
       });
       return;
     }
-    router.replace(callback ? `/login?callback=${callback}` : "/patient/login");
+    router.replace(callback ? `/patient/login?callback=${callback}` : "/patient/login");
     reset();
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
+      <div className="text-center mb-8">
+        <Typography size="3xl" as="h1" weight="bold" color="foreground">
+          {t("patientRegister.pageTitle")}
+        </Typography>
+        <Typography size="sm" color="muted" className="mt-2">
+          {t("patientRegister.pageSubtitle")}
+        </Typography>
+      </div>
+
       <div className="rounded-lg border bg-card p-6 space-y-5">
         <Typography size="2xl" as="h3" color="foreground">
-          {t("register.personalInfo")}
+          {t("patientRegister.sectionTitle")}
         </Typography>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -144,9 +152,10 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
             name="mobileNumber"
             control={control}
             requiredMark="*"
-            label={t("login.phoneLabel")}
+            label={t("patientRegister.phoneLabel")}
             setValue={setValue}
             defaultCountry="SN"
+            readOnlyCountryCode
           />
 
           <div className="relative">
@@ -159,6 +168,7 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
               placeholder="••••••••"
             />
             <button
+              type="button"
               onClick={() => setShowPassword((p) => !p)}
               className="absolute cursor-pointer top-7 right-3"
             >
@@ -180,6 +190,7 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
               placeholder="••••••••"
             />
             <button
+              type="button"
               onClick={() => setShowConfirmPassword((p) => !p)}
               className="absolute cursor-pointer top-7 right-3"
             >
@@ -202,10 +213,9 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
           className="w-full max-w-md dark:text-foreground"
           type="submit"
           isLoading={isSubmitting}
-          loadingText={t("register.creating")}
-          disabled={success}
+          loadingText={t("patientRegister.creating")}
         >
-          {t("register.submit")}
+          {t("patientRegister.submit")}
         </AppButton>
 
         <Link
@@ -215,7 +225,7 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
           }}
           className="text-sm font-medium text-primary hover:underline"
         >
-          {t("register.alreadyAccount")}
+          {t("patientRegister.alreadyAccount")}
         </Link>
       </div>
     </form>

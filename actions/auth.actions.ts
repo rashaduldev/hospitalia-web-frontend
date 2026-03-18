@@ -101,9 +101,12 @@ export async function login(body: LoginRequestData, lang?: string) {
 
 // Logout
 export async function handleLogout({ lang }: { lang: string }) {
+  const { getAccessToken } = await import("@/actions/auth");
+  const token = await getAccessToken();
   await apiClient({
     endpoint: "/api/auth/sign-out",
     method: "GET",
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     params: { lang },
   });
   await deleteAuthCookies();
