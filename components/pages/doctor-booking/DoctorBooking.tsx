@@ -53,7 +53,6 @@ const DoctorBooking = ({
   token,
   doctorUnAvailable = [],
   lang,
-  onBookingSuccess,
 }: {
   locationOptions: { label: string; value: number }[];
   doctor: SingleDoctorInfo;
@@ -61,7 +60,6 @@ const DoctorBooking = ({
   currentUserId: number;
   doctorUnAvailable: UnavailableDate[];
   lang: string;
-  onBookingSuccess?: (info: any) => void;
 }) => {
   const t = useI18n();
   const [showLoginDialog, setShowLoginDialog] = useState(false);
@@ -180,15 +178,17 @@ const DoctorBooking = ({
 
     if (res.success) {
       const selectedLocationObj = locationOptions.find((l) => Number(l.value) === Number(selectedLocation));
-      onBookingSuccess?.({
+      const params = new URLSearchParams({
+        doctorUserId: String(doctorUserId),
         doctorName: `${doctor.firstName} ${doctor.lastName}`,
-        designation: doctor.professionalInfoResponse?.designation,
+        designation: doctor.professionalInfoResponse?.designation || "",
         location: selectedLocationObj?.label || "",
         date: format(parseISO(data.availableDates), "do MMMM"),
         startTime: formatTimeTo12H(selectedSlotObj?.startTime),
         endTime: formatTimeTo12H(selectedSlotObj?.endTime),
         price: patientType === "new" ? "25,000 CFA" : "10,000 CFA",
       });
+      router.push(`/booking/confirmation?${params.toString()}`);
       return;
     }
 
