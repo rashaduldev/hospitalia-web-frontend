@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm, useController, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, parseISO } from "date-fns";
-import { CalendarCheck2, Loader2, Clock, MapPin } from "lucide-react";
+import { CalendarCheck2, Loader2, Clock, MapPin, LogIn } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ControlledSelect } from "@/components/common/FormUIControllers/ControlledSelect";
 import { Calendar } from "@/components/ui/calendar";
@@ -386,12 +386,19 @@ const DoctorBooking = ({
 
       {/* Login Dialog */}
       <Dialog open={!isLoggedIn && showLoginDialog} onOpenChange={setShowLoginDialog}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle>{t("booking.login.title")}</DialogTitle>
+            <div className="flex items-center gap-3 mb-1">
+              <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-primary/10 shrink-0">
+                <LogIn className="h-4 w-4 text-primary" />
+              </div>
+              <DialogTitle className="text-base font-semibold">
+                {t("booking.login.title")}
+              </DialogTitle>
+            </div>
             <DialogDescription>{t("booking.login.des")}</DialogDescription>
           </DialogHeader>
-          <DialogFooter className="flex flex-row gap-2 sm:justify-end">
+          <DialogFooter className="pt-2">
             <Button variant="outline" onClick={() => setShowLoginDialog(false)}>
               {t("booking.login.cancel_btn")}
             </Button>
