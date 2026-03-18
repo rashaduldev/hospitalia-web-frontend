@@ -7,6 +7,7 @@ import {
   MessageSquare,
   UserRound,
   ShieldCheck,
+  Stethoscope,
 } from "lucide-react";
 
 export const REQUEST_TIMEOUT_MS = 10_000;
@@ -48,9 +49,9 @@ export const ROUTES = {
       icon: LayoutDashboardIcon,
     },
     {
-      name: "Admin Panel",
-      url: "/admin/panel",
-      icon: ShieldCheck,
+      name: "Specialities",
+      url: "/admin/specialities",
+      icon: Stethoscope,
     },
   ],
   PATIENT: [

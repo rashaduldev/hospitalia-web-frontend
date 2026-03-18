@@ -43,6 +43,16 @@ export default function Header() {
     currentUser?.profileImage ??
     (currentUser?.userDetails?.gender === "MALE" ? maleAvater : feMaleAvater);
 
+  const DASHBOARD_BY_ROLE: Record<string, string> = {
+    PATIENT: "/patient/dashboard",
+    DOCTOR: "/doctor/dashboard",
+    HOSPITAL: "/hospital/dashboard",
+    ADMIN: "/admin/dashboard",
+  };
+  const dashboardUrl =
+    DASHBOARD_BY_ROLE[currentUser?.userType ?? ""] ??
+    (currentUser?.userType === null ? "/admin/dashboard" : "/dashboard");
+
   const NAV_LINKS = [
     { href: "/", label: t("nav.home") },
     {
@@ -60,8 +70,8 @@ export default function Header() {
         pathname === "/login" || pathname === "/register" || !!currentUser,
     },
     {
-      href: "/dashboard",
-      label: t("nav.dashboard"),
+      href: dashboardUrl,
+      label: "Dashboard",
       hidden: !currentUser,
     },
   ];
@@ -125,10 +135,10 @@ export default function Header() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <Link
-                      href={currentUser.userType === "PATIENT" ? "/patient/dashboard" : "/dashboard"}
+                      href={dashboardUrl}
                       className="cursor-pointer"
                     >
-                      {t("nav.dashboard")}
+                      Dashboard
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
@@ -233,11 +243,11 @@ export default function Header() {
                       </div>
                     </div>
                     <Link
-                      href={currentUser.userType === "PATIENT" ? "/patient/dashboard" : "/dashboard"}
+                      href={dashboardUrl}
                       onClick={() => setIsOpen(false)}
                       className="text-sm font-medium text-primary hover:underline"
                     >
-                      {t("nav.dashboard")}
+                      Dashboard
                     </Link>
                     <AppButton
                       variant="ghost"

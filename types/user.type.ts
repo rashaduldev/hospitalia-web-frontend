@@ -85,12 +85,18 @@ export type LoginRequestData = {
 
 export type Role = {
   roleName: string;
+  roleType?: string;
 };
 
 export type User = {
   id: number;
   roles: Role[];
-  userType: string;
+  userType: string | null;
+  userDetails?: {
+    id?: number;
+    firstName?: string;
+    lastName?: string;
+  } | null;
 };
 
 export type LoginResponseData = {

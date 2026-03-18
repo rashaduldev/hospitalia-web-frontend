@@ -4,14 +4,17 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { ControlledInput } from "@/components/common/FormUIControllers/ControlledInput";
+import { ControlledPhoneInput } from "@/components/common/FormUIControllers/ControlledPhoneInput";
 import { useState } from "react";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import { login } from "@/actions/auth.actions";
+import { adminLogin } from "@/actions/auth.actions";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { getCleanPhoneData } from "@/lib/phone-utils";
 import Link from "next/link";
 
 const adminLoginSchema = z.object({
+  countryCode: z.string(),
   phoneNumber: z.string().min(1, { message: "Phone number is required" }),
   password: z.string().min(1, { message: "Password is required" }),
 });
@@ -27,23 +30,20 @@ const AdminLoginForm = () => {
     control,
     setError,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<AdminLoginValues>({
     resolver: zodResolver(adminLoginSchema),
     defaultValues: {
-      phoneNumber: "",
+      countryCode: "+221",
+      phoneNumber: "+221",
       password: "",
     },
   });
 
   const onSubmit = async (data: AdminLoginValues) => {
-    // Extract country code and number from the raw input
-    const raw = data.phoneNumber.trim();
-    const match = raw.match(/^(\+\d{1,4})(\d+)$/);
-    const countryCode = match ? match[1] : "";
-    const phoneNumber = match ? match[2] : raw;
-
-    const res = await login({ countryCode, phoneNumber, password: data.password });
+    const { countryCode, number: phoneNumber } = getCleanPhoneData(data.phoneNumber);
+    const res = await adminLogin({ countryCode, phoneNumber, password: data.password });
 
     if (!res.success) {
       setError("root", { type: "manual", message: res.message });
@@ -64,12 +64,14 @@ const AdminLoginForm = () => {
       </div>
 
       <div className="space-y-4">
-        <ControlledInput
+        <ControlledPhoneInput
           name="phoneNumber"
           control={control}
           requiredMark="*"
           label="Phone Number"
-          placeholder="e.g. +221XXXXXXXXX"
+          setValue={setValue}
+          defaultCountry="SN"
+          readOnlyCountryCode
         />
 
         <div className="relative">

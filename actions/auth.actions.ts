@@ -113,6 +113,45 @@ export async function handleLogout({ lang }: { lang: string }) {
   redirect("/");
 }
 
+// Admin Login
+export async function adminLogin(body: LoginRequestData, lang?: string) {
+  const res = await apiClient<LoginResponseData>({
+    endpoint: "/api/admin/auth/sign-in",
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    params: lang ? { lang } : undefined,
+    body,
+  });
+
+  if (!res.success) {
+    return res;
+  }
+
+  const { accessToken, refreshToken, user } = res.payload || {};
+  await setAuthCookies(accessToken, refreshToken);
+
+  // Store admin user data from login response since /api/users/me
+  // does not apply to admin — userType is null, identity is via roles[].roleType
+  if (user) {
+    const cookieStore = await cookies();
+    const adminUserData = {
+      id: user.id,
+      userType: "ADMIN" as const,
+      roleType: user.roles?.[0]?.roleType ?? "SUPER_ADMIN",
+      userDetails: user.userDetails,
+    };
+    cookieStore.set("adminUser", JSON.stringify(adminUserData), {
+      httpOnly: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/",
+      maxAge: 60 * 60,
+    });
+  }
+
+  return res;
+}
+
 // Forgot password
 
 export const forgotPassword = async ({
