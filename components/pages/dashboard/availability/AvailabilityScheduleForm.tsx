@@ -1,12 +1,9 @@
 "use client";
 
 import { createDoctorAvailability } from "@/actions/doctor/availability";
-import { DynamicHeading } from "@/components/common/DynamicHeading";
 import { ControlledInput } from "@/components/common/FormUIControllers/ControlledInput";
 import { ControlledSelect } from "@/components/common/FormUIControllers/ControlledSelect";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Typography } from "@/components/ui/Typography";
 import { useLocations } from "@/hooks/useLocations";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/locales/client";
@@ -17,19 +14,16 @@ import {
   AvailabilityScheduleSchema,
   AvailabilityScheduleSchemaFormValues,
 } from "@/schema/doctor.availability.schedule.schema";
-import AppButton from "@/components/common/AppButton";
 import { Location } from "@/types/doctor.location.type";
 import { WeeklySchedule } from "@/types/doctorSchedule";
+import { CalendarCheck2, CheckCircle2 } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
-const DAYS = [
-  "SUNDAY",
-  "MONDAY",
-  "TUESDAY",
-  "WEDNESDAY",
-  "THURSDAY",
-  "FRIDAY",
-  "SATURDAY",
-];
+const DAYS = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+const DAY_LABELS: Record<string, string> = {
+  SUNDAY: "Sun", MONDAY: "Mon", TUESDAY: "Tue", WEDNESDAY: "Wed",
+  THURSDAY: "Thu", FRIDAY: "Fri", SATURDAY: "Sat",
+};
 
 const AVAILABILITY_OPTIONS = [
   { label: "Available", value: "AVAILABLE" },
@@ -51,11 +45,7 @@ export default function AvailabilityScheduleForm({
     message: string;
   } | null>(null);
 
-  const { locations } = useLocations({
-    lang,
-    doctorUserId,
-  });
-
+  const { locations } = useLocations({ lang, doctorUserId });
   const t = useI18n();
 
   const {
@@ -67,20 +57,8 @@ export default function AvailabilityScheduleForm({
   } = useForm<AvailabilityScheduleSchemaFormValues>({
     resolver: zodResolver(AvailabilityScheduleSchema),
     defaultValues: {
-      loc1: {
-        availabilityStatus: "AVAILABLE",
-        doctorLocationId: "",
-        startTime: "",
-        endTime: "",
-        timeSlot: "",
-      },
-      loc2: {
-        availabilityStatus: "AVAILABLE",
-        doctorLocationId: "",
-        startTime: "",
-        endTime: "",
-        timeSlot: "",
-      },
+      loc1: { availabilityStatus: "AVAILABLE", doctorLocationId: "", startTime: "", endTime: "", timeSlot: "" },
+      loc2: { availabilityStatus: "AVAILABLE", doctorLocationId: "", startTime: "", endTime: "", timeSlot: "" },
     },
   });
 
@@ -92,21 +70,14 @@ export default function AvailabilityScheduleForm({
 
   const onSubmit = async (data: AvailabilityScheduleSchemaFormValues) => {
     setFormStatus(null);
-
     if (selectedDays.length === 0) {
-      setFormStatus({
-        type: "error",
-        message: "Please select at least one day!",
-      });
+      setFormStatus({ type: "error", message: "Please select at least one day." });
       return;
     }
 
     const finalScheduleArray: WeeklySchedule[] = [];
-
     selectedDays.forEach((day) => {
-      const formatTime = (time: string | undefined) =>
-        time ? `${time}:00Z` : "";
-
+      const formatTime = (time: string | undefined) => (time ? `${time}:00Z` : "");
       if (data.loc1.doctorLocationId) {
         finalScheduleArray.push({
           availabilityStatus: data.loc1.availabilityStatus,
@@ -117,7 +88,6 @@ export default function AvailabilityScheduleForm({
           dayOfWeek: day,
         });
       }
-
       if (data.loc2.doctorLocationId) {
         finalScheduleArray.push({
           availabilityStatus: data.loc2.availabilityStatus || "AVAILABLE",
@@ -132,196 +102,153 @@ export default function AvailabilityScheduleForm({
 
     const res = await createDoctorAvailability({
       lang,
-      doctorUserId: doctorUserId,
+      doctorUserId,
       weeklySchedule: finalScheduleArray,
     });
 
     if (!res.success) {
-      setError("root", {
-        type: "manual",
-        message: res.message,
-      });
+      setError("root", { type: "manual", message: res.message });
       return;
     }
-    setFormStatus({
-      type: "success",
-      message: res.message,
-    });
+    setFormStatus({ type: "success", message: res.message });
     setSelectedDays([]);
     reset();
   };
 
-  return (
-    <div className="mt-12.5 border rounded-lg p-3 md:p-6">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <DynamicHeading
-          title={t("schedule.title")}
-          description={t("schedule.description")}
-          titleProps={{ size: "2xl", weight: "bold", color: "secondary" }}
-        />
+  const locationOptions = locations?.payload?.map((loc: Location) => ({
+    label: loc.locationName,
+    value: String(loc.locationId),
+  })) || [];
 
-        {/* --- Day Selection --- */}
+  const slotOptions = timeSlots.map((slot) => ({
+    label: slot.replace("_", " "),
+    value: slot,
+  }));
+
+  return (
+    <div className="border border-border rounded-xl bg-card shadow-sm overflow-hidden">
+      <div className="flex items-center gap-3 px-6 py-5 border-b border-border">
+        <div className="p-2 bg-primary/10 rounded-lg shrink-0">
+          <CalendarCheck2 className="w-4 h-4 text-primary" />
+        </div>
         <div>
-          <Label className="block text-sm mb-2 font-medium">
-            {t("schedule.select_day")}*
-          </Label>
+          <h2 className="text-base font-bold text-foreground leading-none">
+            {t("schedule.title")}
+          </h2>
+          <p className="text-xs text-muted-foreground mt-1">
+            {t("schedule.description")}
+          </p>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
+        {/* Day selection */}
+        <div>
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+            {t("schedule.select_day")} *
+          </p>
           <div className="flex flex-wrap gap-2">
             {DAYS.map((day) => {
               const isSelected = selectedDays.includes(day);
               return (
-                <AppButton
+                <button
                   key={day}
                   type="button"
                   onClick={() => toggleDay(day)}
                   className={cn(
-                    "px-7 py-2 rounded-lg border text-sm font-medium transition-all cursor-pointer",
-                    {
-                      "bg-secondary-foreground hover:bg-secondary-foreground border-secondary-foreground text-foreground":
-                        isSelected,
-                      "bg-ring/20 hover:bg-ring/20 border-muted text-foreground":
-                        !isSelected,
-                    },
+                    "px-4 py-2 rounded-lg border text-sm font-semibold transition-all duration-200",
+                    isSelected
+                      ? "bg-primary text-white border-primary shadow-sm"
+                      : "bg-background text-muted-foreground border-border hover:border-primary/50 hover:text-foreground",
                   )}
                 >
-                  {day.charAt(0) + day.slice(1).toLowerCase()}
-                </AppButton>
+                  {DAY_LABELS[day]}
+                </button>
               );
             })}
           </div>
         </div>
 
-        {/* --- Location 1 --- */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="grid grid-cols-1 col-span-1 md:grid-cols-2 md:col-span-2 gap-4">
+        <Separator />
+
+        {/* Location 1 */}
+        <div className="space-y-4">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            Primary Location *
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="md:col-span-2">
+              <ControlledSelect
+                name="loc1.availabilityStatus"
+                label="Availability"
+                control={control}
+                options={AVAILABILITY_OPTIONS}
+              />
+            </div>
             <ControlledSelect
-              name="loc1.availabilityStatus"
-              label="Availability *"
+              name="loc1.doctorLocationId"
+              label="Location *"
               control={control}
-              options={AVAILABILITY_OPTIONS}
+              placeholder="Select Location"
+              options={locationOptions}
             />
-          </div>
-
-          <ControlledSelect
-            name="loc1.doctorLocationId"
-            label="Location *"
-            control={control}
-            placeholder="Select Location"
-            options={
-              locations?.payload?.map((loc: Location) => ({
-                label: loc.locationName,
-                value: String(loc.locationId),
-              })) || []
-            }
-          />
-
-          <div className="grid grid-cols-2 gap-4">
-            <ControlledInput
-              name="loc1.startTime"
-              label="Duration (Start Time) *"
-              type="time"
-              control={control}
-            />
-            <ControlledInput
-              name="loc1.endTime"
-              label="End Time *"
-              type="time"
-              control={control}
-            />
-          </div>
-
-          <div className="md:col-span-1">
+            <div className="grid grid-cols-2 gap-4">
+              <ControlledInput name="loc1.startTime" label="Start Time *" type="time" control={control} />
+              <ControlledInput name="loc1.endTime" label="End Time *" type="time" control={control} />
+            </div>
             <ControlledSelect
               name="loc1.timeSlot"
               label="Time Slot"
               placeholder="Select Time Slot"
               control={control}
-              options={timeSlots.map((slot) => ({
-                label: slot.replace("_", " "),
-                value: slot,
-              }))}
+              options={slotOptions}
             />
           </div>
         </div>
 
-        {/* --- Location 2 (Optional) --- */}
-        <div className="space-y-4">
-          <Typography as="h3" color="foreground" weight="semiBold">
-            Add Another Location on the Same Day (If Needed)
-          </Typography>
+        <Separator />
 
+        {/* Location 2 */}
+        <div className="space-y-4">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            Secondary Location (Optional)
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <ControlledSelect
               name="loc2.doctorLocationId"
               label="Location"
               control={control}
               placeholder="Select Another Location"
-              options={
-                locations?.payload?.map((loc: Location) => ({
-                  label: loc.locationName,
-                  value: String(loc.locationId),
-                })) || []
-              }
+              options={locationOptions}
             />
-
             <div className="grid grid-cols-2 gap-4">
-              <ControlledInput
-                name="loc2.startTime"
-                label="Duration (Start Time)"
-                type="time"
-                control={control}
-              />
-              <ControlledInput
-                name="loc2.endTime"
-                label="End Time"
-                type="time"
-                control={control}
-              />
+              <ControlledInput name="loc2.startTime" label="Start Time" type="time" control={control} />
+              <ControlledInput name="loc2.endTime" label="End Time" type="time" control={control} />
             </div>
-
             <ControlledSelect
               name="loc2.timeSlot"
               label="Time Slot"
               placeholder="Select Time Slot"
               control={control}
-              options={timeSlots.map((slot) => ({
-                label: slot.replace("_", " "),
-                value: slot,
-              }))}
+              options={slotOptions}
             />
           </div>
         </div>
 
-        {/* --- Feedback & Submit --- */}
-        <div className="space-y-4">
-          {formStatus && (
-            <div
-              className={cn("text-sm", {
-                "text-secondary": formStatus.type === "success",
-                "text-destructive": formStatus.type !== "success",
-              })}
-            >
-              {formStatus.message}
-            </div>
-          )}
-          {errors.root && (
-            <Typography as="p" size="xs" weight="semiBold" color="destructive">
-              {errors.root.message}
-            </Typography>
-          )}
+        {/* Feedback & Submit */}
+        {formStatus && (
+          <p className={cn("text-sm flex items-center gap-1.5", formStatus.type === "success" ? "text-secondary" : "text-destructive")}>
+            {formStatus.type === "success" && <CheckCircle2 className="w-4 h-4 shrink-0" />}
+            {formStatus.message}
+          </p>
+        )}
+        {errors.root && (
+          <p className="text-xs text-destructive font-medium">{errors.root.message}</p>
+        )}
 
-          <div className="grid grid-cols-2">
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className={cn(
-                "w-full py-4 rounded-lg font-bold text-muted transition-all shadow-md",
-                isSubmitting ? "bg-primary/90" : "",
-              )}
-            >
-              {isSubmitting ? "Creating..." : "Confirm Availability"}
-            </Button>
-          </div>
-        </div>
+        <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto font-semibold h-11 px-8">
+          {isSubmitting ? "Creating…" : "Confirm Availability"}
+        </Button>
       </form>
     </div>
   );

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { CheckCircle2, Trash, Pencil, Save, X } from "lucide-react";
+import { CheckCircle2, Trash2, Pencil, Save, X, MapPin } from "lucide-react";
 
 import {
   Dialog,
@@ -26,9 +26,8 @@ import {
   updateDoctorLocation,
 } from "@/actions/doctor/location";
 import { useI18n } from "@/locales/client";
-import { Typography } from "@/components/ui/Typography";
 import { ControlledInput } from "@/components/common/FormUIControllers/ControlledInput";
-import AppButton from "@/components/common/AppButton";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function DefaultLocationManager({
@@ -91,44 +90,32 @@ export function DefaultLocationManager({
     },
     onSuccess: () => {
       setSuccessMessage(
-        editingId
-          ? "Location Updated Successfully"
-          : "Default Location Added Successfully",
+        editingId ? "Location updated successfully." : "Location added successfully.",
       );
-      queryClient.invalidateQueries({
-        queryKey: ["doctor-locations", doctorUserId],
-      });
+      queryClient.invalidateQueries({ queryKey: ["doctor-locations", doctorUserId] });
       setEditingId(null);
       reset();
     },
   });
 
-  const onSubmit: SubmitHandler<LocationFormValues> = (data) =>
-    mutation.mutate(data);
+  const onSubmit: SubmitHandler<LocationFormValues> = (data) => mutation.mutate(data);
 
   const deleteMutation = useMutation({
     mutationFn: (locationId: number) =>
       deleteDoctorLocation({ lang, locationId, doctorUserId }),
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["doctor-locations", doctorUserId],
-      });
+      queryClient.invalidateQueries({ queryKey: ["doctor-locations", doctorUserId] });
       setDeleteId(null);
     },
   });
 
   return (
     <div className="space-y-6">
-      {/* Form Section */}
+      {/* Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <Typography
-          size="sm"
-          weight="medium"
-          color="foreground"
-          className="mb-2"
-        >
-          {t("availability.deafult_location")}
-        </Typography>
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+          {editingId ? "Edit Location" : t("availability.deafult_location")}
+        </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <ControlledInput
             name="locationName"
@@ -153,68 +140,51 @@ export function DefaultLocationManager({
         </div>
 
         <div className="flex gap-2">
-          <AppButton
-            className="px-5 rounded-lg"
-            type="submit"
-            isLoading={mutation.isPending}
-            leftIcon={editingId && <Save size={16} />}
-          >
-            {editingId ? "Update Location" : "Add Default Location"}
-          </AppButton>
-
+          <Button type="submit" disabled={mutation.isPending} className="gap-2">
+            {editingId ? <Save className="w-4 h-4" /> : null}
+            {mutation.isPending
+              ? editingId ? "Updating…" : "Adding…"
+              : editingId ? "Update Location" : "Add Location"}
+          </Button>
           {editingId && (
-            <AppButton
+            <Button
               variant="outline"
               type="button"
-              leftIcon={<X size={16} />}
-              onClick={() => {
-                setEditingId(null);
-                reset();
-              }}
+              className="gap-2"
+              onClick={() => { setEditingId(null); reset(); }}
             >
-              Cancel
-            </AppButton>
+              <X className="w-4 h-4" /> Cancel
+            </Button>
           )}
         </div>
 
         {successMessage && (
-          <span className="text-secondary text-sm flex items-center gap-1 mt-2">
-            <CheckCircle2 size={14} /> {successMessage}
-          </span>
+          <p className="text-secondary text-sm flex items-center gap-1.5">
+            <CheckCircle2 className="w-4 h-4 shrink-0" /> {successMessage}
+          </p>
         )}
       </form>
 
-      {/* List Section */}
+      {/* Location List */}
       <div className="space-y-3">
-        <Typography
-          size="sm"
-          weight="medium"
-          color="foreground"
-          className="mb-2"
-        >
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
           {t("availability.deafult_location")}
-        </Typography>
+        </p>
+
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
-            {[...Array(2)].map((_, columnIndex) => (
-              <div key={columnIndex} className="flex flex-col">
-                {[...Array(4)].map((_, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between py-1"
-                  >
-                    {/* Left text area */}
-                    <div className="flex flex-col gap-1 w-full pr-4">
-                      <Skeleton className="h-4 w-3/4 bg-foreground/20" />
-                      <Skeleton className="h-3 w-2/3 bg-foreground/20" />
-                      <Skeleton className="h-3 w-1/2 bg-foreground/20" />
-                      <Skeleton className="h-3 w-1/3 bg-foreground/20" />
+            {[...Array(2)].map((_, col) => (
+              <div key={col} className="flex flex-col gap-3">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="flex items-center justify-between border-b pb-3">
+                    <div className="flex flex-col gap-1.5 flex-1 pr-4">
+                      <Skeleton className="h-4 w-3/4" />
+                      <Skeleton className="h-3 w-2/3" />
+                      <Skeleton className="h-3 w-1/3" />
                     </div>
-
-                    {/* Right action buttons */}
                     <div className="flex gap-1">
-                      <Skeleton className="h-8 w-8 rounded-md bg-foreground/20" />
-                      <Skeleton className="h-8 w-8 rounded-md bg-foreground/20" />
+                      <Skeleton className="h-8 w-8 rounded-md" />
+                      <Skeleton className="h-8 w-8 rounded-md" />
                     </div>
                   </div>
                 ))}
@@ -222,10 +192,9 @@ export function DefaultLocationManager({
             ))}
           </div>
         ) : locations.length === 0 ? (
-          <div className="text-center py-6">
-            <Typography size="sm" color="muted_foreground">
-              {t("availability.no_deafult_location")}
-            </Typography>
+          <div className="flex flex-col items-center justify-center py-8 text-center rounded-lg bg-muted/40 border border-dashed border-border">
+            <MapPin className="w-8 h-8 text-muted-foreground/40 mb-2" />
+            <p className="text-sm text-muted-foreground">{t("availability.no_deafult_location")}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
@@ -234,37 +203,27 @@ export function DefaultLocationManager({
                 {chunk.map((loc: Location) => (
                   <div
                     key={loc.locationId}
-                    className="flex items-start justify-between border-b py-3 gap-4"
+                    className="flex items-start justify-between border-b py-3 gap-4 last:border-0"
                   >
-                    <div className="flex flex-col gap-1 flex-1 min-w-0">
-                      <Typography
-                        size="sm"
-                        color="foreground"
-                        className="font-medium wrap-break-word leading-tight"
-                      >
+                    <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground break-all leading-tight">
                         {loc.locationName}
-                      </Typography>
-
-                      <Typography
-                        size="xs"
-                        color="muted_foreground"
-                        className="wrap-break-word whitespace-normal leading-relaxed"
-                      >
-                        {loc.addressLine1}
-                      </Typography>
-                      <Typography
-                        size="xs"
-                        color="muted_foreground"
-                        className="opacity-80"
-                      >
-                        {loc.city} {loc.postalCode ? `- ${loc.postalCode}` : ""}
-                      </Typography>
+                      </p>
+                      {loc.addressLine1 && (
+                        <p className="text-xs text-muted-foreground break-all leading-relaxed">
+                          {loc.addressLine1}
+                        </p>
+                      )}
+                      {(loc.city || loc.postalCode) && (
+                        <p className="text-xs text-muted-foreground/80">
+                          {loc.city}{loc.postalCode ? ` — ${loc.postalCode}` : ""}
+                        </p>
+                      )}
                     </div>
-                    <div className="flex gap-1 shrink-0 items-center mt-1">
-                      <AppButton
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0"
+                    <div className="flex gap-1 shrink-0 mt-0.5">
+                      <button
+                        type="button"
+                        className="p-1.5 rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
                         onClick={() => {
                           setEditingId(loc.locationId);
                           setValue("locationName", loc.locationName);
@@ -273,15 +232,15 @@ export function DefaultLocationManager({
                           setValue("postalCode", loc.postalCode);
                         }}
                       >
-                        <Pencil size={16} />
-                      </AppButton>
-                      <AppButton
-                        size="sm"
-                        className="h-8 w-8 p-0 bg-destructive hover:bg-destructive/90 text-muted"
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        className="p-1.5 rounded text-destructive hover:bg-destructive/10 transition-colors"
                         onClick={() => setDeleteId(loc.locationId)}
                       >
-                        <Trash size={16} />
-                      </AppButton>
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -293,27 +252,31 @@ export function DefaultLocationManager({
 
       {/* Delete Dialog */}
       <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
-        <DialogContent>
+        <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-xl">
-              {t("availability.delete_title")}
-            </DialogTitle>
+            <div className="flex items-center gap-3 mb-1">
+              <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-destructive/10 shrink-0">
+                <Trash2 className="h-4 w-4 text-destructive" />
+              </div>
+              <DialogTitle className="text-base font-semibold">
+                {t("availability.delete_title")}
+              </DialogTitle>
+            </div>
+            <DialogDescription>
+              {t("availability.delete_description")}
+            </DialogDescription>
           </DialogHeader>
-          <DialogDescription>
-            {t("availability.delete_description")}
-          </DialogDescription>
-          <DialogFooter className="flex gap-2 mt-4">
-            <AppButton variant="outline" onClick={() => setDeleteId(null)}>
+          <DialogFooter className="pt-2">
+            <Button variant="outline" onClick={() => setDeleteId(null)}>
               {t("availability.btn_no")}
-            </AppButton>
-            <AppButton
+            </Button>
+            <Button
               variant="destructive"
-              isLoading={deleteMutation.isPending}
-              loadingText={t("availability.btn_deleting")}
+              disabled={deleteMutation.isPending}
               onClick={() => deleteMutation.mutate(deleteId!)}
             >
-              {t("availability.btn_yes")}
-            </AppButton>
+              {deleteMutation.isPending ? t("availability.btn_deleting") : t("availability.btn_yes")}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

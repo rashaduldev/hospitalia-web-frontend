@@ -9,12 +9,11 @@ import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { login } from "@/actions/auth.actions";
 import { useRouter } from "next/navigation";
-import { DynamicHeading } from "@/components/common/DynamicHeading";
-import { Typography } from "@/components/ui/Typography";
 import { useI18n } from "@/locales/client";
-import AppButton from "@/components/common/AppButton";
+import { Button } from "@/components/ui/button";
 import { ControlledPhoneInput } from "@/components/common/FormUIControllers/ControlledPhoneInput";
 import { getCleanPhoneData } from "@/lib/phone-utils";
+import { Loader2 } from "lucide-react";
 
 const LoginForm = () => {
   const t = useI18n();
@@ -40,14 +39,8 @@ const LoginForm = () => {
   });
 
   const onSubmit = async (data: LoginFormValues) => {
-    const { countryCode, number: phoneNumber } = getCleanPhoneData(
-      data.phoneNumber,
-    );
-    const res = await login({
-      countryCode,
-      phoneNumber,
-      password: data.password,
-    });
+    const { countryCode, number: phoneNumber } = getCleanPhoneData(data.phoneNumber);
+    const res = await login({ countryCode, phoneNumber, password: data.password });
 
     if (!res.success) {
       setError("root", { type: "manual", message: res.message });
@@ -59,19 +52,13 @@ const LoginForm = () => {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="w-full max-w-112.5 mx-auto"
-    >
-      <DynamicHeading
-        title={t("login.doctortitle")}
-        description={t("login.description")}
-        titleProps={{ size: "2xl", weight: "semiBold", color: "foreground" }}
-        className="mb-6"
-      />
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-foreground">Welcome back</h1>
+        <p className="text-sm text-muted-foreground mt-1">Sign in to your doctor or secretary account</p>
+      </div>
 
       <div className="space-y-4">
-        {/* Phone Number Field */}
         <ControlledPhoneInput
           name="phoneNumber"
           control={control}
@@ -79,9 +66,9 @@ const LoginForm = () => {
           label={t("login.phoneLabel")}
           setValue={setValue}
           defaultCountry="SN"
+          readOnlyCountryCode
         />
 
-        {/* Password Field */}
         <div className="relative">
           <ControlledInput
             name="password"
@@ -104,44 +91,25 @@ const LoginForm = () => {
           </button>
         </div>
 
-        {/* Server Errors */}
         {errors.root && (
-          <Typography size="xs" color="destructive" weight="semiBold">
-            {errors.root.message}
-          </Typography>
+          <p className="text-xs text-destructive font-semibold">{errors.root.message}</p>
         )}
 
-        <AppButton
-          className="w-full dark:text-foreground"
-          type="submit"
-          isLoading={isSubmitting}
-          loadingText={t("login.loginLoading")}
-        >
-          {t("login.loginBtn")}
-        </AppButton>
+        <Button type="submit" disabled={isSubmitting} className="w-full h-11 font-semibold">
+          {isSubmitting ? (
+            <><Loader2 className="w-4 h-4 animate-spin mr-2" />{t("login.loginLoading")}</>
+          ) : (
+            t("login.loginBtn")
+          )}
+        </Button>
       </div>
 
-      <div className="mt-8 space-y-4 flex flex-col gap-2">
-        <Link href="/register">
-          <Typography
-            size="sm"
-            weight="medium"
-            color="secondary"
-            className="hover:underline dark:text-foreground"
-          >
-            {t("login.noAccount")}
-          </Typography>
+      <div className="mt-8 flex flex-col gap-3">
+        <Link href="/register" className="text-sm font-medium text-primary hover:underline">
+          {t("login.noAccount")}
         </Link>
-
-        <Link href="/forgot-password">
-          <Typography
-            size="sm"
-            weight="medium"
-            color="primary"
-            className="hover:underline dark:text-foreground"
-          >
-            {t("login.forgotPassword")}
-          </Typography>
+        <Link href="/forgot-password" className="text-sm font-medium text-muted-foreground hover:underline hover:text-foreground">
+          {t("login.forgotPassword")}
         </Link>
       </div>
     </form>
