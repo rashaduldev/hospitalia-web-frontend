@@ -49,6 +49,7 @@ export const SearchForm = ({
   className,
   onSubmitAction,
   initialValues,
+  actionPath = "/search",
 }: SearchFormProps) => {
   const router = useRouter();
   const t = useI18n();
@@ -78,7 +79,7 @@ export const SearchForm = ({
     if (data.city && data.city !== "ALL") params.set("city", data.city);
 
     startTransition(() => {
-      router.push(`/search?${params.toString()}`);
+      router.push(`${actionPath}?${params.toString()}`);
     });
   };
 

@@ -42,6 +42,7 @@ const GetAppointmentPage = async ({
         <SearchForm
           className="w-full! rounded-none! shadow-none! border-0!"
           initialValues={{ searchKeyword, searchType, city }}
+          actionPath="/patient/get-appointment"
         />
       </div>
 

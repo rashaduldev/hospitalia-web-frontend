@@ -11,6 +11,7 @@ export type SearchFormProps = {
   className?: string;
   onSubmitAction?: (data: SearchFormValues) => void;
   initialValues?: Partial<SearchFormValues>;
+  actionPath?: string;
 };
 
 export type SearchResultIteam = {
