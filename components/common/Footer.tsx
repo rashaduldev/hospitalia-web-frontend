@@ -89,8 +89,16 @@ const FooterSection = () => {
           <p className="text-xs text-gray-500">
             © {new Date().getFullYear()} Hospitalia. All rights reserved.
           </p>
-          <p className="text-xs text-gray-600">
-            Built with care for better healthcare.
+          <p className="text-xs text-gray-500">
+            Built with care by{" "}
+            <a
+              href="https://dhrubokinfotech.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-400 hover:text-white transition-colors"
+            >
+              Dhrubok Infotech Services Ltd
+            </a>
           </p>
         </div>
       </div>

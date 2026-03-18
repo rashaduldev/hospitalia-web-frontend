@@ -1,62 +1,104 @@
 "use client";
 import Image from "next/image";
-import { Check } from "lucide-react";
+import { Check, CalendarCheck } from "lucide-react";
 import { Button } from "../ui/button";
-import { Card, CardContent, CardFooter } from "../ui/card";
+import { Badge } from "../ui/badge";
 import { useI18n } from "@/locales/client";
-import packageImage from "../../public/assets/packages/health.png";
 
 export type PackageItem = {
   titleKey: string;
   listKeys: string[];
   price: string;
+  image: string;
+  featured?: boolean;
 };
 
 const PackageCard = ({ pkg }: { pkg: PackageItem }) => {
   const t = useI18n();
-  return (
-    <Card className="mx-auto w-full pt-0 overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 border border-border">
-      {/* Image */}
-      <Image
-        width={400}
-        height={220}
-        src={packageImage}
-        alt="Package image"
-        className="w-full object-cover"
-        style={{ height: "180px" }}
-      />
 
-      <CardContent className="pt-5 pb-4 px-5">
-        {/* Package Title */}
-        <h3 className="text-lg font-bold text-primary mb-3">
+  const formattedPrice = Number(pkg.price).toLocaleString("fr-SN");
+
+  return (
+    <div
+      className={`relative flex flex-col rounded-2xl overflow-hidden border transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl ${
+        pkg.featured
+          ? "border-primary shadow-lg shadow-primary/15"
+          : "border-border shadow-md"
+      }`}
+    >
+      {/* Featured badge */}
+      {pkg.featured && (
+        <div className="absolute top-3 right-3 z-10">
+          <Badge className="bg-primary text-white text-xs font-semibold px-2.5 py-1 shadow">
+            Most Popular
+          </Badge>
+        </div>
+      )}
+
+      {/* Image */}
+      <div className="relative h-44 w-full overflow-hidden">
+        <Image
+          fill
+          src={pkg.image}
+          alt={t(pkg.titleKey as any, {})}
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, 33vw"
+        />
+        {/* gradient overlay so title stays readable if ever floated over */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+      </div>
+
+      {/* Body */}
+      <div className="flex flex-col flex-1 p-5 bg-card">
+        {/* Title */}
+        <h3 className="text-base font-bold text-foreground mb-3 leading-snug">
           {t(pkg.titleKey as any, {})}
         </h3>
 
-        {/* Package Features */}
-        <ul className="space-y-2 mb-4">
+        {/* Features */}
+        <ul className="space-y-2 mb-5 flex-1">
           {pkg.listKeys.map((key, i) => (
-            <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Check className="w-4 h-4 text-secondary shrink-0" />
+            <li key={i} className="flex items-center gap-2.5 text-sm text-muted-foreground">
+              <span className="flex items-center justify-center w-4 h-4 rounded-full bg-secondary/15 shrink-0">
+                <Check className="w-2.5 h-2.5 text-secondary" strokeWidth={3} />
+              </span>
               {t(key as any, {})}
             </li>
           ))}
         </ul>
 
-        {/* Price */}
-        <p className="text-2xl font-extrabold text-foreground">
-          ${pkg.price}
-          <span className="text-sm font-normal text-muted-foreground ml-1">/ package</span>
-        </p>
-      </CardContent>
+        {/* Divider */}
+        <div className="border-t border-border my-4" />
 
-      <CardFooter className="px-5 pb-5">
+        {/* Price row */}
+        <div className="flex items-end justify-between mb-4">
+          <div>
+            <p className="text-xs text-muted-foreground mb-0.5">Package price</p>
+            <p className={`text-2xl font-extrabold leading-none ${pkg.featured ? "text-primary" : "text-foreground"}`}>
+              {formattedPrice}
+              <span className="text-sm font-semibold text-muted-foreground ml-1.5">CFA</span>
+            </p>
+          </div>
+          {pkg.featured && (
+            <span className="text-xs text-primary font-medium bg-primary/8 px-2 py-1 rounded-md">
+              Best value
+            </span>
+          )}
+        </div>
+
+        {/* CTA */}
         <Button
-          className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold"
+          className={`w-full font-semibold gap-2 ${
+            pkg.featured
+              ? "bg-primary hover:bg-primary/90 text-white"
+              : "bg-secondary hover:bg-secondary/90 text-white"
+          }`}
         >
+          <CalendarCheck className="w-4 h-4" />
           {t("ourPackages.checkBtn")}
         </Button>
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   );
 };
 

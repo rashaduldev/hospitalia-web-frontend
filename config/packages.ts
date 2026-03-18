@@ -7,6 +7,8 @@ export const PACKAGES = [
       "ourPackages.bloodUrine",
     ],
     price: "300",
+    image: "/assets/packages/pregnency.png",
+    featured: false,
   },
   {
     titleKey: "ourPackages.generalHealth",
@@ -16,6 +18,8 @@ export const PACKAGES = [
       "ourPackages.basicLab",
     ],
     price: "200",
+    image: "/assets/packages/health.png",
+    featured: true,
   },
   {
     titleKey: "ourPackages.cardiacCare",
@@ -25,5 +29,7 @@ export const PACKAGES = [
       "ourPackages.cholesterol",
     ],
     price: "450",
+    image: "/assets/packages/cardiac.png",
+    featured: false,
   },
 ];
