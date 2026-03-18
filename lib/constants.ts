@@ -2,10 +2,11 @@ import {
   LayoutDashboardIcon,
   ChartBarIcon,
   Settings2Icon,
-  // UserRoundPlus,
   Clock,
   CalendarPlus,
   MessageSquare,
+  UserRound,
+  ShieldCheck,
 } from "lucide-react";
 
 export const REQUEST_TIMEOUT_MS = 10_000;
@@ -14,30 +15,42 @@ export const ROUTES = {
   DOCTOR: [
     {
       name: "Dashboard",
-      url: "/dashboard",
+      url: "/doctor/dashboard",
       icon: LayoutDashboardIcon,
     },
     {
       name: "Set Availability",
-      url: "/availability",
+      url: "/doctor/availability",
       icon: Clock,
     },
-    // {
-    //   name: "Add Secretary",
-    //   url: "/secretary",
-    //   icon: UserRoundPlus,
-    // },
+    {
+      name: "My Profile",
+      url: "/doctor/profile",
+      icon: UserRound,
+    },
   ],
   HOSPITAL: [
     {
       name: "Dashboard",
-      url: "/dashboard",
+      url: "/hospital/dashboard",
       icon: LayoutDashboardIcon,
     },
     {
       name: "Set Availability",
-      url: "/availability",
+      url: "/hospital/availability",
       icon: ChartBarIcon,
+    },
+  ],
+  ADMIN: [
+    {
+      name: "Dashboard",
+      url: "/admin/dashboard",
+      icon: LayoutDashboardIcon,
+    },
+    {
+      name: "Admin Panel",
+      url: "/admin/panel",
+      icon: ShieldCheck,
     },
   ],
   PATIENT: [

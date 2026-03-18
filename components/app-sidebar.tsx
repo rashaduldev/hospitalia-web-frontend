@@ -42,15 +42,20 @@ const ROLE_LABELS: Record<Role, string> = {
   DOCTOR: "Doctor",
   HOSPITAL: "Hospital",
   PATIENT: "Patient",
+  ADMIN: "Admin",
   COMMON: "",
 };
 
 const DASHBOARD_URL: Partial<Record<Role, string>> = {
   PATIENT: "/patient/dashboard",
+  DOCTOR: "/doctor/dashboard",
+  HOSPITAL: "/hospital/dashboard",
+  ADMIN: "/admin/dashboard",
 };
 
 const PROFILE_URL: Partial<Record<Role, string>> = {
   PATIENT: "/patient/profile",
+  DOCTOR: "/doctor/profile",
 };
 
 function UserCard({ initials, displayName, roleLabel }: { initials: string; displayName: string; roleLabel: string }) {

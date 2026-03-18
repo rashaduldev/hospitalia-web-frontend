@@ -1,36 +1,21 @@
 import { getCurrentUser } from '@/actions/user.actions';
-import Unauthorized from '@/components/common/Unauthorized';
-import AdminDashboardPage from '@/components/pages/dashboard/AdminDashboardPage';
-import DoctorDashboardPage from '@/components/pages/dashboard/Doctordashboard';
-import HospitalDashboardPage from '@/components/pages/dashboard/HospitalDashboardPage';
-import PatientDashboardPage from '@/components/pages/dashboard/PatientDashboardPage';
 import { getCurrentLocale } from '@/locales/server';
-import { Metadata } from 'next';
-import React from 'react';
+import { redirect } from 'next/navigation';
 
-export const metadata: Metadata = {
-  title: "Hospitalia - Dashboard",
-  description:"This is the dashboard page for user. Here you can see your today's and upcoming appointments.",
+const ROLE_REDIRECT: Record<string, string> = {
+  DOCTOR: '/doctor/dashboard',
+  HOSPITAL: '/hospital/dashboard',
+  ADMIN: '/admin/dashboard',
+  PATIENT: '/patient/dashboard',
 };
 
-const DaynamicDashboardPage = async () => {
+export default async function DashboardRedirectPage() {
   const lang = await getCurrentLocale();
-    const res = await getCurrentUser({lang});
-    const role = res?.userType;
-    
-  // Role wise component render
-  const Dashboards: Record<string, React.ReactNode> = {
-    ADMIN: <AdminDashboardPage />,
-    DOCTOR: <DoctorDashboardPage />,
-    PATIENT: <PatientDashboardPage />,
-    HOSPITAL: <HospitalDashboardPage />,
-  };
-
-  return (
-    <div className="dashboard-container">
-      {Dashboards[role as string] || <Unauthorized/>}
-    </div>
-  );
-};
-
-export default DaynamicDashboardPage;
+  const res = await getCurrentUser({ lang });
+  const role = res?.userType as string;
+  const target = ROLE_REDIRECT[role];
+  if (target) {
+    redirect(target);
+  }
+  redirect('/');
+}

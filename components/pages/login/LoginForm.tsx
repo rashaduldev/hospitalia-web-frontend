@@ -47,7 +47,13 @@ const LoginForm = () => {
       return;
     }
 
-    router.replace("/dashboard");
+    const userType = res.payload?.user?.userType;
+    const REDIRECT: Record<string, string> = {
+      DOCTOR: "/doctor/dashboard",
+      HOSPITAL: "/hospital/dashboard",
+      ADMIN: "/admin/dashboard",
+    };
+    router.replace(REDIRECT[userType as string] ?? "/doctor/dashboard");
     reset();
   };
 

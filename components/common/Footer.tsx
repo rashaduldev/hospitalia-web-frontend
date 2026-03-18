@@ -17,6 +17,14 @@ const Sections = [
     ],
   },
   {
+    title: "Providers",
+    links: [
+      { title: "Doctor / Secretary Login", href: "/login" },
+      { title: "Hospital Login", href: "/hospital/login" },
+      { title: "Admin Login", href: "/admin/login" },
+    ],
+  },
+  {
     title: "Company",
     links: [
       { title: "About Us", href: "#" },
@@ -58,7 +66,7 @@ const FooterSection = () => {
           </div>
 
           {/* Links Grid */}
-          <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 gap-8">
+          <div className="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-8">
             {Sections.map(({ title, links }) => (
               <div key={title} className="space-y-4">
                 <h6 className="text-sm font-semibold text-white uppercase tracking-wider">{title}</h6>

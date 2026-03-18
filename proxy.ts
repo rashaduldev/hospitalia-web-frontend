@@ -12,14 +12,15 @@ const PUBLIC_ROUTES = [
   "/",
   "/search",
   "/login",
-  "/doctor",
   "/patient/login",
   "/patient/register",
+  "/hospital/login",
+  "/admin/login",
   "/register",
-  "/hospital",
   "/forgot-password",
   "/verify-otp",
   "/reset-password",
+  "/booking/confirmation",
 ];
 
 const publicPathnameRegex = new RegExp(
@@ -27,12 +28,18 @@ const publicPathnameRegex = new RegExp(
   "i",
 );
 
+// Public doctor profile pages: /doctor/[numeric-id] only
+const publicDoctorProfileRegex = /^\/doctor\/\d+(\/.*)?$/i;
+
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   const token = await getAccessToken();
 
-  const isPublicPage = publicPathnameRegex.test(pathname);
+  const isPublicPage =
+    publicPathnameRegex.test(pathname) ||
+    publicDoctorProfileRegex.test(pathname);
+
   if (!isPublicPage && !token) {
     return NextResponse.redirect(new URL("/", req.url));
   }
