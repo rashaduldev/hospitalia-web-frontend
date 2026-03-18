@@ -7,13 +7,15 @@ export async function globalSearch({
   searchType,
   searchKeyword,
   city,
+  page = 0,
 }: {
   lang: string;
   searchType: string;
   searchKeyword: string;
   city?: string;
+  page?: number;
 }) {
-  const params: Record<string, string> = { lang, searchType, searchKeyword };
+  const params: Record<string, string> = { lang, searchType, searchKeyword, page: String(page) };
   if (city && city !== "ALL") params.city = city;
 
   const res = await apiClient({

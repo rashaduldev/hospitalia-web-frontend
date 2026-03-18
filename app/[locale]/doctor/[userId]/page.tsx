@@ -52,7 +52,7 @@ const DoctorBookingPage = async ({ params }: Props) => {
     <div className="min-h-screen bg-background">
       <Header />
 
-      <div className="max-w-6xl mx-auto p-8">
+      <div className="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <BookingClientSection
           doctor={singleDoctor?.payload}
           doctorLocations={locations}
