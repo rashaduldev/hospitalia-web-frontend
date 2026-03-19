@@ -39,8 +39,9 @@ export type AppointmentUpdateRequest = {
 };
 
 export type AvailableSlot = {
-  slotId: string;
+  locationId: number;
   startTime: string;
   endTime: string;
-  isAvailable: boolean;
+  slotDuration: number;
+  available: boolean;
 };

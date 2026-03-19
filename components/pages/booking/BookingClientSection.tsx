@@ -33,6 +33,7 @@ const BookingClientSection = ({
           lang={lang}
           doctor={doctor}
           locationOptions={locationOptions}
+          doctorLocations={doctorLocations}
           token={token}
           currentUserId={currentUserId}
           doctorUnAvailable={doctorUnAvailable}

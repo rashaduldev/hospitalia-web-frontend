@@ -44,15 +44,29 @@ export const createDoctorLocation = async ({
   lang,
   locationName,
   addressLine1,
+  addressLine2,
   city,
+  state,
+  country,
   postalCode,
+  newPatientFee,
+  oldPatientFee,
+  feeCurrency,
+  supportedAppointmentTypeIds,
   doctorUserId,
 }: {
   lang: string;
   locationName: string;
   addressLine1: string;
+  addressLine2?: string;
   city: string;
+  state?: string;
+  country?: string;
   postalCode: string;
+  newPatientFee?: number;
+  oldPatientFee?: number;
+  feeCurrency?: string;
+  supportedAppointmentTypeIds?: number[];
   doctorUserId: number;
 }) => {
   const token = await getAccessToken();
@@ -62,8 +76,15 @@ export const createDoctorLocation = async ({
     body: {
       locationName,
       addressLine1,
+      addressLine2,
       city,
+      state,
+      country,
       postalCode,
+      newPatientFee,
+      oldPatientFee,
+      feeCurrency,
+      supportedAppointmentTypeIds,
       doctorUserId,
     },
     params: { lang },
@@ -97,11 +118,18 @@ export const deleteDoctorLocation = async ({
 export const updateDoctorLocation = async ({
   lang,
   locationId,
-  city,
-  postalCode,
-  doctorUserId,
   locationName,
   addressLine1,
+  addressLine2,
+  city,
+  state,
+  country,
+  postalCode,
+  newPatientFee,
+  oldPatientFee,
+  feeCurrency,
+  supportedAppointmentTypeIds,
+  doctorUserId,
 }: UpdateLocationParams) => {
   const token = await getAccessToken();
 
@@ -110,11 +138,18 @@ export const updateDoctorLocation = async ({
     method: "PUT",
     body: {
       locationId,
-      city,
-      postalCode,
-      doctorUserId,
       locationName,
       addressLine1,
+      addressLine2,
+      city,
+      state,
+      country,
+      postalCode,
+      newPatientFee,
+      oldPatientFee,
+      feeCurrency,
+      supportedAppointmentTypeIds,
+      doctorUserId,
     },
     params: { lang },
     headers: { Authorization: `Bearer ${token}` },
