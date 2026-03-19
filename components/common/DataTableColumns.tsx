@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Appointment } from "@/types/appointment.type";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { Pencil } from "lucide-react";
 import { Typography } from "@/components/ui/Typography";
 import { useI18n } from "@/locales/client";
@@ -52,11 +52,22 @@ export const appointmentColumns: ColumnDef<Appointment>[] = [
       </Typography>
     ),
     cell: ({ row }) => {
-      const date = new Date(row.getValue("appointmentDate"));
+      const raw = row.getValue("appointmentDate") as number[] | string;
+      let formatted = "";
+      try {
+        if (Array.isArray(raw)) {
+          const [year, month, day] = raw;
+          formatted = format(new Date(year, month - 1, day), "dd MMM yyyy");
+        } else {
+          formatted = format(parseISO(raw), "dd MMM yyyy");
+        }
+      } catch {
+        formatted = String(raw);
+      }
       return (
         <div className="font-medium text-nowrap">
           <Typography as="span" size="sm" color="foreground" weight="medium">
-            {format(date, "dd MMM yyyy")}{" "}
+            {formatted}{" "}
           </Typography>
         </div>
       );

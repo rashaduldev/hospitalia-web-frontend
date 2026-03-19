@@ -10,6 +10,7 @@ export const doctorBookingSchema = (t: TFunction) =>
     patientType: z.enum(["new", "returning"], {
       message: t("booking.errors.patientTypeRequired"),
     }),
+    appointmentTypeId: z.string().min(1, t("booking.errors.appointmentTypeRequired")),
   });
 
 export type DoctorBookingFormValues = z.infer<

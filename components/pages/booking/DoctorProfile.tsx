@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { MapPin, Stethoscope, Banknote, Info } from "lucide-react";
+import { MapPin, Stethoscope, BookOpen, BadgeCheck } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Speciality } from "@/types/speciality.type";
@@ -8,12 +8,6 @@ import { DoctorLocation } from "@/types/doctor.location.type";
 import doctorMale from "../../../public/assets/doctor_male.jpg";
 import doctorFemale from "../../../public/assets/doctor_female.jpg";
 
-const NEW_PATIENT_FEE = 25000;
-const RETURNING_PATIENT_FEE = 10000;
-const CURRENCY = "CFA";
-
-const formatPrice = (price: number) =>
-  `${price.toLocaleString("fr-SN")} ${CURRENCY}`;
 
 const SectionHeading = ({
   icon: Icon,
@@ -65,9 +59,18 @@ const DoctorProfile = ({
         </h2>
 
         {doctor.professionalInfoResponse?.designation && (
-          <p className="text-sm text-muted-foreground mt-1 px-4 break-all">
+          <p className="text-sm text-muted-foreground mt-1 px-4">
             {doctor.professionalInfoResponse.designation}
           </p>
+        )}
+
+        {doctor.professionalInfoResponse?.onmsregistrationNumber && (
+          <div className="flex items-center gap-1.5 mt-2">
+            <BadgeCheck className="w-3.5 h-3.5 text-primary shrink-0" />
+            <span className="text-xs text-primary font-medium">
+              Reg. {doctor.professionalInfoResponse.onmsregistrationNumber}
+            </span>
+          </div>
         )}
 
         {specialities.length > 0 && (
@@ -110,19 +113,50 @@ const DoctorProfile = ({
         </>
       )}
 
+      {/* About */}
+      {doctor.professionalInfoResponse?.professionalStatement && (
+        <>
+          <div className="px-6 py-5">
+            <SectionHeading icon={BookOpen} label="About" />
+            <p className="text-sm text-muted-foreground leading-relaxed pl-1">
+              {doctor.professionalInfoResponse.professionalStatement}
+            </p>
+          </div>
+          <Separator />
+        </>
+      )}
+
       {/* Chambers */}
       {doctorLocations?.length > 0 && (
         <>
           <div className="px-6 py-5">
             <SectionHeading icon={MapPin} label="Chambers" />
-            <ul className="space-y-1.5 pl-1">
+            <ul className="space-y-3 pl-1">
               {doctorLocations.map((loc) => (
-                <li
-                  key={loc.locationId}
-                  className="text-sm text-muted-foreground flex items-start gap-1.5 break-all"
-                >
+                <li key={loc.locationId} className="flex items-start gap-1.5">
                   <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-secondary shrink-0" />
-                  {loc.locationName}
+                  <div>
+                    <p className="text-sm font-medium text-foreground">{loc.locationName}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {[loc.addressLine1, loc.addressLine2, loc.city, loc.postalCode]
+                        .filter(Boolean)
+                        .join(", ")}
+                    </p>
+                    {(loc.newPatientFee != null || loc.oldPatientFee != null) && (
+                      <div className="flex items-center gap-3 mt-1">
+                        {loc.newPatientFee != null && (
+                          <span className="text-xs text-secondary font-medium">
+                            New: {loc.newPatientFee.toLocaleString()} {loc.feeCurrency ?? ""}
+                          </span>
+                        )}
+                        {loc.oldPatientFee != null && (
+                          <span className="text-xs text-primary font-medium">
+                            Old: {loc.oldPatientFee.toLocaleString()} {loc.feeCurrency ?? ""}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </li>
               ))}
             </ul>
@@ -131,37 +165,6 @@ const DoctorProfile = ({
         </>
       )}
 
-      {/* Fees */}
-      <div className="px-6 py-5">
-        <SectionHeading icon={Banknote} label="Consultation Fees" />
-        <div className="grid grid-cols-2 gap-2 mt-1">
-          <div className="rounded-lg bg-secondary/10 border border-secondary/20 px-3 py-2.5 text-center">
-            <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide mb-1">
-              New Patient
-            </p>
-            <p className="text-sm font-bold text-secondary">
-              {formatPrice(NEW_PATIENT_FEE)}
-            </p>
-          </div>
-          <div className="rounded-lg bg-primary/10 border border-primary/20 px-3 py-2.5 text-center">
-            <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide mb-1">
-              Returning
-            </p>
-            <p className="text-sm font-bold text-primary">
-              {formatPrice(RETURNING_PATIENT_FEE)}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Note */}
-      <div className="mx-6 mb-6 flex items-start gap-2 rounded-lg bg-muted/60 border border-border px-4 py-3">
-        <Info className="w-3.5 h-3.5 text-muted-foreground shrink-0 mt-0.5" />
-        <p className="text-[11px] text-muted-foreground leading-relaxed">
-          Availability subject to confirmation. Your request may need further
-          processing with the doctor.
-        </p>
-      </div>
     </div>
   );
 };

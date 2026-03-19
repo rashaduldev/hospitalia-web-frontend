@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm, useController, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, parseISO } from "date-fns";
-import { CalendarCheck2, Loader2, Clock, MapPin, LogIn } from "lucide-react";
+import { CalendarCheck2, Loader2, Clock, MapPin, LogIn, Stethoscope } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ControlledSelect } from "@/components/common/FormUIControllers/ControlledSelect";
 import { Calendar } from "@/components/ui/calendar";
@@ -25,8 +25,10 @@ import {
 import { bookAppointment } from "@/actions/doctor/booking";
 import { getDoctorAvailabilityWithLocation } from "@/actions/doctor/availability";
 import { getAvailableSlots } from "@/actions/doctor/slot";
+import { getAppointmentsByDate } from "@/actions/doctor/appointment";
 import { UnavailableDate } from "@/types/doctor.unavailable";
 import { SingleDoctorInfo } from "@/types/doctor";
+import { DoctorLocation } from "@/types/doctor.location.type";
 import { usePathname, useRouter } from "next/navigation";
 import { useI18n } from "@/locales/client";
 import { cn } from "@/lib/utils";
@@ -48,6 +50,7 @@ const SectionHeading = ({
 
 const DoctorBooking = ({
   locationOptions,
+  doctorLocations,
   doctor,
   currentUserId,
   token,
@@ -55,6 +58,7 @@ const DoctorBooking = ({
   lang,
 }: {
   locationOptions: { label: string; value: number }[];
+  doctorLocations: DoctorLocation[];
   doctor: SingleDoctorInfo;
   token: string | null;
   currentUserId: number;
@@ -78,6 +82,7 @@ const DoctorBooking = ({
       availableDates: "",
       availableSlots: "",
       patientType: "new",
+      appointmentTypeId: "",
     },
   });
 
@@ -90,6 +95,7 @@ const DoctorBooking = ({
 
   const { field: dateField } = useController({ name: "availableDates", control });
   const { field: slotField } = useController({ name: "availableSlots", control });
+  const { field: appointmentTypeField } = useController({ name: "appointmentTypeId", control });
 
   const { data: locationAvailability, isLoading: isLoadingAvailability } = useQuery({
     queryKey: ["doctorAvailability", doctorUserId, selectedLocation],
@@ -118,6 +124,34 @@ const DoctorBooking = ({
     },
     enabled: Boolean(selectedDate && doctorUserId && selectedLocation),
   });
+
+  const selectedLocationData = doctorLocations.find(
+    (l) => l.locationId === Number(selectedLocation)
+  );
+  const newPatientFee = selectedLocationData?.newPatientFee ?? null;
+  const oldPatientFee = selectedLocationData?.oldPatientFee ?? null;
+  const feeCurrency = selectedLocationData?.feeCurrency ?? "";
+  const formatFee = (fee: number | null) =>
+    fee != null ? `${fee.toLocaleString()} ${feeCurrency}`.trim() : "Not available";
+
+  const appointmentTypes = selectedLocationData?.supportedAppointmentTypes ?? [];
+
+  const { data: appointmentsOnDate = [] } = useQuery({
+    queryKey: ["appointmentsOnDate", doctorUserId, selectedDate],
+    queryFn: () =>
+      getAppointmentsByDate({
+        doctorUserId,
+        date: format(parseISO(selectedDate!), "yyyy-MM-dd"),
+        lang,
+      }),
+    enabled: Boolean(selectedDate && doctorUserId),
+  });
+
+  const bookedStartTimes = new Set(
+    appointmentsOnDate
+      .filter((a) => a.appointmentStatus !== "CANCELLED")
+      .map((a) => a.startTime)
+  );
 
   const isDayAvailable = (date: Date) => {
     if (!locationAvailability?.content) return false;
@@ -164,13 +198,13 @@ const DoctorBooking = ({
       patientUserId: currentUserId,
       appointmentDate: format(parseISO(data.availableDates), "yyyy-MM-dd"),
       dayOfWeek: format(parseISO(data.availableDates), "EEEE").toUpperCase(),
-      fees: patientType === "new" ? 25000 : 10000,
-      appointmentTypeId: patientType === "new" ? 1 : 2,
+      fees: patientType === "new" ? (newPatientFee ?? 0) : (oldPatientFee ?? 0),
+      appointmentTypeId: Number(data.appointmentTypeId),
       appointmentSlotDto: {
         locationId: Number(selectedLocation),
         startTime: selectedSlotObj?.startTime,
         endTime: selectedSlotObj?.endTime,
-        slotDuration: selectedSlotObj?.duration || 15,
+        slotDuration: selectedSlotObj?.slotDuration || 15,
         available: false,
       },
       notes: "Doctor booking request",
@@ -186,7 +220,7 @@ const DoctorBooking = ({
         date: format(parseISO(data.availableDates), "do MMMM"),
         startTime: formatTimeTo12H(selectedSlotObj?.startTime),
         endTime: formatTimeTo12H(selectedSlotObj?.endTime),
-        price: patientType === "new" ? "25,000 CFA" : "10,000 CFA",
+        price: formatFee(patientType === "new" ? newPatientFee : oldPatientFee),
       });
       router.push(`/booking/confirmation?${params.toString()}`);
       return;
@@ -244,7 +278,9 @@ const DoctorBooking = ({
               <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide mb-1">
                 {t("booking.patient_types.new")}
               </p>
-              <p className="text-sm font-bold text-secondary">25,000 CFA</p>
+              <p className={`text-sm font-bold ${newPatientFee != null ? "text-secondary" : "text-muted-foreground"}`}>
+                {formatFee(newPatientFee)}
+              </p>
             </button>
             <button
               type="button"
@@ -259,12 +295,66 @@ const DoctorBooking = ({
               <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide mb-1">
                 {t("booking.patient_types.returning")}
               </p>
-              <p className="text-sm font-bold text-primary">10,000 CFA</p>
+              <p className={`text-sm font-bold ${oldPatientFee != null ? "text-primary" : "text-muted-foreground"}`}>
+                {formatFee(oldPatientFee)}
+              </p>
             </button>
           </div>
         </div>
 
         <Separator />
+
+        {/* Appointment Type */}
+        {appointmentTypes.length > 0 && (
+          <>
+            <div>
+              <SectionHeading icon={Stethoscope} label="Appointment Type" />
+              <div className="space-y-2">
+                {appointmentTypes.map((type) => {
+                  const isSelected = appointmentTypeField.value === String(type.id);
+                  return (
+                    <button
+                      key={type.id}
+                      type="button"
+                      onClick={() => appointmentTypeField.onChange(String(type.id))}
+                      className={cn(
+                        "w-full flex items-center gap-3 rounded-lg px-4 py-3 border text-left transition-all duration-200",
+                        isSelected
+                          ? "bg-primary/10 border-primary"
+                          : "bg-background border-border hover:border-primary/40 hover:bg-primary/5",
+                      )}
+                    >
+                      <div
+                        className={cn(
+                          "w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center",
+                          isSelected ? "border-primary" : "border-muted-foreground/40",
+                        )}
+                      >
+                        {isSelected && (
+                          <div className="w-2 h-2 rounded-full bg-primary" />
+                        )}
+                      </div>
+                      <div>
+                        <p className={cn("text-sm font-medium", isSelected ? "text-primary" : "text-foreground")}>
+                          {type.name}
+                        </p>
+                        {type.description && (
+                          <p className="text-xs text-muted-foreground mt-0.5">{type.description}</p>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+              {errors.appointmentTypeId && (
+                <p className="text-xs text-destructive mt-2">
+                  {errors.appointmentTypeId.message}
+                </p>
+              )}
+            </div>
+            <Separator />
+          </>
+        )}
 
         {/* Calendar */}
         <div>
@@ -341,16 +431,20 @@ const DoctorBooking = ({
                       <div className="flex flex-wrap gap-2">
                         {slots.map((slot, idx) => {
                           const isSelected = slotField.value === slot.startTime;
+                          const isBooked = slot.available === false || bookedStartTimes.has(slot.startTime);
                           return (
                             <button
                               key={idx}
                               type="button"
-                              onClick={() => slotField.onChange(slot.startTime)}
+                              disabled={isBooked}
+                              onClick={() => !isBooked && slotField.onChange(slot.startTime)}
                               className={cn(
                                 "text-xs font-medium px-3 py-2 rounded-lg border transition-all",
-                                isSelected
-                                  ? "bg-primary text-white border-primary shadow-sm"
-                                  : "bg-background text-foreground border-border hover:border-primary/50 hover:bg-primary/5",
+                                isBooked
+                                  ? "bg-destructive/10 text-destructive/60 border-destructive/20 line-through cursor-not-allowed"
+                                  : isSelected
+                                    ? "bg-primary text-white border-primary shadow-sm"
+                                    : "bg-background text-foreground border-border hover:border-primary/50 hover:bg-primary/5",
                               )}
                             >
                               {formatTimeTo12H(slot.startTime)} – {formatTimeTo12H(slot.endTime)}

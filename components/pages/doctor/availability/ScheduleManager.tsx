@@ -10,11 +10,23 @@ import {
   getDoctorUnAvailability,
   deleteAvailabilitySlot,
 } from "@/actions/doctor/unavailability";
+import { getAppointmentsByDate, cancelAppointment } from "@/actions/doctor/appointment";
 import { useI18n } from "@/locales/client";
 import { Button } from "@/components/ui/button";
 import { UnavailableDate } from "@/types/doctor.unavailable";
+import { Appointment } from "@/types/appointment.type";
 import { StatusMessage } from "./StatusMessage";
-import { CalendarX } from "lucide-react";
+import { AlertTriangle, CalendarX } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import AppButton from "@/components/common/AppButton";
 
 export default function ScheduleManager({
   lang,
@@ -27,6 +39,10 @@ export default function ScheduleManager({
   const queryClient = useQueryClient();
 
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [pendingAction, setPendingAction] = useState<"set-unavailable" | "make-available" | null>(null);
+  const [appointmentsOnDate, setAppointmentsOnDate] = useState<Appointment[]>([]);
+  const [isChecking, setIsChecking] = useState(false);
 
   const { data: existingDatesResponse, isLoading: isFetching } = useQuery({
     queryKey: ["doctor-availability", doctorUserId],
@@ -58,13 +74,53 @@ export default function ScheduleManager({
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["doctor-availability"] }),
   });
 
-  const handleToggleAvailability = () => {
+  const handleButtonClick = async () => {
     if (!selectedDate) return;
-    if (isDateInDatabase && existingSlot?.id) {
-      deleteMutation.mutate(existingSlot.id);
+
+    if (isDateInDatabase) {
+      setPendingAction("make-available");
+      setAppointmentsOnDate([]);
+      setDialogOpen(true);
     } else {
-      createMutation.mutate(format(selectedDate, "yyyy-MM-dd"));
+      setIsChecking(true);
+      try {
+        const dateStr = format(selectedDate, "yyyy-MM-dd");
+        const appointments = await getAppointmentsByDate({ doctorUserId, date: dateStr, lang });
+        setAppointmentsOnDate(appointments);
+      } catch {
+        setAppointmentsOnDate([]);
+      } finally {
+        setIsChecking(false);
+      }
+      setPendingAction("set-unavailable");
+      setDialogOpen(true);
     }
+  };
+
+  const handleConfirm = async () => {
+    setDialogOpen(false);
+    if (!selectedDate) return;
+
+    if (pendingAction === "set-unavailable") {
+      if (appointmentsOnDate.length > 0) {
+        await Promise.all(
+          appointmentsOnDate.map((apt) =>
+            cancelAppointment({
+              appointmentId: apt.appointmentId,
+              cancelledByUserId: doctorUserId,
+              cancellationReason: "Doctor is unavailable.",
+              lang,
+            }),
+          ),
+        );
+      }
+      createMutation.mutate(format(selectedDate, "yyyy-MM-dd"));
+    } else if (pendingAction === "make-available" && existingSlot?.id) {
+      deleteMutation.mutate(existingSlot.id);
+    }
+
+    setPendingAction(null);
+    setAppointmentsOnDate([]);
   };
 
   const isPending = createMutation.isPending || deleteMutation.isPending;
@@ -112,19 +168,70 @@ export default function ScheduleManager({
         />
 
         <Button
-          onClick={handleToggleAvailability}
+          onClick={handleButtonClick}
           type="button"
-          disabled={!selectedDate || isFetching || isPending}
+          disabled={!selectedDate || isFetching || isPending || isChecking}
           variant={isDateInDatabase ? "default" : "destructive"}
           className="w-full sm:w-auto font-semibold h-11 px-8"
         >
-          {isPending
-            ? "Processing…"
-            : isDateInDatabase
-              ? t("unavailability.undo_btn")
-              : t("unavailability.btn") || "Set Unavailable"}
+          {isChecking
+            ? "Checking…"
+            : isPending
+              ? "Processing…"
+              : isDateInDatabase
+                ? t("unavailability.undo_btn")
+                : t("unavailability.btn")}
         </Button>
       </div>
+
+      <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {pendingAction === "set-unavailable" && appointmentsOnDate.length > 0 && (
+                <AlertTriangle className="inline w-5 h-5 text-destructive mr-2 shrink-0 -mt-0.5" />
+              )}
+              {pendingAction === "set-unavailable"
+                ? t("unavailability.confirm_unavailable_title")
+                : t("unavailability.confirm_available_title")}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {pendingAction === "set-unavailable" ? (
+                appointmentsOnDate.length > 0 ? (
+                  <>
+                    {t("unavailability.confirm_unavailable_with_appointments")}
+                    <span className="block mt-1 text-destructive font-medium">
+                      {appointmentsOnDate.length} {t("unavailability.appointments_on_date")}:{" "}
+                      {selectedDate && format(selectedDate, "MMMM d, yyyy")}
+                    </span>
+                  </>
+                ) : (
+                  t("unavailability.confirm_unavailable_no_appointments")
+                )
+              ) : (
+                t("unavailability.confirm_available_description")
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDialogOpen(false)}>
+              {t("unavailability.dialog_cancel")}
+            </AlertDialogCancel>
+            <AppButton
+              variant={pendingAction === "set-unavailable" ? "destructive" : "default"}
+              isLoading={isPending}
+              loadingText="Processing…"
+              onClick={handleConfirm}
+            >
+              {pendingAction === "set-unavailable"
+                ? appointmentsOnDate.length > 0
+                  ? t("unavailability.confirm_cancel_appointments_btn")
+                  : t("unavailability.confirm_set_unavailable_btn")
+                : t("unavailability.confirm_make_available_btn")}
+            </AppButton>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

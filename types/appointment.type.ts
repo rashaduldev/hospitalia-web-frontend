@@ -18,6 +18,9 @@ export type Appointment = {
   doctorLocationId?: string;
   notes?: string;
   createdAt?: string;
+  cancellationReason?: string | null;
+  cancelledAt?: number | null;
+  cancelledByUserId?: number | null;
 };
 
 export type AppointmentBookingRequest = {
@@ -36,8 +39,9 @@ export type AppointmentUpdateRequest = {
 };
 
 export type AvailableSlot = {
-  slotId: string;
+  locationId: number;
   startTime: string;
   endTime: string;
-  isAvailable: boolean;
+  slotDuration: number;
+  available: boolean;
 };

@@ -31,6 +31,11 @@ export interface Paginated<T> {
   page: number;
   limit: number;
   total: number;
+  totalElements: number;
+  totalPages: number;
+  numberOfElements: number;
+  first: boolean;
+  last: boolean;
 }
 
 export type RegisterUser = {
