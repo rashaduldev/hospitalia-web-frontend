@@ -264,6 +264,16 @@ export default {
     undo_btn: "Rendre disponible",
     confirmed_slots: "Créneaux confirmés",
     confirmed_slots_des: "Tous vos créneaux horaires confirmés",
+    confirm_unavailable_title: "Définir la date comme indisponible ?",
+    confirm_available_title: "Rendre la date disponible à nouveau ?",
+    confirm_unavailable_no_appointments: "Êtes-vous sûr de vouloir marquer cette date comme indisponible ? Aucun rendez-vous n'est actuellement planifié.",
+    confirm_unavailable_with_appointments: "Cette date comporte des rendez-vous planifiés qui seront annulés. Êtes-vous sûr de vouloir continuer ?",
+    confirm_available_description: "Êtes-vous sûr de vouloir rendre cette date disponible à nouveau ?",
+    confirm_set_unavailable_btn: "Définir indisponible",
+    confirm_cancel_appointments_btn: "Annuler les rendez-vous et définir indisponible",
+    confirm_make_available_btn: "Rendre disponible",
+    dialog_cancel: "Annuler",
+    appointments_on_date: "rendez-vous à cette date",
   },
 
   location: {

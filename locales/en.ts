@@ -242,6 +242,16 @@ export default {
     undo_btn: "Make Available",
     confirmed_slots: "Confirmed Slots",
     confirmed_slots_des: "All your confirmed time slots",
+    confirm_unavailable_title: "Set Date as Unavailable?",
+    confirm_available_title: "Make Date Available Again?",
+    confirm_unavailable_no_appointments: "Are you sure you want to mark this date as unavailable? No appointments are currently scheduled.",
+    confirm_unavailable_with_appointments: "This date has scheduled appointments that will be cancelled. Are you sure you want to proceed?",
+    confirm_available_description: "Are you sure you want to make this date available again?",
+    confirm_set_unavailable_btn: "Set Unavailable",
+    confirm_cancel_appointments_btn: "Cancel Appointments & Set Unavailable",
+    confirm_make_available_btn: "Make Available",
+    dialog_cancel: "Cancel",
+    appointments_on_date: "appointments on this date",
   },
   location: {
     errors: {

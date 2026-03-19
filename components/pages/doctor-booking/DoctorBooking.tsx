@@ -341,19 +341,24 @@ const DoctorBooking = ({
                       <div className="flex flex-wrap gap-2">
                         {slots.map((slot, idx) => {
                           const isSelected = slotField.value === slot.startTime;
+                          const isBooked = slot.isAvailable === false;
                           return (
                             <button
                               key={idx}
                               type="button"
-                              onClick={() => slotField.onChange(slot.startTime)}
+                              disabled={isBooked}
+                              onClick={() => !isBooked && slotField.onChange(slot.startTime)}
                               className={cn(
                                 "text-xs font-medium px-3 py-2 rounded-lg border transition-all",
-                                isSelected
-                                  ? "bg-primary text-white border-primary shadow-sm"
-                                  : "bg-background text-foreground border-border hover:border-primary/50 hover:bg-primary/5",
+                                isBooked
+                                  ? "bg-muted text-muted-foreground border-muted-foreground/20 line-through cursor-not-allowed opacity-60"
+                                  : isSelected
+                                    ? "bg-primary text-white border-primary shadow-sm"
+                                    : "bg-background text-foreground border-border hover:border-primary/50 hover:bg-primary/5",
                               )}
                             >
                               {formatTimeTo12H(slot.startTime)} – {formatTimeTo12H(slot.endTime)}
+                              {isBooked && <span className="ml-1 not-italic normal-case no-underline">(Booked)</span>}
                             </button>
                           );
                         })}

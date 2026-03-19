@@ -18,6 +18,9 @@ export type Appointment = {
   doctorLocationId?: string;
   notes?: string;
   createdAt?: string;
+  cancellationReason?: string | null;
+  cancelledAt?: number | null;
+  cancelledByUserId?: number | null;
 };
 
 export type AppointmentBookingRequest = {

@@ -1,10 +1,16 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Monitor, MoonStar, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
 export default function ThemeToggle() {
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) return <div className="flex items-center gap-1 w-22 h-9" />;
 
   const getBtnClass = (mode: string) =>
     `p-2 rounded-full hover:cursor-pointer dark:text-foreground transition-all  ${
