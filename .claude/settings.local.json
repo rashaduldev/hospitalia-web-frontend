@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git checkout:*)",
+      "Bash(find /Volumes/Works/projects/web/hospitalia-web/types -type f -name \"*.ts\" -exec wc -l {} +)",
+      "Bash(wc -l /Volumes/Works/projects/web/hospitalia-web/config/*.ts)",
+      "Bash(xargs ls:*)",
+      "Bash(curl -s -u \"+88017111111:disl@1234\" \"https://hospitalia-api.dhrubok.xyz/v3/api-docs\")",
+      "Bash(npx tsc:*)",
+      "Bash(curl -s -u +88017111111:disl@1234 https://hospitalia-api.dhrubok.xyz/v3/api-docs)",
+      "Bash(curl -s -X POST \"https://hospitalia-api.dhrubok.xyz/api/auth/sign-in\" -H \"Content-Type: application/json\" -d '{\"\"\"\"countryCode\"\"\"\":\"\"\"\"+880\"\"\"\",\"\"\"\"phoneNumber\"\"\"\":\"\"\"\"17111111\"\"\"\",\"\"\"\"password\"\"\"\":\"\"\"\"disl@1234\"\"\"\"}')",
+      "Bash(python3 -c \":*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "WebFetch(domain:hospitalia-api.dhrubok.xyz)",
+      "Bash(curl -s \"https://hospitalia-api.dhrubok.xyz/v3/api-docs\" -u \"admin:admin\")",
+      "Bash(curl -s https://hospitalia-api.dhrubok.xyz/v3/api-docs)",
+      "Bash(curl -s \"https://hospitalia-api.dhrubok.xyz/v3/api-docs\" -u \"+88017111111:disl@1234\")",
+      "Bash(python3 -m json.tool)",
+      "Bash(git add:*)",
+      "Bash(git pull:*)",
+      "Bash(npm run:*)",
+      "WebFetch(domain:api.unsplash.com)",
+      "WebSearch",
+      "WebFetch(domain:dev.to)",
+      "WebFetch(domain:images.unsplash.com)",
+      "Bash(git branch:*)",
+      "Bash(find:*)",
+      "Bash(find /Volumes/Works/projects/web/hospitalia-web/app/[locale]/\\\\\\(dashboard\\\\\\)/ -type f -name \"*.tsx\" -o -name \"*.ts\" -o -name \"*.json\")",
+      "Bash(find /Volumes/Works/projects/web/hospitalia-web/app/[locale]/\\\\\\(dashboard\\\\\\) -type f -name \"*.tsx\" -o -type f -name \"*.ts\")",
+      "Bash(wc -l /Volumes/Works/projects/web/hospitalia-web/actions/*.ts /Volumes/Works/projects/web/hospitalia-web/actions/*/*.ts)",
+      "Bash(grep:*)",
+      "Bash(ls \"/Volumes/Works/projects/web/hospitalia-web/app/[locale]/\\(auth\\)/login/\")",
+      "Bash(ls \"/Volumes/Works/projects/web/hospitalia-web/app/[locale]/\\(auth\\)/patient/\")"
+    ]
+  }
+}

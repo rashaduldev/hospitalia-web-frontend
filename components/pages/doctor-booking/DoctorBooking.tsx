@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm, useController, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, parseISO } from "date-fns";
+import { enUS } from "date-fns/locale";
 import { CalendarCheck2, Loader2, Clock, MapPin, LogIn, Stethoscope } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ControlledSelect } from "@/components/common/FormUIControllers/ControlledSelect";
@@ -365,6 +366,7 @@ const DoctorBooking = ({
             <Calendar
               key={selectedLocation}
               mode="single"
+              locale={enUS}
               className="mx-auto border rounded-xl"
               selected={
                 dateField.value && !isNaN(new Date(dateField.value).getTime())

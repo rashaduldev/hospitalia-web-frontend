@@ -4,6 +4,7 @@
 import { useState, useMemo } from "react";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { format, startOfDay } from "date-fns";
+import { enUS } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
 import {
   createDoctorUnAvailability,
@@ -149,6 +150,7 @@ export default function ScheduleManager({
         <Calendar
           className="mx-auto border rounded-xl"
           mode="single"
+          locale={enUS}
           selected={selectedDate}
           onSelect={(date) => {
             setSelectedDate(date);
