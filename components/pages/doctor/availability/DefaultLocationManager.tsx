@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Check, CheckCircle2, Trash2, Pencil, Save, X, MapPin } from "lucide-react";
@@ -78,7 +78,7 @@ export function DefaultLocationManager({
 
   const { handleSubmit, reset, setValue, watch, control } =
     useForm<LocationFormValues>({
-      resolver: zodResolver(locationSchema(t)),
+      resolver: zodResolver(locationSchema(t)) as Resolver<LocationFormValues>,
       defaultValues: {
         locationName: "",
         addressLine1: "",
