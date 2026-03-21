@@ -100,6 +100,43 @@ async function downloadFile(fileId: string, fileName: string) {
   }
 }
 
+// ── Blob image (bypasses Content-Disposition: attachment) ────────────────────
+
+function BlobImage({
+  fileId,
+  alt,
+  className,
+}: {
+  fileId: string;
+  alt: string;
+  className?: string;
+}) {
+  const [src, setSrc] = useState<string | null>(null);
+
+  useEffect(() => {
+    let objectUrl: string;
+    fetch(getFileAccessUrl(fileId))
+      .then((r) => r.blob())
+      .then((blob) => {
+        objectUrl = URL.createObjectURL(blob);
+        setSrc(objectUrl);
+      })
+      .catch(() => {});
+    return () => {
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [fileId]);
+
+  if (!src) {
+    return (
+      <div className={cn("bg-muted/60 animate-pulse flex items-center justify-center", className)}>
+        <Loader2 className="w-5 h-5 text-muted-foreground animate-spin" />
+      </div>
+    );
+  }
+  return <img src={src} alt={alt} className={className} />;
+}
+
 // ── Status icon ───────────────────────────────────────────────────────────────
 
 function StatusIcon({ status }: { status?: MessageStatus }) {
@@ -180,8 +217,8 @@ function FilePreviewModal({
         {/* Preview body */}
         <div className="bg-muted/40 flex items-center justify-center" style={{ minHeight: 320 }}>
           {isImage && (
-            <img
-              src={getFileAccessUrl(file.id)}
+            <BlobImage
+              fileId={file.id}
               alt={file.name}
               className="max-w-full max-h-[75vh] object-contain"
             />
@@ -240,8 +277,8 @@ function FileCard({ file, isMine }: { file: MessageFile; isMine: boolean }) {
           onClick={() => setPreviewOpen(true)}
           className="relative mt-1.5 rounded-xl overflow-hidden max-w-[240px] border border-white/20 block group"
         >
-          <img
-            src={file.url}
+          <BlobImage
+            fileId={file.id}
             alt={file.name}
             className="w-full object-cover max-h-52"
           />
