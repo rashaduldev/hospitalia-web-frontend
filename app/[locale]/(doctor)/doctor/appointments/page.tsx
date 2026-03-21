@@ -1,15 +1,15 @@
 import { getCurrentUser } from "@/actions/user.actions";
 import { ErrorHandle } from "@/components/common/ErrorHandle";
-import Availability from "@/components/pages/doctor/availability/Availability";
+import DoctorAppointmentsPage from "@/components/pages/doctor/appointments/DoctorAppointmentsPage";
 import { getCurrentLocale } from "@/locales/server";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Hospitalia - Availability",
-  description: "Manage your schedule and time slots for patient appointments.",
+  title: "Hospitalia - Appointments",
+  description: "View and manage your today's and upcoming appointments.",
 };
 
-export default async function DoctorAvailabilityPage() {
+export default async function DoctorAppointments() {
   const lang = await getCurrentLocale();
   const res = await getCurrentUser({ lang });
 
@@ -17,5 +17,5 @@ export default async function DoctorAvailabilityPage() {
     return <ErrorHandle message="Failed to load user information." status={401} />;
   }
 
-  return <Availability userId={res.id} lang={lang} />;
+  return <DoctorAppointmentsPage doctorUserId={res.id} lang={lang} />;
 }

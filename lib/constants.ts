@@ -8,6 +8,10 @@ import {
   UserRound,
   ShieldCheck,
   Stethoscope,
+  MapPin,
+  CalendarDays,
+  CalendarCheck,
+  Users,
 } from "lucide-react";
 
 export const REQUEST_TIMEOUT_MS = 10_000;
@@ -20,9 +24,19 @@ export const ROUTES = {
       icon: LayoutDashboardIcon,
     },
     {
-      name: "Set Availability",
+      name: "Appointments",
+      url: "/doctor/appointments",
+      icon: CalendarDays,
+    },
+    {
+      name: "Availability",
       url: "/doctor/availability",
       icon: Clock,
+    },
+    {
+      name: "Locations",
+      url: "/doctor/locations",
+      icon: MapPin,
     },
     {
       name: "My Profile",
@@ -59,6 +73,16 @@ export const ROUTES = {
       name: "Dashboard",
       url: "/patient/dashboard",
       icon: LayoutDashboardIcon,
+    },
+    {
+      name: "Appointments",
+      url: "/patient/appointments",
+      icon: CalendarCheck,
+    },
+    {
+      name: "Beneficiaries",
+      url: "/patient/beneficiaries",
+      icon: Users,
     },
     {
       name: "Get Appointment",
