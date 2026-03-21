@@ -158,30 +158,38 @@ export async function sendFileMessage(
 ): Promise<ApiResponse<ApiChatMessage>> {
   const token = await getAccessToken();
   const threadId = formData.get("threadId") as string;
-
+  const senderUserId = formData.get("senderUserId") as string;
+  const senderType = formData.get("senderType") as string;
   const file = formData.get("file") as File;
+
+  // senderUserId and senderType are query params, not form fields
   const apiForm = new FormData();
-  apiForm.append("senderUserId", formData.get("senderUserId") as string);
-  apiForm.append("senderType", formData.get("senderType") as string);
   apiForm.append("file", file, file.name);
 
   const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "";
+  const url = `${baseUrl}/api/chat/threads/${threadId}/messages/file?senderUserId=${senderUserId}&senderType=${senderType}`;
+
   try {
-    const res = await fetch(
-      `${baseUrl}/api/chat/threads/${threadId}/messages/file`,
-      {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body: apiForm,
-      }
-    );
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: apiForm,
+    });
     const data = await res.json();
+    if (!res.ok) {
+      return {
+        success: false,
+        status: "error",
+        message: data?.message || `Upload failed (${res.status})`,
+        payload: null,
+      };
+    }
     return { ...data, statusCode: res.status };
   } catch {
     return {
       success: false,
       status: "error",
-      message: "Failed to upload file.",
+      message: "Network error — could not upload file.",
       payload: null,
     };
   }
