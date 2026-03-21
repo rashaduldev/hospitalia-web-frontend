@@ -7,8 +7,8 @@ export const metadata = { title: "Hospitalia - Messages" };
 export default async function MessagesPage() {
   const lang = await getCurrentLocale();
   const user = await getCurrentUser({ lang });
-  const myId = String(user?.id ?? "patient-me");
-  const myName = [user?.firstName, user?.lastName].filter(Boolean).join(" ") || "You";
+  const myNumericId = user?.id ?? 0;
+  const myId = String(myNumericId);
 
-  return <PatientMessagesPage myId={myId} myName={myName} />;
+  return <PatientMessagesPage myId={myId} myNumericId={myNumericId} />;
 }

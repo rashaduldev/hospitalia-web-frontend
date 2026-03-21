@@ -4,10 +4,10 @@ import ChatPage from "@/components/chat/ChatPage";
 
 export default function PatientMessagesPage({
   myId,
-  myName,
+  myNumericId,
 }: {
   myId: string;
-  myName: string;
+  myNumericId: number;
 }) {
-  return <ChatPage myId={myId} myName={myName} myRole="PATIENT" />;
+  return <ChatPage myId={myId} myNumericId={myNumericId} myRole="PATIENT" />;
 }

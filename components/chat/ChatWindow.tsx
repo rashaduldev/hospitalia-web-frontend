@@ -11,6 +11,8 @@ import {
   FileText,
   Download,
   Loader2,
+  AlertCircle,
+  RefreshCw,
 } from "lucide-react";
 import { Conversation, Message, MessageFile, MessageStatus } from "./types";
 import { ChatInput, QueuedFile } from "./ChatInput";
@@ -246,18 +248,45 @@ function EmptyState() {
 
 // ── Main ChatWindow ───────────────────────────────────────────────────────────
 
+function MessagesSkeleton() {
+  return (
+    <div className="flex-1 flex flex-col gap-4 px-4 py-4 bg-dashboard-bg animate-pulse">
+      {[60, 40, 75, 50, 65].map((w, i) => (
+        <div
+          key={i}
+          className={`flex items-end gap-2 ${i % 2 === 0 ? "" : "flex-row-reverse"}`}
+        >
+          <div className="w-7 h-7 rounded-full bg-muted shrink-0" />
+          <div
+            className="h-9 rounded-2xl bg-muted"
+            style={{ width: `${w}%`, maxWidth: 320 }}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function ChatWindow({
   conversation,
   messages,
   myId,
   onSendMessage,
   onBack,
+  isLoading = false,
+  isError = false,
+  onRetry,
+  isSending = false,
 }: {
   conversation: Conversation | null;
   messages: Message[];
   myId: string;
-  onSendMessage: (text: string, files: QueuedFile[]) => void;
+  onSendMessage: (text: string, files: QueuedFile[]) => Promise<void>;
   onBack: () => void;
+  isLoading?: boolean;
+  isError?: boolean;
+  onRetry?: () => void;
+  isSending?: boolean;
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -347,6 +376,23 @@ export function ChatWindow({
       </div>
 
       {/* Message area */}
+      {isLoading ? (
+        <MessagesSkeleton />
+      ) : isError ? (
+        <div className="flex-1 flex flex-col items-center justify-center gap-3 bg-dashboard-bg">
+          <AlertCircle className="w-8 h-8 text-destructive" />
+          <p className="text-sm text-destructive font-medium">Failed to load messages</p>
+          {onRetry && (
+            <button
+              type="button"
+              onClick={onRetry}
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
+            >
+              <RefreshCw className="w-3.5 h-3.5" /> Try again
+            </button>
+          )}
+        </div>
+      ) : (
       <div
         ref={scrollRef}
         className="flex-1 overflow-y-auto px-4 py-4 space-y-1 bg-dashboard-bg"
@@ -408,9 +454,10 @@ export function ChatWindow({
           })()
         )}
       </div>
+      )}
 
       {/* Input */}
-      <ChatInput onSend={onSendMessage} />
+      <ChatInput onSend={onSendMessage} disabled={isSending} />
     </div>
   );
 }

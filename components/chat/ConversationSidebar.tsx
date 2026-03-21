@@ -96,16 +96,31 @@ function ConversationItem({
   );
 }
 
+function ConversationSkeleton() {
+  return (
+    <div className="flex items-center gap-3 px-4 py-3.5 animate-pulse">
+      <div className="w-10 h-10 rounded-full bg-muted shrink-0" />
+      <div className="flex-1 space-y-1.5">
+        <div className="h-3 bg-muted rounded w-3/4" />
+        <div className="h-2.5 bg-muted rounded w-1/2" />
+        <div className="h-2.5 bg-muted rounded w-full" />
+      </div>
+    </div>
+  );
+}
+
 export function ConversationSidebar({
   conversations,
   activeId,
   onSelect,
   myRole,
+  isLoading = false,
 }: {
   conversations: Conversation[];
   activeId: string | null;
   onSelect: (id: string) => void;
   myRole: "DOCTOR" | "PATIENT";
+  isLoading?: boolean;
 }) {
   const totalUnread = conversations.reduce((acc, c) => acc + c.unreadCount, 0);
 
@@ -140,7 +155,11 @@ export function ConversationSidebar({
 
       {/* Conversation list */}
       <div className="flex-1 overflow-y-auto divide-y divide-border/50">
-        {conversations.length === 0 ? (
+        {isLoading ? (
+          Array.from({ length: 4 }).map((_, i) => (
+            <ConversationSkeleton key={i} />
+          ))
+        ) : conversations.length === 0 ? (
           <div className="flex items-center justify-center h-40 text-sm text-muted-foreground px-4 text-center">
             No conversations yet
           </div>

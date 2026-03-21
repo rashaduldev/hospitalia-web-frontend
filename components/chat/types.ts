@@ -1,3 +1,6 @@
+// Re-export API types used across chat components
+export type { ApiChatMessage, ApiThread } from "@/actions/chat/chat.actions";
+
 export type MessageFile = {
   id: string;
   name: string;

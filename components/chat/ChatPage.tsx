@@ -1,52 +1,240 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useCurrentLocale } from "@/locales/client";
 import { ConversationSidebar } from "./ConversationSidebar";
 import { ChatWindow } from "./ChatWindow";
 import { QueuedFile } from "./ChatInput";
-import { Conversation, Message, MessageFile } from "./types";
+import { Conversation, Message } from "./types";
 import {
-  PATIENT_CONVERSATIONS,
-  DOCTOR_CONVERSATIONS,
-  MOCK_MESSAGES,
-} from "./mockData";
+  getDoctorThreads,
+  getPatientThreads,
+  getThreadMessages,
+  sendTextMessage,
+  sendFileMessage,
+  ApiThread,
+  ApiChatMessage,
+} from "@/actions/chat/chat.actions";
+import {
+  getTodaysAppointments,
+  getUpcomingAppointments,
+} from "@/actions/doctor/appointment";
+import { getPatientUpcomingAppointments } from "@/actions/patient/appointments.actions";
+import { Appointment } from "@/types/appointment.type";
 import { cn } from "@/lib/utils";
 
-function buildMessageFile(qf: QueuedFile): MessageFile {
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function getInitials(name: string): string {
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+function apiMessageToUiMessage(msg: ApiChatMessage, myNumericId: number): Message {
   return {
-    id: qf.id,
-    name: qf.file.name,
-    size: qf.file.size,
-    mimeType: qf.file.type,
-    url: qf.previewUrl ?? "#",
+    id: String(msg.id),
+    senderId: String(msg.senderUserId),
+    text: msg.content ?? undefined,
+    files: msg.file
+      ? [
+          {
+            id: String(msg.file.id),
+            name: msg.file.fileName,
+            size: msg.file.fileSize,
+            mimeType: msg.file.mimeType,
+            url: msg.file.fileUrl,
+          },
+        ]
+      : undefined,
+    timestamp: new Date(msg.creationDate),
+    status: msg.senderUserId === myNumericId ? "read" : undefined,
   };
 }
 
+function apiThreadToConversation(
+  thread: ApiThread,
+  myRole: "DOCTOR" | "PATIENT",
+  nameLookup: Record<number, string>,
+  specialtyLookup: Record<number, string>
+): Conversation {
+  const participantNumericId =
+    myRole === "DOCTOR" ? thread.patientUserId : thread.doctorUserId;
+  const participantRole: "DOCTOR" | "PATIENT" =
+    myRole === "DOCTOR" ? "PATIENT" : "DOCTOR";
+  const fallback =
+    participantRole === "DOCTOR"
+      ? `Doctor #${participantNumericId}`
+      : `Patient #${participantNumericId}`;
+  const participantName = nameLookup[participantNumericId] ?? fallback;
+
+  const lastMsg = thread.lastMessage;
+  let lastMessageText: string | undefined;
+  if (lastMsg?.content) {
+    lastMessageText = lastMsg.content;
+  } else if (lastMsg?.file) {
+    lastMessageText = `📎 ${lastMsg.file.fileName}`;
+  }
+
+  return {
+    id: String(thread.id),
+    participantId: String(participantNumericId),
+    participantName,
+    participantRole,
+    participantInitials: getInitials(participantName),
+    participantSpecialty: specialtyLookup[participantNumericId],
+    isOnline: false,
+    lastMessage: lastMessageText,
+    lastMessageTime: lastMsg ? new Date(lastMsg.creationDate) : undefined,
+    unreadCount: 0,
+  };
+}
+
+// ── Component ─────────────────────────────────────────────────────────────────
+
 export default function ChatPage({
   myId,
-  myName,
+  myNumericId,
   myRole,
 }: {
   myId: string;
-  myName: string;
+  myNumericId: number;
   myRole: "DOCTOR" | "PATIENT";
 }) {
-  const conversations: Conversation[] =
-    myRole === "PATIENT" ? PATIENT_CONVERSATIONS : DOCTOR_CONVERSATIONS;
+  const locale = useCurrentLocale();
+  const queryClient = useQueryClient();
 
-  const [activeId, setActiveId] = useState<string | null>(null);
+  const [activeConvId, setActiveConvId] = useState<string | null>(null);
   const [showMobileChat, setShowMobileChat] = useState(false);
-  const [messageMap, setMessageMap] = useState<Record<string, Message[]>>(() =>
-    Object.fromEntries(
-      conversations.map((c) => [c.id, MOCK_MESSAGES[c.id] ?? []])
-    )
-  );
+  const [optimisticMessages, setOptimisticMessages] = useState<Message[]>([]);
+  const [isSending, setIsSending] = useState(false);
 
-  const activeConversation = conversations.find((c) => c.id === activeId) ?? null;
-  const activeMessages = activeId ? (messageMap[activeId] ?? []) : [];
+  // ── Load threads ────────────────────────────────────────────────────────────
+  const {
+    data: threadsData,
+    isLoading: threadsLoading,
+  } = useQuery({
+    queryKey: ["chatThreads", myRole, myNumericId],
+    queryFn: () =>
+      myRole === "DOCTOR"
+        ? getDoctorThreads({ doctorUserId: myNumericId, pageNo: 0, pageSize: 20, lang: locale })
+        : getPatientThreads({ patientUserId: myNumericId, pageNo: 0, pageSize: 20, lang: locale }),
+    enabled: !!myNumericId,
+    refetchInterval: 15_000, // refresh thread list every 15s (new conversations)
+    refetchIntervalInBackground: false,
+  });
 
+  // ── Load appointments for participant name resolution ───────────────────────
+  const { data: apptData } = useQuery({
+    queryKey: myRole === "DOCTOR"
+      ? ["doctorUpcomingAppts-chat", myNumericId]
+      : ["patientUpcomingAppts-chat", myNumericId],
+    queryFn: () =>
+      myRole === "DOCTOR"
+        ? getUpcomingAppointments({
+            doctorUserId: myNumericId,
+            pageNo: 0,
+            pageSize: 100,
+            lang: locale,
+          })
+        : getPatientUpcomingAppointments({
+            patientUserId: myNumericId,
+            page: 0,
+            size: 100,
+            lang: locale,
+          }),
+    enabled: !!myNumericId,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Also load today's appointments for doctor (more participant names)
+  const { data: todayApptData } = useQuery({
+    queryKey: ["doctorTodayAppts-chat", myNumericId],
+    queryFn: () =>
+      getTodaysAppointments({
+        doctorUserId: myNumericId,
+        pageNo: 0,
+        pageSize: 100,
+        lang: locale,
+      }),
+    enabled: !!myNumericId && myRole === "DOCTOR",
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Build name + specialty lookups from appointment data
+  const { nameLookup, specialtyLookup } = useMemo(() => {
+    const nameLookup: Record<number, string> = {};
+    const specialtyLookup: Record<number, string> = {};
+
+    const appts: Appointment[] = [
+      ...((apptData?.payload?.content ?? []) as Appointment[]),
+      ...((todayApptData?.payload?.content ?? []) as Appointment[]),
+    ];
+
+    appts.forEach((appt) => {
+      if (myRole === "DOCTOR") {
+        if (appt.patientUserId && appt.patientName) {
+          nameLookup[appt.patientUserId] = appt.patientName;
+        }
+      } else {
+        if (appt.doctorUserId && appt.doctorName) {
+          nameLookup[appt.doctorUserId] = appt.doctorName;
+        }
+        if (appt.doctorUserId && appt.designation) {
+          specialtyLookup[appt.doctorUserId] = appt.designation;
+        }
+      }
+    });
+
+    return { nameLookup, specialtyLookup };
+  }, [apptData, todayApptData, myRole]);
+
+  // ── Build conversations from threads ────────────────────────────────────────
+  const conversations: Conversation[] = useMemo(() => {
+    const threads: ApiThread[] = (threadsData?.payload?.content ?? []) as ApiThread[];
+    return threads.map((t) =>
+      apiThreadToConversation(t, myRole, nameLookup, specialtyLookup)
+    );
+  }, [threadsData, myRole, nameLookup, specialtyLookup]);
+
+  const activeThreadId = activeConvId ? Number(activeConvId) : null;
+  const activeConversation = conversations.find((c) => c.id === activeConvId) ?? null;
+
+  // ── Load messages for active thread (with polling) ──────────────────────────
+  const {
+    data: messagesData,
+    isLoading: messagesLoading,
+    isError: messagesError,
+    refetch: refetchMessages,
+  } = useQuery({
+    queryKey: ["chatMessages", activeThreadId],
+    queryFn: () =>
+      getThreadMessages({
+        threadId: activeThreadId!,
+        pageNo: 0,
+        pageSize: 50,
+        lang: locale,
+      }),
+    enabled: !!activeThreadId,
+    refetchInterval: 5_000, // poll every 5 seconds
+    refetchIntervalInBackground: false,
+  });
+
+  // API returns newest-first → reverse for chronological display
+  const apiMessages: Message[] = useMemo(() => {
+    const content: ApiChatMessage[] =
+      (messagesData?.payload?.content ?? []) as ApiChatMessage[];
+    return [...content].reverse().map((m) => apiMessageToUiMessage(m, myNumericId));
+  }, [messagesData, myNumericId]);
+
+  // Merge API messages with optimistic ones (optimistic always at end)
+  const allMessages = [...apiMessages, ...optimisticMessages];
+
+  // ── Conversation selection ──────────────────────────────────────────────────
   const handleSelectConversation = (id: string) => {
-    setActiveId(id);
+    setActiveConvId(id);
+    setOptimisticMessages([]);
     setShowMobileChat(true);
   };
 
@@ -54,68 +242,118 @@ export default function ChatPage({
     setShowMobileChat(false);
   };
 
+  // ── Send message ────────────────────────────────────────────────────────────
   const handleSendMessage = useCallback(
-    (text: string, files: QueuedFile[]) => {
-      if (!activeId) return;
+    async (text: string, files: QueuedFile[]) => {
+      if (!activeThreadId || isSending) return;
 
-      const newMsg: Message = {
-        id: `msg-${Date.now()}`,
-        senderId: myId,
-        text: text || undefined,
-        files: files.length > 0 ? files.map(buildMessageFile) : undefined,
-        timestamp: new Date(),
-        status: "sent",
-      };
+      setIsSending(true);
 
-      setMessageMap((prev) => ({
-        ...prev,
-        [activeId]: [...(prev[activeId] ?? []), newMsg],
-      }));
+      // Add optimistic messages immediately
+      const tempMessages: Message[] = [];
+      if (text) {
+        tempMessages.push({
+          id: `opt-text-${Date.now()}`,
+          senderId: myId,
+          text,
+          timestamp: new Date(),
+          status: "sending",
+        });
+      }
+      files.forEach((qf, i) => {
+        tempMessages.push({
+          id: `opt-file-${Date.now()}-${i}`,
+          senderId: myId,
+          files: [
+            {
+              id: qf.id,
+              name: qf.file.name,
+              size: qf.file.size,
+              mimeType: qf.file.type,
+              url: qf.previewUrl ?? "#",
+            },
+          ],
+          timestamp: new Date(),
+          status: "sending",
+        });
+      });
+      setOptimisticMessages((prev) => [...prev, ...tempMessages]);
+
+      try {
+        // Send text message
+        if (text) {
+          await sendTextMessage({
+            threadId: activeThreadId,
+            senderUserId: myNumericId,
+            senderType: myRole,
+            content: text,
+            lang: locale,
+          });
+        }
+
+        // Send each file as a separate message
+        for (const qf of files) {
+          const formData = new FormData();
+          formData.append("threadId", String(activeThreadId));
+          formData.append("senderUserId", String(myNumericId));
+          formData.append("senderType", myRole);
+          formData.append("file", qf.file);
+          await sendFileMessage(formData);
+        }
+      } finally {
+        // Clear optimistic messages and refresh
+        setOptimisticMessages([]);
+        setIsSending(false);
+        queryClient.invalidateQueries({ queryKey: ["chatMessages", activeThreadId] });
+        queryClient.invalidateQueries({ queryKey: ["chatThreads", myRole, myNumericId] });
+      }
     },
-    [activeId, myId]
+    [activeThreadId, isSending, myId, myNumericId, myRole, locale, queryClient]
   );
 
+  // ── Render ──────────────────────────────────────────────────────────────────
   return (
     <div
       className={cn(
-        // Cancel the parent layout's horizontal margins
         "-mx-3 md:-mx-6",
-        // Full height minus the site header
         "h-[calc(100svh-var(--header-height))]",
         "flex overflow-hidden bg-background"
       )}
     >
-      {/* ── Conversation sidebar ── */}
+      {/* Sidebar */}
       <div
         className={cn(
           "flex flex-col border-r border-border bg-card shrink-0",
           "w-full lg:w-72 xl:w-80",
-          // Mobile: visible only when no chat is showing
           showMobileChat ? "hidden lg:flex" : "flex"
         )}
       >
         <ConversationSidebar
           conversations={conversations}
-          activeId={activeId}
+          activeId={activeConvId}
           onSelect={handleSelectConversation}
           myRole={myRole}
+          isLoading={threadsLoading}
         />
       </div>
 
-      {/* ── Chat window ── */}
+      {/* Chat window */}
       <div
         className={cn(
           "flex-1 flex min-w-0",
-          // Mobile: visible only when chat is showing
           showMobileChat ? "flex" : "hidden lg:flex"
         )}
       >
         <ChatWindow
           conversation={activeConversation}
-          messages={activeMessages}
+          messages={allMessages}
           myId={myId}
           onSendMessage={handleSendMessage}
           onBack={handleBack}
+          isLoading={messagesLoading}
+          isError={messagesError}
+          onRetry={refetchMessages}
+          isSending={isSending}
         />
       </div>
     </div>
