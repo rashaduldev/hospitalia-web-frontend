@@ -79,9 +79,13 @@ function getFileTypeInfo(mimeType: string): {
   return { Icon: File, color: "text-muted-foreground", bg: "bg-muted", label: "File" };
 }
 
-async function downloadFile(fileId: string, fileName: string) {
+function getFileAccessUrl(fileId: string): string {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "";
-  const downloadUrl = `${baseUrl}/api/file-objects/id/${fileId}/download`;
+  return `${baseUrl}/api/file-objects/id/${fileId}/download`;
+}
+
+async function downloadFile(fileId: string, fileName: string) {
+  const downloadUrl = getFileAccessUrl(fileId);
   try {
     const res = await fetch(downloadUrl);
     const blob = await res.blob();
@@ -147,7 +151,7 @@ function FilePreviewModal({
           </div>
           <div className="flex items-center gap-1.5 shrink-0 ml-4">
             <a
-              href={file.url}
+              href={getFileAccessUrl(file.id)}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-md border border-border text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
@@ -177,14 +181,14 @@ function FilePreviewModal({
         <div className="bg-muted/40 flex items-center justify-center" style={{ minHeight: 320 }}>
           {isImage && (
             <img
-              src={file.url}
+              src={getFileAccessUrl(file.id)}
               alt={file.name}
               className="max-w-full max-h-[75vh] object-contain"
             />
           )}
           {isPdf && (
             <iframe
-              src={file.url}
+              src={getFileAccessUrl(file.id)}
               className="w-full"
               style={{ height: "75vh" }}
               title={file.name}
@@ -280,7 +284,7 @@ function FileCard({ file, isMine }: { file: MessageFile; isMine: boolean }) {
           )}
           onClick={(e) => {
             e.stopPropagation();
-            downloadFile(file.url, file.name);
+            downloadFile(file.id, file.name);
           }}
         />
       </button>
