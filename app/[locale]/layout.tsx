@@ -5,6 +5,7 @@ import AppClientProvider from "@/providers/AppClientProvider";
 import AppQueryProvider from "@/providers/ReactQueryProvider";
 import { getStaticParams } from "@/locales/server";
 import { ThemeProvider } from "next-themes";
+import { Toaster } from "sonner";
 import { siteConfig } from "@/config/siteConfig";
 
 const PlusJakartaSans = Plus_Jakarta_Sans({
@@ -76,6 +77,7 @@ export default async function RootLayout({
           <AppClientProvider locale={locale || "en"}>
             <AppQueryProvider>{children}</AppQueryProvider>
           </AppClientProvider>
+          <Toaster richColors position="top-right" />
         </ThemeProvider>
       </body>
     </html>
