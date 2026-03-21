@@ -62,8 +62,8 @@ function FileCard({ file, isMine }: { file: MessageFile; isMine: boolean }) {
       className={cn(
         "mt-1 flex items-center gap-1.5 rounded-2xl px-4 py-2.5 text-sm font-medium transition-colors max-w-[260px]",
         isMine
-          ? "bg-primary text-white hover:bg-primary/90 rounded-br-none"
-          : "bg-card border border-border text-foreground hover:bg-muted rounded-bl-none shadow-sm"
+          ? "bg-secondary/80 text-white hover:bg-secondary/90 rounded-br-none"
+          : "bg-secondary/10 border border-secondary/30 text-foreground hover:bg-secondary/15 rounded-bl-none"
       )}
     >
       <ExternalLink className="w-3.5 h-3.5 shrink-0 opacity-70" />
