@@ -79,9 +79,11 @@ function getFileTypeInfo(mimeType: string): {
   return { Icon: File, color: "text-muted-foreground", bg: "bg-muted", label: "File" };
 }
 
-async function downloadFile(url: string, fileName: string) {
+async function downloadFile(fileId: string, fileName: string) {
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "";
+  const downloadUrl = `${baseUrl}/api/file-objects/id/${fileId}/download`;
   try {
-    const res = await fetch(url);
+    const res = await fetch(downloadUrl);
     const blob = await res.blob();
     const blobUrl = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -90,7 +92,7 @@ async function downloadFile(url: string, fileName: string) {
     a.click();
     URL.revokeObjectURL(blobUrl);
   } catch {
-    window.open(url, "_blank");
+    window.open(downloadUrl, "_blank");
   }
 }
 
@@ -155,7 +157,7 @@ function FilePreviewModal({
             </a>
             <button
               type="button"
-              onClick={() => downloadFile(file.url, file.name)}
+              onClick={() => downloadFile(file.id, file.name)}
               className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-md bg-primary text-white hover:bg-primary/90 transition-colors"
             >
               <Download className="w-3.5 h-3.5" />
@@ -205,7 +207,7 @@ function FilePreviewModal({
               <p className="text-sm text-muted-foreground">No preview available for this file type.</p>
               <button
                 type="button"
-                onClick={() => downloadFile(file.url, file.name)}
+                onClick={() => downloadFile(file.id, file.name)}
                 className="inline-flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg bg-primary text-white hover:bg-primary/90 transition-colors"
               >
                 <Download className="w-4 h-4" />
