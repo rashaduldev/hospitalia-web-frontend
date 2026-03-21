@@ -82,9 +82,10 @@ export function SearchAutocomplete({
       field.onChange(item.name);
       setOpen(false);
       setSuggestions([]);
-      router.push(`/doctor/${item.userId}`);
+      const path = searchType === "HOSPITAL" ? `/hospital/${item.userId}` : `/doctor/${item.userId}`;
+      router.push(path);
     },
-    [field, router],
+    [field, router, searchType],
   );
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

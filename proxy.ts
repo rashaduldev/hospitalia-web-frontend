@@ -28,8 +28,8 @@ const publicPathnameRegex = new RegExp(
   "i",
 );
 
-// Public doctor profile pages: /doctor/[numeric-id] only
-const publicDoctorProfileRegex = /^\/doctor\/\d+(\/.*)?$/i;
+// Public profile pages: /doctor/[numeric-id] and /hospital/[numeric-id]
+const publicProfileRegex = /^\/(doctor|hospital)\/\d+(\/.*)?$/i;
 
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -38,7 +38,7 @@ export async function proxy(req: NextRequest) {
 
   const isPublicPage =
     publicPathnameRegex.test(pathname) ||
-    publicDoctorProfileRegex.test(pathname);
+    publicProfileRegex.test(pathname);
 
   if (!isPublicPage && !token) {
     return NextResponse.redirect(new URL("/", req.url));
