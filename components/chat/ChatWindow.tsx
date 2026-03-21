@@ -6,13 +6,6 @@ import {
   ChevronLeft,
   Check,
   CheckCheck,
-  FileText,
-  FileImage,
-  FileVideo,
-  FileAudio,
-  FileArchive,
-  FileSpreadsheet,
-  File,
   Loader2,
   AlertCircle,
   RefreshCw,
@@ -25,15 +18,6 @@ import { format, isToday, isYesterday, isSameDay } from "date-fns";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-function formatFileSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
-
-function isImageMime(type: string) {
-  return type.startsWith("image/");
-}
 
 
 function formatMsgTime(date: Date): string {
@@ -46,28 +30,6 @@ function formatDateSeparator(date: Date): string {
   return format(date, "EEEE, MMMM d");
 }
 
-function getFileTypeInfo(mimeType: string): {
-  Icon: React.ElementType;
-  color: string;
-  bg: string;
-  label: string;
-} {
-  if (mimeType.startsWith("image/"))
-    return { Icon: FileImage, color: "text-blue-500", bg: "bg-blue-50 dark:bg-blue-950/40", label: "Image" };
-  if (mimeType === "application/pdf")
-    return { Icon: FileText, color: "text-red-500", bg: "bg-red-50 dark:bg-red-950/40", label: "PDF" };
-  if (mimeType.includes("spreadsheet") || mimeType.includes("excel") || mimeType.includes("csv"))
-    return { Icon: FileSpreadsheet, color: "text-green-500", bg: "bg-green-50 dark:bg-green-950/40", label: "Spreadsheet" };
-  if (mimeType.includes("word") || mimeType.includes("document") || mimeType.includes("msword"))
-    return { Icon: FileText, color: "text-blue-600", bg: "bg-blue-50 dark:bg-blue-950/40", label: "Document" };
-  if (mimeType.startsWith("video/"))
-    return { Icon: FileVideo, color: "text-purple-500", bg: "bg-purple-50 dark:bg-purple-950/40", label: "Video" };
-  if (mimeType.startsWith("audio/"))
-    return { Icon: FileAudio, color: "text-yellow-500", bg: "bg-yellow-50 dark:bg-yellow-950/40", label: "Audio" };
-  if (mimeType.includes("zip") || mimeType.includes("rar") || mimeType.includes("archive") || mimeType.includes("tar"))
-    return { Icon: FileArchive, color: "text-orange-500", bg: "bg-orange-50 dark:bg-orange-950/40", label: "Archive" };
-  return { Icon: File, color: "text-muted-foreground", bg: "bg-muted", label: "File" };
-}
 
 function getFileAccessUrl(fileId: string): string {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "";
@@ -92,31 +54,20 @@ function StatusIcon({ status }: { status?: MessageStatus }) {
 // ── File attachment display ───────────────────────────────────────────────────
 
 function FileCard({ file, isMine }: { file: MessageFile; isMine: boolean }) {
-  const { Icon, color, bg } = getFileTypeInfo(file.mimeType);
-  const ext = file.name.split(".").pop()?.toUpperCase() ?? "FILE";
-
   return (
     <a
       href={getFileAccessUrl(file.id)}
       target="_blank"
       rel="noopener noreferrer"
       className={cn(
-        "flex items-center gap-3 mt-1.5 rounded-xl px-3 py-2.5 w-[260px] transition-colors group",
-        isMine ? "bg-white/15 hover:bg-white/25" : "bg-muted hover:bg-muted/80"
+        "mt-1.5 flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors max-w-[260px] truncate",
+        isMine
+          ? "bg-white/20 text-white hover:bg-white/30"
+          : "bg-primary/10 text-primary hover:bg-primary/20"
       )}
     >
-      <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center shrink-0", isMine ? "bg-white/20" : bg)}>
-        <Icon className={cn("w-5 h-5", isMine ? "text-white" : color)} />
-      </div>
-      <div className="min-w-0 flex-1">
-        <p className={cn("text-xs font-semibold truncate leading-snug", isMine ? "text-white" : "text-foreground")}>
-          {file.name}
-        </p>
-        <p className={cn("text-[10px] mt-0.5 font-medium", isMine ? "text-white/60" : "text-muted-foreground")}>
-          {ext} · {formatFileSize(file.size)}
-        </p>
-      </div>
-      <ExternalLink className={cn("w-3.5 h-3.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity", isMine ? "text-white" : "text-primary")} />
+      <ExternalLink className="w-3 h-3 shrink-0" />
+      <span className="truncate">Attachment: {file.name}</span>
     </a>
   );
 }
