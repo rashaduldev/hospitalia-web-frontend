@@ -132,7 +132,7 @@ function FilePreviewModal({
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-4xl w-full p-0 gap-0 overflow-hidden">
+      <DialogContent className="max-w-4xl w-full p-0 gap-0 overflow-hidden" showCloseButton={false}>
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b bg-card shrink-0">
           <div className="flex items-center gap-3 min-w-0">
@@ -274,7 +274,7 @@ function FileCard({ file, isMine }: { file: MessageFile; isMine: boolean }) {
             {file.name}
           </p>
           <p className={cn("text-[10px] mt-0.5 uppercase tracking-wide font-medium", isMine ? "text-white/60" : "text-muted-foreground")}>
-            {file.mimeType.split("/")[1] ?? "file"} · {formatFileSize(file.size)}
+            {file.name.split(".").pop() ?? "file"} · {formatFileSize(file.size)}
           </p>
         </div>
         <Download
