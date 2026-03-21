@@ -62,7 +62,7 @@ function FileCard({ file, isMine }: { file: MessageFile; isMine: boolean }) {
       className={cn(
         "mt-1 flex items-center gap-1.5 rounded-2xl px-4 py-2.5 text-sm font-medium transition-colors max-w-[260px]",
         isMine
-          ? "bg-transparent border border-white/70 text-white hover:bg-white/10 rounded-br-none"
+          ? "bg-transparent border border-primary text-primary hover:bg-primary/5 rounded-br-none"
           : "bg-transparent border border-primary text-primary hover:bg-primary/5 rounded-bl-none"
       )}
     >
