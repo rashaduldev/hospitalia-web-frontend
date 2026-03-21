@@ -60,13 +60,13 @@ function FileCard({ file, isMine }: { file: MessageFile; isMine: boolean }) {
       target="_blank"
       rel="noopener noreferrer"
       className={cn(
-        "mt-1.5 flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors max-w-[260px] truncate",
+        "mt-1 flex items-center gap-1.5 rounded-2xl px-4 py-2.5 text-sm font-medium transition-colors max-w-[260px]",
         isMine
-          ? "bg-white/20 text-white hover:bg-white/30"
-          : "bg-primary/10 text-primary hover:bg-primary/20"
+          ? "bg-primary text-white hover:bg-primary/90 rounded-br-none"
+          : "bg-card border border-border text-foreground hover:bg-muted rounded-bl-none shadow-sm"
       )}
     >
-      <ExternalLink className="w-3 h-3 shrink-0" />
+      <ExternalLink className="w-3.5 h-3.5 shrink-0 opacity-70" />
       <span className="truncate">Attachment: {file.name}</span>
     </a>
   );
