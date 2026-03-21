@@ -39,6 +39,11 @@ export const ROUTES = {
       icon: MapPin,
     },
     {
+      name: "Messages",
+      url: "/doctor/messages",
+      icon: MessageSquare,
+    },
+    {
       name: "My Profile",
       url: "/doctor/profile",
       icon: UserRound,
