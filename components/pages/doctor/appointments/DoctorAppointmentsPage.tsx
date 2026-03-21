@@ -1,13 +1,10 @@
-import { DataTableWithExport } from "@/components/data-table";
 import {
   getTodaysAppointments,
   getUpcomingAppointments,
 } from "@/actions/doctor/appointment";
 import { getI18n } from "@/locales/server";
-import { appointmentColumns } from "@/components/common/DataTableColumns";
-import { Suspense } from "react";
-import { TableSkeleton } from "@/components/common/TableSkeleton";
 import { CalendarDays, CalendarClock } from "lucide-react";
+import { DoctorAppointmentsTable } from "./DoctorAppointmentsTable";
 
 export default async function DoctorAppointmentsPage({
   doctorUserId,
@@ -37,6 +34,9 @@ export default async function DoctorAppointmentsPage({
     }),
   ]);
 
+  const todayAppointments = todayRes?.payload?.content ?? [];
+  const upcomingAppointments = upcomingRes?.payload?.content ?? [];
+
   return (
     <div className="space-y-6 p-4 sm:p-6">
       {/* Today's appointments */}
@@ -54,16 +54,11 @@ export default async function DoctorAppointmentsPage({
             </p>
           </div>
         </div>
-        <div className="p-6">
-          <Suspense fallback={<TableSkeleton columnCount={5} />}>
-            <DataTableWithExport
-              columns={appointmentColumns}
-              data={todayRes?.payload?.content || []}
-              filename="todays-appointments"
-              emptyMessage={t("appoinment.no_today")}
-            />
-          </Suspense>
-        </div>
+        <DoctorAppointmentsTable
+          appointments={todayAppointments}
+          doctorUserId={doctorUserId}
+          emptyMessage={t("appoinment.no_today")}
+        />
       </div>
 
       {/* Upcoming appointments */}
@@ -81,16 +76,11 @@ export default async function DoctorAppointmentsPage({
             </p>
           </div>
         </div>
-        <div className="p-6">
-          <Suspense fallback={<TableSkeleton columnCount={5} />}>
-            <DataTableWithExport
-              columns={appointmentColumns}
-              data={upcomingRes?.payload?.content || []}
-              filename="upcoming-appointments"
-              emptyMessage={t("appoinment.no_upcoming")}
-            />
-          </Suspense>
-        </div>
+        <DoctorAppointmentsTable
+          appointments={upcomingAppointments}
+          doctorUserId={doctorUserId}
+          emptyMessage={t("appoinment.no_upcoming")}
+        />
       </div>
     </div>
   );

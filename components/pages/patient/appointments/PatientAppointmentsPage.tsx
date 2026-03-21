@@ -38,6 +38,7 @@ import {
   AlertCircle,
   RefreshCw,
 } from "lucide-react";
+import { ChatThreadButton } from "@/components/chat/ChatThreadButton";
 import { format, parseISO } from "date-fns";
 import { Appointment } from "@/types/appointment.type";
 import AppButton from "@/components/common/AppButton";
@@ -397,6 +398,15 @@ export default function PatientAppointmentsPage({
                     <td className="py-3.5 px-4 min-w-[150px]">
                       <p className="text-sm font-medium text-foreground whitespace-normal">{appt.doctorName}</p>
                       <p className="text-xs text-muted-foreground mt-0.5">{appt.designation}</p>
+                      {appt.doctorUserId && patientUserId && (
+                        <div className="mt-1.5">
+                          <ChatThreadButton
+                            doctorUserId={appt.doctorUserId}
+                            patientUserId={patientUserId}
+                            navigateTo="/patient/messages"
+                          />
+                        </div>
+                      )}
                     </td>
                     <td className="py-3.5 px-4 min-w-[160px] max-w-[220px]">
                       <p className="text-sm text-foreground whitespace-normal leading-snug">{appt.locationName}</p>
@@ -659,6 +669,15 @@ export default function PatientAppointmentsPage({
                     <td className="py-3.5 px-4 min-w-[150px]">
                       <p className="text-sm font-medium text-foreground whitespace-normal">{appt.doctorName}</p>
                       <p className="text-xs text-muted-foreground mt-0.5">{appt.designation}</p>
+                      {appt.doctorUserId && patientUserId && (
+                        <div className="mt-1.5">
+                          <ChatThreadButton
+                            doctorUserId={appt.doctorUserId}
+                            patientUserId={patientUserId}
+                            navigateTo="/patient/messages"
+                          />
+                        </div>
+                      )}
                     </td>
                     <td className="py-3.5 px-4 min-w-[160px] max-w-[220px]">
                       <p className="text-sm text-foreground whitespace-normal leading-snug">{appt.locationName}</p>

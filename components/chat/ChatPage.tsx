@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCurrentLocale } from "@/locales/client";
 import { ConversationSidebar } from "./ConversationSidebar";
@@ -93,6 +94,9 @@ export default function ChatPage({
   const locale = useCurrentLocale();
   const queryClient = useQueryClient();
 
+  const searchParams = useSearchParams();
+  const threadParam = searchParams.get("thread");
+
   const [activeConvId, setActiveConvId] = useState<string | null>(null);
   const [showMobileChat, setShowMobileChat] = useState(false);
   const [optimisticMessages, setOptimisticMessages] = useState<Message[]>([]);
@@ -118,6 +122,17 @@ export default function ChatPage({
     const threads: ApiThread[] = (threadsData?.payload?.content ?? []) as ApiThread[];
     return threads.map((t) => apiThreadToConversation(t, myRole));
   }, [threadsData, myRole]);
+
+  // Auto-select thread from ?thread= URL param once conversations are loaded
+  useEffect(() => {
+    if (threadParam && !activeConvId && conversations.length > 0) {
+      const match = conversations.find((c) => c.id === threadParam);
+      if (match) {
+        setActiveConvId(match.id);
+        setShowMobileChat(true);
+      }
+    }
+  }, [threadParam, conversations, activeConvId]);
 
   const activeThreadId = activeConvId ? Number(activeConvId) : null;
   const activeConversation = conversations.find((c) => c.id === activeConvId) ?? null;

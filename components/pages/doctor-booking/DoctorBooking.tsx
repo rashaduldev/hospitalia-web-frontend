@@ -24,6 +24,7 @@ import {
   doctorBookingSchema,
 } from "@/schema/doctor.booking.schema";
 import { bookAppointment } from "@/actions/doctor/booking";
+import { getOrCreateThread } from "@/actions/chat/chat.actions";
 import { getDoctorAvailabilityWithLocation } from "@/actions/doctor/availability";
 import { getAvailableSlots } from "@/actions/doctor/slot";
 import { getAppointmentsByDate } from "@/actions/doctor/appointment";
@@ -212,6 +213,9 @@ const DoctorBooking = ({
     });
 
     if (res.success) {
+      // Ensure a chat thread exists between this patient and doctor
+      getOrCreateThread({ doctorUserId, patientUserId: currentUserId, lang }).catch(() => {});
+
       const selectedLocationObj = locationOptions.find((l) => Number(l.value) === Number(selectedLocation));
       const params = new URLSearchParams({
         doctorUserId: String(doctorUserId),
