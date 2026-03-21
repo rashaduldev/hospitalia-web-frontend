@@ -159,10 +159,11 @@ export async function sendFileMessage(
   const token = await getAccessToken();
   const threadId = formData.get("threadId") as string;
 
+  const file = formData.get("file") as File;
   const apiForm = new FormData();
   apiForm.append("senderUserId", formData.get("senderUserId") as string);
   apiForm.append("senderType", formData.get("senderType") as string);
-  apiForm.append("file", formData.get("file") as File);
+  apiForm.append("file", file, file.name);
 
   const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "";
   try {

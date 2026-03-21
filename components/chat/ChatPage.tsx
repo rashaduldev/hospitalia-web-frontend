@@ -18,6 +18,7 @@ import {
   ApiChatMessage,
 } from "@/actions/chat/chat.actions";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -226,16 +227,21 @@ export default function ChatPage({
       });
       setOptimisticMessages((prev) => [...prev, ...tempMessages]);
 
+      let failed = false;
       try {
         // Send text message
         if (text) {
-          await sendTextMessage({
+          const res = await sendTextMessage({
             threadId: activeThreadId,
             senderUserId: myNumericId,
             senderType: myRole,
             content: text,
             lang: locale,
           });
+          if (!res.success) {
+            failed = true;
+            toast.error(res.message || "Failed to send message");
+          }
         }
 
         // Send each file as a separate message
@@ -245,14 +251,25 @@ export default function ChatPage({
           formData.append("senderUserId", String(myNumericId));
           formData.append("senderType", myRole);
           formData.append("file", qf.file);
-          await sendFileMessage(formData);
+          const res = await sendFileMessage(formData);
+          if (!res.success) {
+            failed = true;
+            toast.error(res.message || "Failed to upload file");
+          }
         }
+      } catch (err) {
+        failed = true;
+        toast.error("Something went wrong. Please try again.");
       } finally {
-        // Clear optimistic messages and refresh
         setOptimisticMessages([]);
         setIsSending(false);
-        queryClient.invalidateQueries({ queryKey: ["chatMessages", activeThreadId] });
-        queryClient.invalidateQueries({ queryKey: ["chatThreads", myRole, myNumericId] });
+        if (!failed) {
+          queryClient.invalidateQueries({ queryKey: ["chatMessages", activeThreadId] });
+          queryClient.invalidateQueries({ queryKey: ["chatThreads", myRole, myNumericId] });
+        } else {
+          // Still refresh so state is consistent
+          queryClient.invalidateQueries({ queryKey: ["chatMessages", activeThreadId] });
+        }
       }
     },
     [activeThreadId, isSending, myId, myNumericId, myRole, locale, queryClient]
