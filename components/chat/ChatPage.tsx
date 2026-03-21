@@ -21,6 +21,17 @@ import { cn } from "@/lib/utils";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
+// Java Spring can return dates as [year, month, day, hour, minute, second] arrays
+function parseApiDate(value: string | number[] | null | undefined): Date {
+  if (!value) return new Date();
+  if (Array.isArray(value)) {
+    const [year, month, day, hour = 0, minute = 0, second = 0] = value as number[];
+    return new Date(year, month - 1, day, hour, minute, second);
+  }
+  const d = new Date(value as string);
+  return isNaN(d.getTime()) ? new Date() : d;
+}
+
 function getInitials(name: string): string {
   const parts = name.trim().split(/\s+/);
   if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
@@ -43,7 +54,7 @@ function apiMessageToUiMessage(msg: ApiChatMessage, myNumericId: number): Messag
           },
         ]
       : undefined,
-    timestamp: new Date(msg.creationDate),
+    timestamp: parseApiDate(msg.creationDate),
     status: msg.senderUserId === myNumericId ? "read" : undefined,
   };
 }
@@ -75,7 +86,7 @@ function apiThreadToConversation(
     participantInitials: getInitials(participantName),
     isOnline: false,
     lastMessage: lastMessageText,
-    lastMessageTime: lastMsg ? new Date(lastMsg.creationDate) : undefined,
+    lastMessageTime: lastMsg ? parseApiDate(lastMsg.creationDate) : undefined,
     unreadCount: 0,
   };
 }

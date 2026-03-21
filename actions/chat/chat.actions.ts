@@ -25,8 +25,8 @@ export type ApiChatMessage = {
   content: string | null;
   fileObjectId: number | null;
   file: ApiChatFile | null;
-  creationDate: string;
-  lastModifiedDate: string;
+  creationDate: string | number[];
+  lastModifiedDate: string | number[];
 };
 
 export type ApiThread = {
@@ -37,8 +37,8 @@ export type ApiThread = {
   patientName: string;
   lastMessageId: number | null;
   lastMessage: ApiChatMessage | null;
-  creationDate: string;
-  lastModifiedDate: string;
+  creationDate: string | number[];
+  lastModifiedDate: string | number[];
 };
 
 // ── 1. Create or get thread ───────────────────────────────────────────────────
