@@ -16,12 +16,6 @@ import {
   ApiThread,
   ApiChatMessage,
 } from "@/actions/chat/chat.actions";
-import {
-  getTodaysAppointments,
-  getUpcomingAppointments,
-} from "@/actions/doctor/appointment";
-import { getPatientUpcomingAppointments } from "@/actions/patient/appointments.actions";
-import { Appointment } from "@/types/appointment.type";
 import { cn } from "@/lib/utils";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -55,19 +49,14 @@ function apiMessageToUiMessage(msg: ApiChatMessage, myNumericId: number): Messag
 
 function apiThreadToConversation(
   thread: ApiThread,
-  myRole: "DOCTOR" | "PATIENT",
-  nameLookup: Record<number, string>,
-  specialtyLookup: Record<number, string>
+  myRole: "DOCTOR" | "PATIENT"
 ): Conversation {
-  const participantNumericId =
-    myRole === "DOCTOR" ? thread.patientUserId : thread.doctorUserId;
   const participantRole: "DOCTOR" | "PATIENT" =
     myRole === "DOCTOR" ? "PATIENT" : "DOCTOR";
-  const fallback =
-    participantRole === "DOCTOR"
-      ? `Doctor #${participantNumericId}`
-      : `Patient #${participantNumericId}`;
-  const participantName = nameLookup[participantNumericId] ?? fallback;
+  const participantNumericId =
+    myRole === "DOCTOR" ? thread.patientUserId : thread.doctorUserId;
+  const participantName =
+    myRole === "DOCTOR" ? thread.patientName : thread.doctorName;
 
   const lastMsg = thread.lastMessage;
   let lastMessageText: string | undefined;
@@ -83,7 +72,6 @@ function apiThreadToConversation(
     participantName,
     participantRole,
     participantInitials: getInitials(participantName),
-    participantSpecialty: specialtyLookup[participantNumericId],
     isOnline: false,
     lastMessage: lastMessageText,
     lastMessageTime: lastMsg ? new Date(lastMsg.creationDate) : undefined,
@@ -125,78 +113,11 @@ export default function ChatPage({
     refetchIntervalInBackground: false,
   });
 
-  // ── Load appointments for participant name resolution ───────────────────────
-  const { data: apptData } = useQuery({
-    queryKey: myRole === "DOCTOR"
-      ? ["doctorUpcomingAppts-chat", myNumericId]
-      : ["patientUpcomingAppts-chat", myNumericId],
-    queryFn: () =>
-      myRole === "DOCTOR"
-        ? getUpcomingAppointments({
-            doctorUserId: myNumericId,
-            pageNo: 0,
-            pageSize: 100,
-            lang: locale,
-          })
-        : getPatientUpcomingAppointments({
-            patientUserId: myNumericId,
-            page: 0,
-            size: 100,
-            lang: locale,
-          }),
-    enabled: !!myNumericId,
-    staleTime: 5 * 60 * 1000,
-  });
-
-  // Also load today's appointments for doctor (more participant names)
-  const { data: todayApptData } = useQuery({
-    queryKey: ["doctorTodayAppts-chat", myNumericId],
-    queryFn: () =>
-      getTodaysAppointments({
-        doctorUserId: myNumericId,
-        pageNo: 0,
-        pageSize: 100,
-        lang: locale,
-      }),
-    enabled: !!myNumericId && myRole === "DOCTOR",
-    staleTime: 5 * 60 * 1000,
-  });
-
-  // Build name + specialty lookups from appointment data
-  const { nameLookup, specialtyLookup } = useMemo(() => {
-    const nameLookup: Record<number, string> = {};
-    const specialtyLookup: Record<number, string> = {};
-
-    const appts: Appointment[] = [
-      ...((apptData?.payload?.content ?? []) as Appointment[]),
-      ...((todayApptData?.payload?.content ?? []) as Appointment[]),
-    ];
-
-    appts.forEach((appt) => {
-      if (myRole === "DOCTOR") {
-        if (appt.patientUserId && appt.patientName) {
-          nameLookup[appt.patientUserId] = appt.patientName;
-        }
-      } else {
-        if (appt.doctorUserId && appt.doctorName) {
-          nameLookup[appt.doctorUserId] = appt.doctorName;
-        }
-        if (appt.doctorUserId && appt.designation) {
-          specialtyLookup[appt.doctorUserId] = appt.designation;
-        }
-      }
-    });
-
-    return { nameLookup, specialtyLookup };
-  }, [apptData, todayApptData, myRole]);
-
   // ── Build conversations from threads ────────────────────────────────────────
   const conversations: Conversation[] = useMemo(() => {
     const threads: ApiThread[] = (threadsData?.payload?.content ?? []) as ApiThread[];
-    return threads.map((t) =>
-      apiThreadToConversation(t, myRole, nameLookup, specialtyLookup)
-    );
-  }, [threadsData, myRole, nameLookup, specialtyLookup]);
+    return threads.map((t) => apiThreadToConversation(t, myRole));
+  }, [threadsData, myRole]);
 
   const activeThreadId = activeConvId ? Number(activeConvId) : null;
   const activeConversation = conversations.find((c) => c.id === activeConvId) ?? null;

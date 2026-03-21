@@ -19,6 +19,7 @@ export type ApiChatMessage = {
   id: number;
   threadId: number;
   senderUserId: number;
+  senderName: string;
   senderType: "DOCTOR" | "PATIENT" | "SECRETARY";
   messageType: "TEXT" | "FILE";
   content: string | null;
@@ -31,7 +32,9 @@ export type ApiChatMessage = {
 export type ApiThread = {
   id: number;
   doctorUserId: number;
+  doctorName: string;
   patientUserId: number;
+  patientName: string;
   lastMessageId: number | null;
   lastMessage: ApiChatMessage | null;
   creationDate: string;
