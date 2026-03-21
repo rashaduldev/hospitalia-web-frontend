@@ -1,23 +1,34 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
-  Phone,
-  Video,
   MoreVertical,
   ChevronLeft,
   Check,
   CheckCheck,
   FileText,
+  FileImage,
+  FileVideo,
+  FileAudio,
+  FileArchive,
+  FileSpreadsheet,
+  File,
   Download,
   Loader2,
   AlertCircle,
   RefreshCw,
+  X,
+  ExternalLink,
+  ZoomIn,
 } from "lucide-react";
 import { Conversation, Message, MessageFile, MessageStatus } from "./types";
 import { ChatInput, QueuedFile } from "./ChatInput";
 import { cn } from "@/lib/utils";
 import { format, isToday, isYesterday, isSameDay } from "date-fns";
+import {
+  Dialog,
+  DialogContent,
+} from "@/components/ui/dialog";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -31,6 +42,10 @@ function isImageMime(type: string) {
   return type.startsWith("image/");
 }
 
+function isPdfMime(type: string) {
+  return type === "application/pdf";
+}
+
 function formatMsgTime(date: Date): string {
   return format(date, "h:mm a");
 }
@@ -39,6 +54,44 @@ function formatDateSeparator(date: Date): string {
   if (isToday(date)) return "Today";
   if (isYesterday(date)) return "Yesterday";
   return format(date, "EEEE, MMMM d");
+}
+
+function getFileTypeInfo(mimeType: string): {
+  Icon: React.ElementType;
+  color: string;
+  bg: string;
+  label: string;
+} {
+  if (mimeType.startsWith("image/"))
+    return { Icon: FileImage, color: "text-blue-500", bg: "bg-blue-50 dark:bg-blue-950/40", label: "Image" };
+  if (mimeType === "application/pdf")
+    return { Icon: FileText, color: "text-red-500", bg: "bg-red-50 dark:bg-red-950/40", label: "PDF" };
+  if (mimeType.includes("spreadsheet") || mimeType.includes("excel") || mimeType.includes("csv"))
+    return { Icon: FileSpreadsheet, color: "text-green-500", bg: "bg-green-50 dark:bg-green-950/40", label: "Spreadsheet" };
+  if (mimeType.includes("word") || mimeType.includes("document") || mimeType.includes("msword"))
+    return { Icon: FileText, color: "text-blue-600", bg: "bg-blue-50 dark:bg-blue-950/40", label: "Document" };
+  if (mimeType.startsWith("video/"))
+    return { Icon: FileVideo, color: "text-purple-500", bg: "bg-purple-50 dark:bg-purple-950/40", label: "Video" };
+  if (mimeType.startsWith("audio/"))
+    return { Icon: FileAudio, color: "text-yellow-500", bg: "bg-yellow-50 dark:bg-yellow-950/40", label: "Audio" };
+  if (mimeType.includes("zip") || mimeType.includes("rar") || mimeType.includes("archive") || mimeType.includes("tar"))
+    return { Icon: FileArchive, color: "text-orange-500", bg: "bg-orange-50 dark:bg-orange-950/40", label: "Archive" };
+  return { Icon: File, color: "text-muted-foreground", bg: "bg-muted", label: "File" };
+}
+
+async function downloadFile(url: string, fileName: string) {
+  try {
+    const res = await fetch(url);
+    const blob = await res.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = blobUrl;
+    a.download = fileName;
+    a.click();
+    URL.revokeObjectURL(blobUrl);
+  } catch {
+    window.open(url, "_blank");
+  }
 }
 
 // ── Status icon ───────────────────────────────────────────────────────────────
@@ -56,66 +109,181 @@ function StatusIcon({ status }: { status?: MessageStatus }) {
   return null;
 }
 
+// ── File preview modal ────────────────────────────────────────────────────────
+
+function FilePreviewModal({
+  file,
+  open,
+  onClose,
+}: {
+  file: MessageFile | null;
+  open: boolean;
+  onClose: () => void;
+}) {
+  if (!file) return null;
+  const isImage = isImageMime(file.mimeType);
+  const isPdf = isPdfMime(file.mimeType);
+
+  return (
+    <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-4xl w-full p-0 gap-0 overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 py-3 border-b bg-card shrink-0">
+          <div className="flex items-center gap-3 min-w-0">
+            {(() => {
+              const { Icon, color, bg } = getFileTypeInfo(file.mimeType);
+              return (
+                <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center shrink-0", bg)}>
+                  <Icon className={cn("w-4 h-4", color)} />
+                </div>
+              );
+            })()}
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-foreground truncate leading-none">{file.name}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{formatFileSize(file.size)}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5 shrink-0 ml-4">
+            <a
+              href={file.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-md border border-border text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              Open
+            </a>
+            <button
+              type="button"
+              onClick={() => downloadFile(file.url, file.name)}
+              className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-md bg-primary text-white hover:bg-primary/90 transition-colors"
+            >
+              <Download className="w-3.5 h-3.5" />
+              Download
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-8 h-8 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* Preview body */}
+        <div className="bg-muted/40 flex items-center justify-center" style={{ minHeight: 320 }}>
+          {isImage && (
+            <img
+              src={file.url}
+              alt={file.name}
+              className="max-w-full max-h-[75vh] object-contain"
+            />
+          )}
+          {isPdf && (
+            <iframe
+              src={file.url}
+              className="w-full"
+              style={{ height: "75vh" }}
+              title={file.name}
+            />
+          )}
+          {!isImage && !isPdf && (
+            <div className="flex flex-col items-center gap-4 py-16 px-8 text-center">
+              {(() => {
+                const { Icon, color, bg } = getFileTypeInfo(file.mimeType);
+                return (
+                  <div className={cn("w-20 h-20 rounded-2xl flex items-center justify-center", bg)}>
+                    <Icon className={cn("w-10 h-10", color)} />
+                  </div>
+                );
+              })()}
+              <div>
+                <p className="text-base font-semibold text-foreground">{file.name}</p>
+                <p className="text-sm text-muted-foreground mt-1">{formatFileSize(file.size)}</p>
+              </div>
+              <p className="text-sm text-muted-foreground">No preview available for this file type.</p>
+              <button
+                type="button"
+                onClick={() => downloadFile(file.url, file.name)}
+                className="inline-flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg bg-primary text-white hover:bg-primary/90 transition-colors"
+              >
+                <Download className="w-4 h-4" />
+                Download File
+              </button>
+            </div>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 // ── File attachment display ───────────────────────────────────────────────────
 
 function FileCard({ file, isMine }: { file: MessageFile; isMine: boolean }) {
-  if (isImageMime(file.mimeType)) {
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const isImage = isImageMime(file.mimeType);
+  const { Icon, color, bg } = getFileTypeInfo(file.mimeType);
+
+  if (isImage) {
     return (
-      <div className="mt-1.5 rounded-xl overflow-hidden max-w-[240px] border border-white/20">
-        <img
-          src={file.url}
-          alt={file.name}
-          className="w-full object-cover max-h-52"
-        />
-      </div>
+      <>
+        <button
+          type="button"
+          onClick={() => setPreviewOpen(true)}
+          className="relative mt-1.5 rounded-xl overflow-hidden max-w-[240px] border border-white/20 block group"
+        >
+          <img
+            src={file.url}
+            alt={file.name}
+            className="w-full object-cover max-h-52"
+          />
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors flex items-center justify-center">
+            <ZoomIn className="w-7 h-7 text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow" />
+          </div>
+        </button>
+        <FilePreviewModal file={file} open={previewOpen} onClose={() => setPreviewOpen(false)} />
+      </>
     );
   }
 
   return (
-    <a
-      href={file.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={cn(
-        "flex items-center gap-3 mt-1.5 rounded-xl px-3 py-2.5 max-w-[260px] transition-colors group",
-        isMine
-          ? "bg-white/15 hover:bg-white/20"
-          : "bg-muted hover:bg-muted/80"
-      )}
-    >
-      <div
+    <>
+      <button
+        type="button"
+        onClick={() => setPreviewOpen(true)}
         className={cn(
-          "w-9 h-9 rounded-lg flex items-center justify-center shrink-0",
-          isMine ? "bg-white/20" : "bg-primary/10"
+          "flex items-center gap-3 mt-1.5 rounded-xl px-3 py-2.5 w-[260px] text-left transition-colors group",
+          isMine
+            ? "bg-white/15 hover:bg-white/20"
+            : "bg-muted hover:bg-muted/80"
         )}
       >
-        <FileText className={cn("w-4 h-4", isMine ? "text-white" : "text-primary")} />
-      </div>
-      <div className="min-w-0 flex-1">
-        <p
+        <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center shrink-0", isMine ? "bg-white/20" : bg)}>
+          <Icon className={cn("w-5 h-5", isMine ? "text-white" : color)} />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className={cn("text-xs font-semibold truncate leading-tight", isMine ? "text-white" : "text-foreground")}>
+            {file.name}
+          </p>
+          <p className={cn("text-[10px] mt-0.5 uppercase tracking-wide font-medium", isMine ? "text-white/60" : "text-muted-foreground")}>
+            {file.mimeType.split("/")[1] ?? "file"} · {formatFileSize(file.size)}
+          </p>
+        </div>
+        <Download
           className={cn(
-            "text-xs font-medium truncate leading-tight",
-            isMine ? "text-white" : "text-foreground"
+            "w-3.5 h-3.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity",
+            isMine ? "text-white" : "text-primary"
           )}
-        >
-          {file.name}
-        </p>
-        <p
-          className={cn(
-            "text-[10px] mt-0.5",
-            isMine ? "text-white/60" : "text-muted-foreground"
-          )}
-        >
-          {formatFileSize(file.size)}
-        </p>
-      </div>
-      <Download
-        className={cn(
-          "w-3.5 h-3.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity",
-          isMine ? "text-white" : "text-primary"
-        )}
-      />
-    </a>
+          onClick={(e) => {
+            e.stopPropagation();
+            downloadFile(file.url, file.name);
+          }}
+        />
+      </button>
+      <FilePreviewModal file={file} open={previewOpen} onClose={() => setPreviewOpen(false)} />
+    </>
   );
 }
 
@@ -351,20 +519,6 @@ export function ChatWindow({
 
         {/* Action buttons */}
         <div className="flex items-center gap-1 shrink-0">
-          <button
-            type="button"
-            title="Voice call (coming soon)"
-            className="w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-          >
-            <Phone className="w-4 h-4" />
-          </button>
-          <button
-            type="button"
-            title="Video call (coming soon)"
-            className="w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-          >
-            <Video className="w-4 h-4" />
-          </button>
           <button
             type="button"
             title="More options"
