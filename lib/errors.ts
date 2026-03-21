@@ -6,3 +6,13 @@ export class SessionExpiredError extends Error {
     this.name = "SessionExpiredError";
   }
 }
+
+export function assertApiSuccess<
+  T extends { success: boolean; message: string; statusCode?: number }
+>(res: T): T {
+  if (!res.success) {
+    if (res.statusCode === 403) throw new SessionExpiredError();
+    throw new Error(res.message || "Something went wrong");
+  }
+  return res;
+}

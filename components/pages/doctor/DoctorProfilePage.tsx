@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useSafeQuery } from "@/lib/safeQuery";
 import { getDoctorInfobyUserid } from "@/actions/doctor/doctordata";
 import { getDoctorLocations } from "@/actions/doctor/location";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -45,12 +45,12 @@ export default function DoctorProfilePage({
   userId: number;
   lang: string;
 }) {
-  const { data: doctorData, isLoading: loadingDoctor } = useQuery({
+  const { data: doctorData, isLoading: loadingDoctor } = useSafeQuery({
     queryKey: ["doctorProfile", userId],
     queryFn: () => getDoctorInfobyUserid({ lang, SignleDoctorUserId: userId }),
   });
 
-  const { data: locationsData, isLoading: loadingLocations } = useQuery({
+  const { data: locationsData, isLoading: loadingLocations } = useSafeQuery({
     queryKey: ["doctor-locations", userId],
     queryFn: () => getDoctorLocations({ lang, doctorUserId: userId }),
   });

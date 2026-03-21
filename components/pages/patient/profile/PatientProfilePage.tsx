@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useSafeQuery, useSafeMutation } from "@/lib/safeQuery";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -13,7 +14,6 @@ import {
   updatePatientProfile,
   changePatientPassword,
 } from "@/actions/patient/profile.actions";
-import { SessionExpiredError } from "@/lib/errors";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Typography } from "@/components/ui/Typography";
 import AppButton from "@/components/common/AppButton";
@@ -35,19 +35,6 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { format, parseISO, isValid } from "date-fns";
-
-// ── assertSuccess (same pattern as dashboard/messages) ────────────────────
-
-function assertSuccess<
-  T extends { success: boolean; message: string; statusCode?: number },
->(res: T): T {
-  if (!res.success) {
-    if (res.statusCode === 401 || res.statusCode === 403)
-      throw new SessionExpiredError();
-    throw new Error(res.message || "Something went wrong");
-  }
-  return res;
-}
 
 // ── helpers ────────────────────────────────────────────────────────────────
 
@@ -154,12 +141,10 @@ export default function PatientProfilePage() {
   });
 
   // ── fetch profile ────────────────────────────────────────────────────────
-  const { data, isLoading, isError, error, refetch, isRefetching } = useQuery({
+  const { data, isLoading, isError, error, refetch, isRefetching } = useSafeQuery({
     queryKey: ["patientProfile", currentUser?.id, locale],
-    queryFn: async () =>
-      assertSuccess(
-        await getPatientProfile({ lang: locale, userId: currentUser!.id }),
-      ),
+    queryFn: () =>
+      getPatientProfile({ lang: locale, userId: currentUser!.id }),
     enabled: !!currentUser?.id,
   });
 
@@ -196,7 +181,7 @@ export default function PatientProfilePage() {
   });
 
   // ── update mutation ──────────────────────────────────────────────────────
-  const { mutate, isPending } = useMutation({
+  const { mutate, isPending } = useSafeMutation({
     mutationFn: (values: ProfileValues) =>
       updatePatientProfile({
         body: {
@@ -217,32 +202,36 @@ export default function PatientProfilePage() {
       setEditing(false);
       toast.success("Profile updated successfully");
     },
-    onError: (err: Error) => setErrorMsg(err.message),
+    onError: (err: Error) => {
+      if (err.name === "SessionExpiredError") return;
+      setErrorMsg(err.message);
+    },
   });
 
   // ── change password mutation ─────────────────────────────────────────────
-  const { mutateAsync: changePasswordAsync } = useMutation({
+  const { mutateAsync: changePasswordAsync } = useSafeMutation({
     mutationFn: async (newPassword: string) => {
       if (!currentUser?.id) throw new Error("User session not loaded. Please refresh.");
-      return assertSuccess(
-        await changePatientPassword({
-          body: {
-            userId: currentUser.id,
-            firstName: firstName ?? "",
-            lastName: lastName ?? "",
-            email: email ?? "",
-            dateOfBirth: toApiDate(dateOfBirth),
-            gender: gender ?? "",
-            countryCode: countryCode ?? "",
-            mobileNumber: mobileNumber ?? "",
-            password: newPassword,
-          },
-          lang: locale,
-        }),
-      );
+      return changePatientPassword({
+        body: {
+          userId: currentUser.id,
+          firstName: firstName ?? "",
+          lastName: lastName ?? "",
+          email: email ?? "",
+          dateOfBirth: toApiDate(dateOfBirth),
+          gender: gender ?? "",
+          countryCode: countryCode ?? "",
+          mobileNumber: mobileNumber ?? "",
+          password: newPassword,
+        },
+        lang: locale,
+      });
     },
     onSuccess: () => toast.success("Password changed successfully"),
-    onError: (err: Error) => setErrorMsg(err.message),
+    onError: (err: Error) => {
+      if (err.name === "SessionExpiredError") return;
+      setErrorMsg(err.message);
+    },
   });
 
   // ── render ────────────────────────────────────────────────────────────────

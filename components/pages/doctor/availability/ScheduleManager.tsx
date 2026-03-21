@@ -2,7 +2,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSafeQuery, useSafeMutation } from "@/lib/safeQuery";
 import { format, startOfDay } from "date-fns";
 import { enUS } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
@@ -45,7 +46,7 @@ export default function ScheduleManager({
   const [appointmentsOnDate, setAppointmentsOnDate] = useState<Appointment[]>([]);
   const [isChecking, setIsChecking] = useState(false);
 
-  const { data: existingDatesResponse, isLoading: isFetching } = useQuery({
+  const { data: existingDatesResponse, isLoading: isFetching } = useSafeQuery({
     queryKey: ["doctor-availability", doctorUserId],
     queryFn: () => getDoctorUnAvailability({ lang, doctorUserId }),
     enabled: !!doctorUserId,
@@ -64,13 +65,13 @@ export default function ScheduleManager({
 
   const isDateInDatabase = !!existingSlot;
 
-  const createMutation = useMutation({
+  const createMutation = useSafeMutation({
     mutationFn: (date: string) =>
       createDoctorUnAvailability({ lang, doctorUserId, unavailableDate: date }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["doctor-availability"] }),
   });
 
-  const deleteMutation = useMutation({
+  const deleteMutation = useSafeMutation({
     mutationFn: (id: number) => deleteAvailabilitySlot({ id }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["doctor-availability"] }),
   });

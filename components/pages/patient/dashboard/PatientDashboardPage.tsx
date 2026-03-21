@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSafeQuery, useSafeMutation } from "@/lib/safeQuery";
 import {
   getPatientUpcomingAppointments,
   getPatientPastAppointments,
@@ -49,7 +50,6 @@ import { Appointment } from "@/types/appointment.type";
 import { Beneficiary } from "@/types/patient.user.type";
 import AppButton from "@/components/common/AppButton";
 import ErrorDialog from "@/components/common/ErrorDialog";
-import { SessionExpiredError } from "@/lib/errors";
 import { toast } from "sonner";
 import Papa from "papaparse";
 
@@ -116,19 +116,6 @@ const STATUS_STYLES: Record<string, string> = {
 
 const STATUS_OPTIONS = ["All", "CONFIRMED", "CANCELLED", "COMPLETED"];
 
-// Throws if the API response is not successful so React Query error state fires.
-// Throws SessionExpiredError for 403 so the global handler can intercept it.
-function assertSuccess<T extends { success: boolean; message: string; statusCode?: number }>(
-  res: T
-): T {
-  if (!res.success) {
-    if (res.statusCode === 403 || res.statusCode === 401) {
-      throw new SessionExpiredError();
-    }
-    throw new Error(res.message || "Something went wrong");
-  }
-  return res;
-}
 
 export default function PatientDashboardPage({
   lang,
@@ -166,17 +153,15 @@ export default function PatientDashboardPage({
     error: apptErrorObj,
     isRefetching: apptRefetching,
     refetch: refetchAppts,
-  } = useQuery({
+  } = useSafeQuery({
     queryKey: ["patientAppointments", patientUserId, page],
-    queryFn: async () =>
-      assertSuccess(
-        await getPatientUpcomingAppointments({
-          lang,
-          patientUserId: patientUserId!,
-          page,
-          size: 10,
-        })
-      ),
+    queryFn: () =>
+      getPatientUpcomingAppointments({
+        lang,
+        patientUserId: patientUserId!,
+        page,
+        size: 10,
+      }),
     enabled: !!patientUserId,
   });
 
@@ -204,17 +189,15 @@ export default function PatientDashboardPage({
     error: pastApptErrorObj,
     isRefetching: pastApptRefetching,
     refetch: refetchPastAppts,
-  } = useQuery({
+  } = useSafeQuery({
     queryKey: ["patientPastAppointments", patientUserId, pastPage],
-    queryFn: async () =>
-      assertSuccess(
-        await getPatientPastAppointments({
-          lang,
-          patientUserId: patientUserId!,
-          page: pastPage,
-          size: 10,
-        })
-      ),
+    queryFn: () =>
+      getPatientPastAppointments({
+        lang,
+        patientUserId: patientUserId!,
+        page: pastPage,
+        size: 10,
+      }),
     enabled: !!patientUserId,
   });
 
@@ -242,31 +225,28 @@ export default function PatientDashboardPage({
     isRefetching: benefRefetching,
     error: benefErrorObj,
     refetch: refetchBenef,
-  } = useQuery({
+  } = useSafeQuery({
     queryKey: ["beneficiaries"],
-    queryFn: async () =>
-      assertSuccess(await getBeneficiaries({ lang, pageNo: 0, pageSize: 20 })),
+    queryFn: () => getBeneficiaries({ lang, pageNo: 0, pageSize: 20 }),
   });
 
   const beneficiaries: Beneficiary[] = benefData?.payload?.content ?? [];
 
   // ── Mutations ─────────────────────────────────────────────────────────────
-  const addBeneficiaryMutation = useMutation({
-    mutationFn: async ({
+  const addBeneficiaryMutation = useSafeMutation({
+    mutationFn: ({
       name,
       relation,
     }: {
       name: string;
       relation: string;
     }) =>
-      assertSuccess(
-        await addBeneficiary({
-          patientUserId: patientUserId!,
-          name,
-          relation,
-          lang,
-        })
-      ),
+      addBeneficiary({
+        patientUserId: patientUserId!,
+        name,
+        relation,
+        lang,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["beneficiaries"] });
       setBeneficiaryName("");
@@ -275,34 +255,33 @@ export default function PatientDashboardPage({
       toast.success("Beneficiary added successfully");
     },
     onError: (err: Error) => {
+      if (err.name === "SessionExpiredError") return;
       setAddError(err.message);
     },
   });
 
-  const deleteBeneficiaryMutation = useMutation({
-    mutationFn: async (id: number) =>
-      assertSuccess(await deleteBeneficiary({ id, lang })),
+  const deleteBeneficiaryMutation = useSafeMutation({
+    mutationFn: (id: number) => deleteBeneficiary({ id, lang }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["beneficiaries"] });
       setDeleteTargetId(null);
       toast.success("Beneficiary removed");
     },
     onError: (err: Error) => {
+      if (err.name === "SessionExpiredError") return;
       setDeleteTargetId(null);
       setErrorDialog(err.message || "Failed to remove beneficiary");
     },
   });
 
-  const cancelMutation = useMutation({
-    mutationFn: async ({ appointmentId, reason }: { appointmentId: string; reason: string }) =>
-      assertSuccess(
-        await cancelPatientAppointment({
-          appointmentId,
-          cancelledByUserId: patientUserId!,
-          cancellationReason: reason,
-          lang,
-        })
-      ),
+  const cancelMutation = useSafeMutation({
+    mutationFn: ({ appointmentId, reason }: { appointmentId: string; reason: string }) =>
+      cancelPatientAppointment({
+        appointmentId,
+        cancelledByUserId: patientUserId!,
+        cancellationReason: reason,
+        lang,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["patientAppointments"] });
       setCancelTargetId(null);
@@ -311,6 +290,7 @@ export default function PatientDashboardPage({
       toast.success("Appointment cancelled");
     },
     onError: (err: Error) => {
+      if (err.name === "SessionExpiredError") return;
       setCancelTargetId(null);
       setCancelReason("");
       setCancelReasonOther("");

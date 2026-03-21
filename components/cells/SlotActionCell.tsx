@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Pencil, Trash2, MoreVertical, AlertCircle } from "lucide-react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSafeQuery, useSafeMutation } from "@/lib/safeQuery";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -82,7 +83,7 @@ export const SlotActionCell = ({ slot }: { slot: DoctorAvailabilitySlot }) => {
     },
   });
 
-  const { data: locationResponse } = useQuery({
+  const { data: locationResponse } = useSafeQuery({
     queryKey: ["doctor-locations", slot.doctorUserId],
     queryFn: () =>
       getDoctorLocations({
@@ -97,9 +98,9 @@ export const SlotActionCell = ({ slot }: { slot: DoctorAvailabilitySlot }) => {
     })) || [];
 
   // Update mutation
-  const updateMutation = useMutation({
-    mutationFn: async (formData: FormDataType) => {
-      await updateDoctorAvailability({
+  const updateMutation = useSafeMutation({
+    mutationFn: (formData: FormDataType) =>
+      updateDoctorAvailability({
         doctorUserId: slot.doctorUserId,
         availabilityIds: [slot.id],
         weeklySchedule: [
@@ -112,8 +113,7 @@ export const SlotActionCell = ({ slot }: { slot: DoctorAvailabilitySlot }) => {
             availabilityStatus: "AVAILABLE",
           },
         ],
-      });
-    },
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["doctor-availability"] });
       setIsEditOpen(false);
@@ -124,11 +124,8 @@ export const SlotActionCell = ({ slot }: { slot: DoctorAvailabilitySlot }) => {
   });
 
   // Delete mutation
-  const deleteMutation = useMutation({
-    mutationFn: async (id: number) => {
-      const res = await deleteAvailabilitySlot({ id });
-      return res;
-    },
+  const deleteMutation = useSafeMutation({
+    mutationFn: (id: number) => deleteAvailabilitySlot({ id }),
     onSuccess: (res) => {
       queryClient.invalidateQueries({ queryKey: ["doctor-availability"] });
       setIsDeleteOpen(false);

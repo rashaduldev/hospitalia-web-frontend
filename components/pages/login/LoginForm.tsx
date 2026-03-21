@@ -111,7 +111,7 @@ const LoginForm = () => {
       </div>
 
       <div className="mt-8 flex flex-col gap-3">
-        <Link href="/register" className="text-sm font-medium text-primary hover:underline">
+        <Link href="/doctor/register" className="text-sm font-medium text-primary hover:underline">
           {t("login.noAccount")}
         </Link>
         <Link href="/forgot-password" className="text-sm font-medium text-muted-foreground hover:underline hover:text-foreground">

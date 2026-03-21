@@ -4,7 +4,8 @@ import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSafeQuery, useSafeMutation } from "@/lib/safeQuery";
 import {
   Pencil,
   Trash2,
@@ -58,7 +59,7 @@ export default function SpecialityManagementPage() {
   } = useForm<NameValues>({ resolver: zodResolver(nameSchema) });
 
   // ── Fetch all, sorted alphabetically by the API ──
-  const { data, isLoading } = useQuery({
+  const { data, isLoading } = useSafeQuery({
     queryKey: ["admin-specialities"],
     queryFn: () =>
       getAllSpecialities({ pageNo: 0, pageSize: 1000 }),
@@ -83,7 +84,7 @@ export default function SpecialityManagementPage() {
   };
 
   // ── Create ──
-  const createMutation = useMutation({
+  const createMutation = useSafeMutation({
     mutationFn: (values: NameValues) => createSpeciality({ name: values.name }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-specialities"] });
@@ -93,7 +94,7 @@ export default function SpecialityManagementPage() {
   });
 
   // ── Update ──
-  const updateMutation = useMutation({
+  const updateMutation = useSafeMutation({
     mutationFn: ({ id, name }: { id: number; name: string }) =>
       updateSpeciality({ id, name }),
     onSuccess: () => {
@@ -104,7 +105,7 @@ export default function SpecialityManagementPage() {
   });
 
   // ── Delete ──
-  const deleteMutation = useMutation({
+  const deleteMutation = useSafeMutation({
     mutationFn: (id: number) => deleteSpeciality({ id }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-specialities"] });

@@ -1,4 +1,5 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSafeQuery, useSafeMutation } from "@/lib/safeQuery";
 import {
   getDoctorLocations,
   createDoctorLocation,
@@ -20,18 +21,14 @@ export function useLocations({
   const queryClient = useQueryClient();
   const queryKey = ["doctor-locations", doctorUserId];
 
-  const query = useQuery({
+  const query = useSafeQuery({
     queryKey,
-    queryFn: async () => {
-      const res = await getDoctorLocations({ lang, doctorUserId });
-      if (res.error) throw new Error(res.error);
-      return res.payload || [];
-    },
+    queryFn: () => getDoctorLocations({ lang, doctorUserId }),
     staleTime: 1000 * 60 * 5,
   });
 
   // 2. Create/Update Mutation with Optimistic Updates
-  const saveMutation = useMutation({
+  const saveMutation = useSafeMutation({
     mutationFn: (payload: DoctorLocation) => {
       return payload.locationId
         ? updateDoctorLocation({
@@ -75,7 +72,7 @@ export function useLocations({
   });
 
   // 3. Delete Mutation
-  const deleteMutation = useMutation({
+  const deleteMutation = useSafeMutation({
     mutationFn: (locationId: number) =>
       deleteDoctorLocation({ lang, locationId, doctorUserId }),
     onMutate: async (deletedId) => {
@@ -95,7 +92,7 @@ export function useLocations({
   });
 
   return {
-    locations: query.data ?? [],
+    locations: query.data?.payload ?? [],
     isLoading: query.isLoading,
     isError: query.isError,
     error: query.error,

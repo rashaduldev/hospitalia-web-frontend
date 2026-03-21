@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useSafeQuery } from "@/lib/safeQuery";
 import { useCurrentLocale } from "@/locales/client";
 import { getCurrentUser } from "@/actions/user.actions";
 import { getPatientUpcomingAppointments } from "@/actions/patient/appointments.actions";
@@ -12,17 +13,6 @@ import { format, parseISO } from "date-fns";
 import { Appointment } from "@/types/appointment.type";
 import AppButton from "@/components/common/AppButton";
 import { toast } from "sonner";
-import { SessionExpiredError } from "@/lib/errors";
-
-function assertSuccess<T extends { success: boolean; message: string; statusCode?: number }>(
-  res: T
-): T {
-  if (!res.success) {
-    if (res.statusCode === 403 || res.statusCode === 401) throw new SessionExpiredError();
-    throw new Error(res.message || "Something went wrong");
-  }
-  return res;
-}
 
 interface Message {
   id: string;
@@ -62,17 +52,15 @@ export default function PatientMessagesPage({ lang }: { lang: string }) {
   });
 
   // ── Latest appointment ────────────────────────────────────────────────────
-  const { data: apptData } = useQuery({
+  const { data: apptData } = useSafeQuery({
     queryKey: ["patientAppointments", currentUser?.id, 0],
-    queryFn: async () =>
-      assertSuccess(
-        await getPatientUpcomingAppointments({
-          lang,
-          patientUserId: currentUser!.id,
-          page: 0,
-          size: 1,
-        })
-      ),
+    queryFn: () =>
+      getPatientUpcomingAppointments({
+        lang,
+        patientUserId: currentUser!.id,
+        page: 0,
+        size: 1,
+      }),
     enabled: !!currentUser?.id,
   });
 

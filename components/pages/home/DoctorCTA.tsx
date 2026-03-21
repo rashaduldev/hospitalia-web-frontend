@@ -29,7 +29,7 @@ const DoctorCTA = () => {
           <p className="text-white/75 text-base leading-relaxed max-w-md mx-auto md:mx-0 mb-8">
             Hospitalia gives healthcare professionals a powerful platform to manage availability, accept bookings, and grow their practice — all in one place.
           </p>
-          <Link href="/register">
+          <Link href="/doctor/register">
             <Button
               size="lg"
               className="bg-white text-primary font-bold hover:bg-white/90 shadow-lg px-8"

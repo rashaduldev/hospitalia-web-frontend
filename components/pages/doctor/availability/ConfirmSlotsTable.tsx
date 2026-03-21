@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useSafeQuery } from "@/lib/safeQuery";
 import ConfirmSlotsColumns from "@/components/common/ConfirmSlotsColumns";
 import { DataTableWithExport } from "@/components/data-table";
 import { TableSkeleton } from "@/components/common/TableSkeleton";
@@ -24,12 +24,12 @@ type ConfirmSlotsTableProps = {
 };
 
 const ConfirmSlotsTable: React.FC<ConfirmSlotsTableProps> = ({ doctorUserId, lang }) => {
-  const { data: slotsData, isLoading: slotsLoading } = useQuery({
+  const { data: slotsData, isLoading: slotsLoading } = useSafeQuery({
     queryKey: ["doctorAvailability", doctorUserId, lang],
     queryFn: () => getDoctorAvailability({ doctorUserId, lang }),
   });
 
-  const { data: locationsData, isLoading: locationsLoading } = useQuery({
+  const { data: locationsData, isLoading: locationsLoading } = useSafeQuery({
     queryKey: ["doctorLocations", doctorUserId, lang],
     queryFn: () => getDoctorLocations({ doctorUserId, lang }),
   });

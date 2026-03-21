@@ -2,7 +2,7 @@ import Header from "@/components/pages/home/Header";
 import LoginForm from "@/components/pages/login/LoginForm";
 import { Metadata } from "next";
 import Image from "next/image";
-import patientLoginImg from "../../../../public/assets/patient-login.png";
+import patientLoginImg from "../../../../../public/assets/patient-login.png";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {

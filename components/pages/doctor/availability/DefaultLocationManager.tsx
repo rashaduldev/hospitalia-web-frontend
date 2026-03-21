@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useForm, SubmitHandler, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSafeQuery, useSafeMutation } from "@/lib/safeQuery";
 import { Check, CheckCircle2, Trash2, Pencil, Save, X, MapPin } from "lucide-react";
 import {
   Dialog,
@@ -96,12 +97,12 @@ export function DefaultLocationManager({
 
   const selectedTypeIds = watch("supportedAppointmentTypeIds");
 
-  const { data: response, isLoading } = useQuery({
+  const { data: response, isLoading } = useSafeQuery({
     queryKey: ["doctor-locations", doctorUserId],
     queryFn: () => getDoctorLocations({ lang, doctorUserId }),
   });
 
-  const { data: appointmentTypesRes } = useQuery({
+  const { data: appointmentTypesRes } = useSafeQuery({
     queryKey: ["appointmentTypes", lang],
     queryFn: () => getAppointmentTypes(lang),
   });
@@ -122,8 +123,8 @@ export function DefaultLocationManager({
     setValue("supportedAppointmentTypeIds", updated);
   };
 
-  const mutation = useMutation({
-    mutationFn: async (data: LocationFormValues) => {
+  const mutation = useSafeMutation({
+    mutationFn: (data: LocationFormValues) => {
       const payload = {
         lang,
         locationName: data.locationName,
@@ -156,7 +157,7 @@ export function DefaultLocationManager({
 
   const onSubmit: SubmitHandler<LocationFormValues> = (data) => mutation.mutate(data);
 
-  const deleteMutation = useMutation({
+  const deleteMutation = useSafeMutation({
     mutationFn: (locationId: number) =>
       deleteDoctorLocation({ lang, locationId, doctorUserId }),
     onSuccess: () => {

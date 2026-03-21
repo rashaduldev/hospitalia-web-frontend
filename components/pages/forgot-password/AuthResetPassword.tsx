@@ -62,7 +62,7 @@ export default function AuthResetPassword({
       return;
     }
 
-    router.replace("/login");
+    router.replace("/doctor/login");
   };
 
   return (

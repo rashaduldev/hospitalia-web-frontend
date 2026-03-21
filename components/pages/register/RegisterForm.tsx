@@ -89,7 +89,7 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
       setError("root", { type: "manual", message: res.message });
       return;
     }
-    router.replace("/login");
+    router.replace("/doctor/login");
     reset();
   };
 
@@ -273,7 +273,7 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
             t("register.submit")
           )}
         </Button>
-        <Link href="/login" className="text-sm font-medium text-primary hover:underline">
+        <Link href="/doctor/login" className="text-sm font-medium text-primary hover:underline">
           {t("register.alreadyAccount")}
         </Link>
       </div>

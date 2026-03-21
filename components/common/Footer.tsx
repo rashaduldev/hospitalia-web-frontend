@@ -19,7 +19,7 @@ const Sections = [
   {
     title: "Providers",
     links: [
-      { title: "Doctor / Secretary Login", href: "/login" },
+      { title: "Doctor / Secretary Login", href: "/doctor/login" },
       { title: "Hospital Login", href: "/hospital/login" },
       { title: "Admin Login", href: "/admin/login" },
     ],

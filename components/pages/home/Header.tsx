@@ -64,10 +64,10 @@ export default function Header() {
         !!currentUser,
     },
     {
-      href: "/login",
+      href: "/doctor/login",
       label: t("nav.doctor"),
       hidden:
-        pathname === "/login" || pathname === "/register" || !!currentUser,
+        pathname === "/doctor/login" || pathname === "/doctor/register" || !!currentUser,
     },
     {
       href: dashboardUrl,

@@ -25,9 +25,14 @@ export default function SessionExpiredDialog({
   const pathname = usePathname();
   const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS);
 
-  const loginPath = pathname.startsWith("/patient")
-    ? "/patient/login"
-    : "/login";
+  const parts = pathname.split("/").filter(Boolean);
+  const locale = parts[0] ?? "en";
+  const section = parts[1] ?? "";
+  const loginPath =
+    section === "patient" ? `/${locale}/patient/login` :
+    section === "admin"   ? `/${locale}/admin/login`   :
+    section === "hospital"? `/${locale}/hospital/login`:
+                            `/${locale}/login`;
 
   const redirect = () => router.replace(loginPath);
 
