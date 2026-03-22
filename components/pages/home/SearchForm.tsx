@@ -8,34 +8,14 @@ import { Button } from "@/components/ui/button";
 import { ControlledSelect } from "@/components/common/FormUIControllers/ControlledSelect";
 import { DynamicHeading } from "@/components/common/DynamicHeading";
 import { SearchAutocomplete } from "./SearchAutocomplete";
-import { useTransition } from "react";
+import { useTransition, useEffect, useState } from "react";
 import { SearchFormProps, SearchFormValues } from "@/types/search.type";
 import { useI18n } from "@/locales/client";
 import { SearchFormSchema } from "@/schema/search.schema";
 import { cn } from "@/lib/utils";
+import { getDoctorCities, getHospitalCities } from "@/actions/global.search";
 
-const SENEGAL_REGIONS = [
-  "ALL",
-  "Dakar",
-  "Thiès",
-  "Saint-Louis",
-  "Ziguinchor",
-  "Kaolack",
-  "Diourbel",
-  "Tambacounda",
-  "Louga",
-  "Fatick",
-  "Kolda",
-  "Matam",
-  "Kaffrine",
-  "Kédougou",
-  "Sédhiou",
-];
-
-const CITY_OPTIONS = SENEGAL_REGIONS.map((c) => ({
-  label: c === "ALL" ? "All Regions" : c,
-  value: c,
-}));
+const ALL_OPTION = { label: "All Cities", value: "ALL" };
 
 const SEARCH_OPTIONS = [
   { value: "DOCTOR", labelKey: "banner.doctor", icon: Stethoscope },
@@ -54,6 +34,8 @@ export const SearchForm = ({
   const router = useRouter();
   const t = useI18n();
   const [isPending, startTransition] = useTransition();
+  const [cityOptions, setCityOptions] = useState([ALL_OPTION]);
+  const [citiesLoading, setCitiesLoading] = useState(false);
 
   const { control, handleSubmit, setValue } = useForm<SearchFormValues>({
     resolver: zodResolver(SearchFormSchema(t)),
@@ -66,6 +48,26 @@ export const SearchForm = ({
 
   const currentType = useWatch({ control, name: "searchType" });
   const currentCity = useWatch({ control, name: "city" });
+
+  // Load cities dynamically based on search type
+  useEffect(() => {
+    setCitiesLoading(true);
+    setValue("city", "ALL");
+    const load = async () => {
+      try {
+        const cities =
+          currentType === "DOCTOR"
+            ? await getDoctorCities()
+            : await getHospitalCities();
+        setCityOptions([ALL_OPTION, ...cities.map((c) => ({ label: c, value: c }))]);
+      } catch {
+        setCityOptions([ALL_OPTION]);
+      } finally {
+        setCitiesLoading(false);
+      }
+    };
+    load();
+  }, [currentType]);
 
   const handleFormSubmit = async (data: SearchFormValues) => {
     if (onSubmitAction) {
@@ -133,8 +135,9 @@ export const SearchForm = ({
         <ControlledSelect
           name="city"
           control={control}
-          options={CITY_OPTIONS}
-          placeholder="All Regions"
+          options={cityOptions}
+          placeholder={citiesLoading ? "Loading cities..." : "All Cities"}
+          disabled={citiesLoading}
         />
       </div>
 
