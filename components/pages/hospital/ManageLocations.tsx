@@ -46,8 +46,8 @@ function LocationForm({
       state: initial?.state ?? "",
       country: initial?.country ?? "",
       postalCode: initial?.postalCode ?? "",
-      latitude: initial?.latitude ?? "",
-      longitude: initial?.longitude ?? "",
+      latitude: initial?.latitude != null ? String(initial.latitude) : "",
+      longitude: initial?.longitude != null ? String(initial.longitude) : "",
     },
   });
 

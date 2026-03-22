@@ -227,7 +227,6 @@ export default function HospitalSetupProfileForm({
           label=""
           control={control}
           placeholder="Describe your hospital's mission, services, and what makes it unique..."
-          className="min-h-28"
         />
       </SectionCard>
 

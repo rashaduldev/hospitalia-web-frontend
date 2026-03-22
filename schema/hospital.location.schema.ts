@@ -8,8 +8,8 @@ export const HospitalLocationSchema = z.object({
   state: z.string().optional(),
   country: z.string().optional(),
   postalCode: z.string().optional(),
-  latitude: z.coerce.number().optional().or(z.literal("")),
-  longitude: z.coerce.number().optional().or(z.literal("")),
+  latitude: z.string().optional(),
+  longitude: z.string().optional(),
 });
 
 export type HospitalLocationFormValues = z.infer<typeof HospitalLocationSchema>;
