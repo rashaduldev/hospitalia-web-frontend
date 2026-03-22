@@ -146,10 +146,12 @@ export function AppSidebar({ lang, userRole, user, ...props }: AppSidebarProps) 
         </div>
 
         {/* ── Common nav (Settings etc.) ── */}
-        <div className="pb-2">
-          <SidebarSeparator className="mb-3" />
-          <NavDocuments items={formattedCommonLinks} />
-        </div>
+        {userRole !== "HOSPITAL" && (
+          <div className="pb-2">
+            <SidebarSeparator className="mb-3" />
+            <NavDocuments items={formattedCommonLinks} />
+          </div>
+        )}
       </SidebarContent>
 
       {/* ── Sign out ── */}

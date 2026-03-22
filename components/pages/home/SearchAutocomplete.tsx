@@ -82,7 +82,7 @@ export function SearchAutocomplete({
       field.onChange(item.name);
       setOpen(false);
       setSuggestions([]);
-      const path = searchType === "HOSPITAL" ? `/hospital/${item.userId}` : `/doctor/${item.userId}`;
+      const path = searchType === "HOSPITAL" ? `/hospital/${item.hospitalId ?? item.userId}` : `/doctor/${item.userId}`;
       router.push(path);
     },
     [field, router, searchType],

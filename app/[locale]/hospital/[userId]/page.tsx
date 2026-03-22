@@ -1,4 +1,4 @@
-import { getHospitalInfoByUserId } from "@/actions/hospital/hospitaldata";
+import { getHospitalPublicProfile } from "@/actions/hospital/hospitaldata";
 import Header from "@/components/pages/home/Header";
 import { getCurrentLocale } from "@/locales/server";
 import HospitalProfile from "@/components/pages/hospital/HospitalProfile";
@@ -18,9 +18,8 @@ type Props = {
 const HospitalProfilePage = async ({ params }: Props) => {
   const lang = await getCurrentLocale();
   const { userId } = await params;
-  const hospitalUserId = Number(userId);
 
-  const hospitalData = await getHospitalInfoByUserId({ lang, hospitalUserId });
+  const hospitalData = await getHospitalPublicProfile({ lang, id: Number(userId) });
   const hospital: HospitalInfo | null = hospitalData?.payload ?? null;
 
   if (!hospital) {

@@ -7,7 +7,6 @@ import {
   BedDouble,
   CalendarDays,
   Stethoscope,
-  Mail,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
@@ -63,8 +62,8 @@ const InfoRow = ({
 const HospitalProfile = ({ hospital }: { hospital: HospitalInfo }) => {
   const p = hospital.professionalInfoResponse;
   const specialities: Speciality[] = p?.specialities ?? [];
-  const displayName = hospital.hospitalName ?? hospital.email ?? "Hospital";
-  const workPhone = hospital.workPhoneNumber ?? p?.workPhoneNumber;
+  const displayName = hospital.hospitalName ?? "Hospital";
+  const workPhone = hospital.workPhoneNumber;
   const about = p?.professionalStatement;
   const hospitalTypeLabel = hospital.hospitalType
     ? hospital.hospitalType.charAt(0) + hospital.hospitalType.slice(1).toLowerCase().replace(/_/g, " ")
@@ -86,11 +85,11 @@ const HospitalProfile = ({ hospital }: { hospital: HospitalInfo }) => {
           <p className="text-sm text-muted-foreground mt-1">{hospitalTypeLabel}</p>
         )}
 
-        {p?.onmsregistrationNumber && (
+        {p?.onmsRegistrationNumber && (
           <div className="flex items-center gap-1.5 mt-2">
             <BadgeCheck className="w-3.5 h-3.5 text-primary shrink-0" />
             <span className="text-xs text-primary font-medium">
-              Reg. {p.onmsregistrationNumber}
+              Reg. {p.onmsRegistrationNumber}
             </span>
           </div>
         )}
@@ -132,21 +131,13 @@ const HospitalProfile = ({ hospital }: { hospital: HospitalInfo }) => {
       )}
 
       {/* Contact */}
-      {(workPhone || hospital.email || hospital.websiteUrl) && (
+      {(workPhone || hospital.websiteUrl) && (
         <>
           <div className="px-6 py-5">
             <SectionHeading icon={Phone} label="Contact" />
             <div className="pl-1">
               {workPhone && (
                 <InfoRow icon={Phone} label="Phone" value={workPhone} />
-              )}
-              {hospital.email && (
-                <InfoRow
-                  icon={Mail}
-                  label="Email"
-                  value={hospital.email}
-                  href={`mailto:${hospital.email}`}
-                />
               )}
               {hospital.websiteUrl && (
                 <InfoRow
@@ -184,7 +175,7 @@ const HospitalProfile = ({ hospital }: { hospital: HospitalInfo }) => {
         <>
           <div className="px-6 py-5">
             <SectionHeading icon={BookOpen} label="About" />
-            <p className="text-sm text-muted-foreground leading-relaxed pl-1">{about}</p>
+            <p className="text-sm text-muted-foreground leading-relaxed pl-1 whitespace-pre-wrap">{about}</p>
           </div>
           <Separator />
         </>

@@ -16,6 +16,7 @@ export type SearchFormProps = {
 
 export type SearchResultIteam = {
   userId: number;
+  hospitalId?: number | null;
   name: string;
   designation: string;
   locationName: string[];

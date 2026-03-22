@@ -12,6 +12,7 @@ import {
   CalendarDays,
   CalendarCheck,
   Users,
+  Building2,
 } from "lucide-react";
 
 export const REQUEST_TIMEOUT_MS = 10_000;
@@ -56,19 +57,9 @@ export const ROUTES = {
       icon: LayoutDashboardIcon,
     },
     {
-      name: "Manage Doctors",
-      url: "/hospital/manage-doctors",
-      icon: Stethoscope,
-    },
-    {
-      name: "Manage Locations",
-      url: "/hospital/manage-locations",
-      icon: MapPin,
-    },
-    {
-      name: "Set Availability",
-      url: "/hospital/availability",
-      icon: ChartBarIcon,
+      name: "Hospitals",
+      url: "/hospital/hospitals",
+      icon: Building2,
     },
   ],
   ADMIN: [
