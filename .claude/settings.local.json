@@ -31,7 +31,17 @@
       "Bash(wc -l /Volumes/Works/projects/web/hospitalia-web/actions/*.ts /Volumes/Works/projects/web/hospitalia-web/actions/*/*.ts)",
       "Bash(grep:*)",
       "Bash(ls \"/Volumes/Works/projects/web/hospitalia-web/app/[locale]/\\(auth\\)/login/\")",
-      "Bash(ls \"/Volumes/Works/projects/web/hospitalia-web/app/[locale]/\\(auth\\)/patient/\")"
+      "Bash(ls \"/Volumes/Works/projects/web/hospitalia-web/app/[locale]/\\(auth\\)/patient/\")",
+      "Bash(find \"/Volumes/Works/projects/web/hospitalia-web/app/[locale]/\\(doctor\\)\" -type f -name \"*.tsx\")",
+      "Bash(ls:*)",
+      "Bash(curl -s \"https://hospitalia-api.dhrubok.xyz/api/global-search/cities/doctors\")",
+      "Bash(curl -s \"https://hospitalia-api.dhrubok.xyz/api/global-search/search?searchKeyword=doc&searchType=DOCTOR&pageNo=1&pageSize=5\")",
+      "Bash(curl -s \"https://hospitalia-api.dhrubok.xyz/api/global-search/search?searchKeyword=doc&searchType=DOCTOR&pageNo=0&pageSize=5\")",
+      "Bash(curl -s \"https://hospitalia-api.dhrubok.xyz/api/global-search/search?searchKeyword=a&searchType=DOCTOR&pageNo=0&pageSize=5\")",
+      "Bash(curl -s \"https://hospitalia-api.dhrubok.xyz/api/global-search/search?searchKeyword=dakar&searchType=DOCTOR&pageNo=0&pageSize=10\")",
+      "Bash(curl -s \"https://hospitalia-api.dhrubok.xyz/api/global-search/search?searchKeyword=doctor&searchType=DOCTOR&pageNo=0&pageSize=10\")",
+      "Bash(curl -s \"http://localhost:3000/en/search?searchKeyword=dakar&searchType=DOCTOR\")",
+      "Bash(git diff:*)"
     ]
   }
 }

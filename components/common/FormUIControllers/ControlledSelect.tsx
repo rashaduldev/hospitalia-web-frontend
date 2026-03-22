@@ -25,6 +25,7 @@ type ControlledSelectProps = {
   placeholder?: string;
   options: OptionType[];
   className?: string;
+  disabled?: boolean;
   renderOption?: (opt: OptionType) => React.ReactNode;
 };
 
@@ -38,6 +39,7 @@ export const ControlledSelect: FC<ControlledSelectProps> = ({
   options,
   onChange,
   className,
+  disabled,
 }) => {
   return (
     <Controller
@@ -60,6 +62,7 @@ export const ControlledSelect: FC<ControlledSelectProps> = ({
 
           <Select
             value={field.value || ""}
+            disabled={disabled}
             onValueChange={(value) => {
               field.onChange(value);
               if (onChange) onChange(value);
