@@ -4,19 +4,21 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { Eye, EyeOff, Building2, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Building2, Loader2, CheckCircle2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ControlledInput } from "@/components/common/FormUIControllers/ControlledInput";
 import { ControlledPhoneInput } from "@/components/common/FormUIControllers/ControlledPhoneInput";
 import { hospitalRegister } from "@/actions/auth.actions";
 import { HospitalRegisterSchema, HospitalRegisterFormValues } from "@/schema/hospital.register.schema";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { getCleanPhoneData } from "@/lib/phone-utils";
 
 export default function HospitalRegisterForm({ lang }: { lang: string }) {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const {
     handleSubmit,
@@ -58,10 +60,34 @@ export default function HospitalRegisterForm({ lang }: { lang: string }) {
     }
 
     reset();
-    router.replace("/hospital/login");
+    setShowSuccess(true);
   };
 
   return (
+    <>
+    <Dialog open={showSuccess} onOpenChange={setShowSuccess}>
+      <DialogContent className="max-w-sm text-center">
+        <DialogTitle className="sr-only">Registration Successful</DialogTitle>
+        <div className="flex flex-col items-center gap-4 py-4">
+          <div className="p-4 bg-secondary/15 rounded-full">
+            <CheckCircle2 className="w-10 h-10 text-secondary" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-foreground">Account Created!</h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Your hospital account has been successfully registered. You can now sign in.
+            </p>
+          </div>
+          <Button
+            className="w-full mt-2 font-semibold"
+            onClick={() => router.replace("/hospital/login")}
+          >
+            Go to Login
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 pb-3">
       <div className="border border-border rounded-xl bg-card shadow-sm overflow-hidden">
         <div className="flex items-center gap-3 px-6 py-5 border-b border-border">
@@ -172,5 +198,6 @@ export default function HospitalRegisterForm({ lang }: { lang: string }) {
         </Link>
       </div>
     </form>
+    </>
   );
 }
