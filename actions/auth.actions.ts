@@ -62,6 +62,29 @@ export const Patientregister = async ({
   });
   return res;
 };
+// Hospital Register
+export const hospitalRegister = async ({
+  bodyData,
+  lang,
+}: {
+  bodyData: {
+    hospitalName: string;
+    email: string;
+    countryCode: string;
+    mobileNumber: string;
+    password: string;
+  };
+  lang: string;
+}) => {
+  return apiClient({
+    endpoint: "/api/auth/hospital/sign-up",
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    params: { lang },
+    body: bodyData,
+  });
+};
+
 // Register
 export const register = async ({
   bodyData,

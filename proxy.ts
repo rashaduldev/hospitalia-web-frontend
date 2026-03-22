@@ -16,6 +16,7 @@ const PUBLIC_ROUTES = [
   "/patient/login",
   "/patient/register",
   "/hospital/login",
+  "/hospital/register",
   "/admin/login",
   "/forgot-password",
   "/verify-otp",
