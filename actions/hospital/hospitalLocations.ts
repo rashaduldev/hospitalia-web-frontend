@@ -5,7 +5,7 @@ import { getAccessToken } from "../auth";
 
 export type HospitalLocation = {
   id: number;
-  hospitalUserId: number;
+  hospitalId: number;
   addressId: number;
   locationName: string;
   addressLine1: string;
@@ -20,14 +20,14 @@ export type HospitalLocation = {
 
 export const getHospitalLocations = async ({
   lang,
-  hospitalUserId,
+  hospitalId,
 }: {
   lang: string;
-  hospitalUserId: number;
+  hospitalId: number;
 }) => {
   const token = await getAccessToken();
   return apiClient<HospitalLocation[]>({
-    endpoint: `/api/hospitals/locations/hospital/${hospitalUserId}`,
+    endpoint: `/api/hospitals/locations/hospital/${hospitalId}`,
     method: "GET",
     params: { lang },
     headers: { Authorization: `Bearer ${token}` },
@@ -40,7 +40,7 @@ export const createHospitalLocation = async ({
 }: {
   lang: string;
   body: {
-    hospitalUserId: number;
+    hospitalId: number;
     locationName: string;
     addressLine1: string;
     addressLine2?: string | null;
@@ -69,7 +69,7 @@ export const updateHospitalLocation = async ({
   lang: string;
   body: {
     locationId: number;
-    hospitalUserId: number;
+    hospitalId: number;
     locationName: string;
     addressLine1: string;
     addressLine2?: string | null;

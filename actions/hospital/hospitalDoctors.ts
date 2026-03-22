@@ -5,7 +5,7 @@ import { getAccessToken } from "../auth";
 
 export type HospitalDoctorResponse = {
   id: number;
-  hospitalUserId: number;
+  hospitalId: number;
   doctorUserId: number;
   hospitalLocationId: number;
   doctorLocationId: number;
@@ -15,14 +15,14 @@ export type HospitalDoctorResponse = {
 
 export const getDoctorsByHospital = async ({
   lang,
-  hospitalUserId,
+  hospitalId,
 }: {
   lang: string;
-  hospitalUserId: number;
+  hospitalId: number;
 }) => {
   const token = await getAccessToken();
   return apiClient<HospitalDoctorResponse[]>({
-    endpoint: `/api/hospital-doctors/hospital/${hospitalUserId}`,
+    endpoint: `/api/hospital-doctors/hospital/${hospitalId}`,
     method: "GET",
     params: { lang },
     headers: { Authorization: `Bearer ${token}` },
@@ -31,12 +31,12 @@ export const getDoctorsByHospital = async ({
 
 export const assignDoctorToHospital = async ({
   lang,
-  hospitalUserId,
+  hospitalId,
   doctorUserId,
   hospitalLocationId,
 }: {
   lang: string;
-  hospitalUserId: number;
+  hospitalId: number;
   doctorUserId: number;
   hospitalLocationId: number;
 }) => {
@@ -46,7 +46,7 @@ export const assignDoctorToHospital = async ({
     method: "POST",
     params: { lang },
     headers: { Authorization: `Bearer ${token}` },
-    body: { hospitalUserId, doctorUserId, hospitalLocationId },
+    body: { hospitalId, doctorUserId, hospitalLocationId },
   });
 };
 

@@ -7,6 +7,7 @@ import { getStaticParams } from "@/locales/server";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 import { siteConfig } from "@/config/siteConfig";
+import FooterSection from "@/components/common/Footer";
 
 const PlusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-plus-jakarta-sans",
@@ -75,7 +76,12 @@ export default async function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <AppClientProvider locale={locale || "en"}>
-            <AppQueryProvider>{children}</AppQueryProvider>
+            <AppQueryProvider>
+              <div className="flex flex-col min-h-screen">
+                {children}
+                <FooterSection />
+              </div>
+            </AppQueryProvider>
           </AppClientProvider>
           <Toaster richColors position="top-right" />
         </ThemeProvider>

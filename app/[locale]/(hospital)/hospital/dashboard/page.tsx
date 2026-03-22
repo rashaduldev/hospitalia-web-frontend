@@ -19,5 +19,5 @@ export default async function HospitalDashboard() {
     redirect("/hospital/setup-profile");
   }
 
-  return <HospitalDashboardPage hospitalUserId={user.id} lang={lang} />;
+  return <HospitalDashboardPage hospitalId={user.id} lang={lang} />;
 }

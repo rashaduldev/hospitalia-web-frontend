@@ -6,10 +6,10 @@ import ManageDoctors from "./ManageDoctors";
 import ManageLocations from "./ManageLocations";
 
 export default function HospitalDashboardPage({
-  hospitalUserId,
+  hospitalId,
   lang,
 }: {
-  hospitalUserId: number;
+  hospitalId: number;
   lang: string;
 }) {
   return (
@@ -43,7 +43,7 @@ export default function HospitalDashboardPage({
               </div>
             </div>
             <div className="p-6">
-              <ManageDoctors hospitalUserId={hospitalUserId} lang={lang} />
+              <ManageDoctors hospitalId={hospitalId} lang={lang} />
             </div>
           </div>
         </TabsContent>
@@ -60,7 +60,7 @@ export default function HospitalDashboardPage({
               </div>
             </div>
             <div className="p-6">
-              <ManageLocations hospitalUserId={hospitalUserId} lang={lang} />
+              <ManageLocations hospitalId={hospitalId} lang={lang} />
             </div>
           </div>
         </TabsContent>

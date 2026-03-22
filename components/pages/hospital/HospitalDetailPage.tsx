@@ -216,7 +216,7 @@ export default function HospitalDetailPage({
               <h3 className="text-sm font-semibold text-foreground">Doctors</h3>
             </div>
             <div className="p-6">
-              <ManageDoctors hospitalUserId={hospital.userId} lang={lang} />
+              <ManageDoctors hospitalId={hospital.id} lang={lang} />
             </div>
           </div>
         )}
@@ -227,7 +227,7 @@ export default function HospitalDetailPage({
               <h3 className="text-sm font-semibold text-foreground">Locations</h3>
             </div>
             <div className="p-6">
-              <ManageLocations hospitalUserId={hospital.userId} lang={lang} />
+              <ManageLocations hospitalId={hospital.id} lang={lang} />
             </div>
           </div>
         )}

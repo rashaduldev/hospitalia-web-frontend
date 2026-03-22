@@ -6,8 +6,16 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, Pencil, Trash2, MapPin, Loader2, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogFooter,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
 import { ControlledInput } from "@/components/common/FormUIControllers/ControlledInput";
+import { ControlledSelect } from "@/components/common/FormUIControllers/ControlledSelect";
 import { toast } from "sonner";
 import {
   getHospitalLocations,
@@ -18,14 +26,30 @@ import {
 } from "@/actions/hospital/hospitalLocations";
 import { HospitalLocationSchema, HospitalLocationFormValues } from "@/schema/hospital.location.schema";
 
+const COUNTRIES = [
+  "Afghanistan", "Albania", "Algeria", "Argentina", "Australia", "Austria",
+  "Bangladesh", "Belgium", "Bolivia", "Brazil", "Cambodia", "Canada", "Chile",
+  "China", "Colombia", "Croatia", "Czech Republic", "Denmark", "Ecuador",
+  "Egypt", "Ethiopia", "Finland", "France", "Germany", "Ghana", "Greece",
+  "Hungary", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel",
+  "Italy", "Japan", "Jordan", "Kazakhstan", "Kenya", "Malaysia", "Mexico",
+  "Morocco", "Myanmar", "Nepal", "Netherlands", "New Zealand", "Nigeria",
+  "Norway", "Pakistan", "Peru", "Philippines", "Poland", "Portugal",
+  "Romania", "Russia", "Saudi Arabia", "Senegal", "Singapore", "South Africa",
+  "South Korea", "Spain", "Sri Lanka", "Sudan", "Sweden", "Switzerland",
+  "Tanzania", "Thailand", "Tunisia", "Turkey", "Uganda", "Ukraine",
+  "United Arab Emirates", "United Kingdom", "United States", "Uruguay",
+  "Venezuela", "Vietnam", "Yemen", "Zimbabwe",
+].map((c) => ({ label: c, value: c }));
+
 function LocationForm({
-  hospitalUserId,
+  hospitalId,
   lang,
   initial,
   onSuccess,
   onCancel,
 }: {
-  hospitalUserId: number;
+  hospitalId: number;
   lang: string;
   initial?: HospitalLocation;
   onSuccess: () => void;
@@ -53,7 +77,7 @@ function LocationForm({
 
   const onSubmit = async (data: HospitalLocationFormValues) => {
     const body = {
-      hospitalUserId,
+      hospitalId,
       locationName: data.locationName,
       addressLine1: data.addressLine1,
       addressLine2: data.addressLine2 || null,
@@ -90,7 +114,13 @@ function LocationForm({
         </div>
         <ControlledInput name="city" requiredMark="*" label="City" control={control} placeholder="City" />
         <ControlledInput name="state" label="State / Division" control={control} placeholder="State or division" />
-        <ControlledInput name="country" label="Country" control={control} placeholder="Country" />
+        <ControlledSelect
+          name="country"
+          label="Country"
+          control={control}
+          placeholder="Select country"
+          options={COUNTRIES}
+        />
         <ControlledInput name="postalCode" label="Postal Code" control={control} placeholder="Postal code" />
         <ControlledInput name="latitude" label="Latitude" type="number" control={control} placeholder="e.g. 23.8103" />
         <ControlledInput name="longitude" label="Longitude" type="number" control={control} placeholder="e.g. 90.4125" />
@@ -100,23 +130,23 @@ function LocationForm({
         <p className="text-xs text-destructive font-semibold">{errors.root.message}</p>
       )}
 
-      <DialogFooter>
-        <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
+      <AlertDialogFooter>
+        <AlertDialogCancel type="button" onClick={onCancel}>Cancel</AlertDialogCancel>
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting
             ? <><Loader2 className="w-4 h-4 animate-spin mr-2" />{initial ? "Saving..." : "Creating..."}</>
             : initial ? "Save Changes" : "Create Location"}
         </Button>
-      </DialogFooter>
+      </AlertDialogFooter>
     </form>
   );
 }
 
 export default function ManageLocations({
-  hospitalUserId,
+  hospitalId,
   lang,
 }: {
-  hospitalUserId: number;
+  hospitalId: number;
   lang: string;
 }) {
   const queryClient = useQueryClient();
@@ -125,8 +155,8 @@ export default function ManageLocations({
   const [deleteTarget, setDeleteTarget] = useState<HospitalLocation | null>(null);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["hospital-locations", hospitalUserId],
-    queryFn: () => getHospitalLocations({ lang, hospitalUserId }),
+    queryKey: ["hospital-locations", hospitalId],
+    queryFn: () => getHospitalLocations({ lang, hospitalId }),
   });
   const locations: HospitalLocation[] = data?.payload ?? [];
 
@@ -135,7 +165,7 @@ export default function ManageLocations({
     onSuccess: (res) => {
       if (!res.success) { toast.error(res.message); return; }
       toast.success("Location deleted");
-      queryClient.invalidateQueries({ queryKey: ["hospital-locations", hospitalUserId] });
+      queryClient.invalidateQueries({ queryKey: ["hospital-locations", hospitalId] });
       setDeleteTarget(null);
     },
     onError: () => toast.error("Failed to delete location"),
@@ -143,7 +173,7 @@ export default function ManageLocations({
 
   const handleFormSuccess = () => {
     toast.success(editTarget ? "Location updated" : "Location created");
-    queryClient.invalidateQueries({ queryKey: ["hospital-locations", hospitalUserId] });
+    queryClient.invalidateQueries({ queryKey: ["hospital-locations", hospitalId] });
     setFormOpen(false);
     setEditTarget(null);
   };
@@ -222,30 +252,34 @@ export default function ManageLocations({
       )}
 
       {/* Create / Edit Dialog */}
-      <Dialog open={formOpen} onOpenChange={(v) => { if (!v) { setFormOpen(false); setEditTarget(null); } }}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-          <DialogTitle>{editTarget ? "Edit Location" : "Add Location"}</DialogTitle>
+      <AlertDialog open={formOpen} onOpenChange={(v) => { if (!v) { setFormOpen(false); setEditTarget(null); } }}>
+        <AlertDialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <AlertDialogHeader>
+            <AlertDialogTitle>{editTarget ? "Edit Location" : "Add Location"}</AlertDialogTitle>
+          </AlertDialogHeader>
           <LocationForm
-            hospitalUserId={hospitalUserId}
+            hospitalId={hospitalId}
             lang={lang}
             initial={editTarget ?? undefined}
             onSuccess={handleFormSuccess}
             onCancel={() => { setFormOpen(false); setEditTarget(null); }}
           />
-        </DialogContent>
-      </Dialog>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Delete Confirm Dialog */}
-      <Dialog open={!!deleteTarget} onOpenChange={(v) => { if (!v) setDeleteTarget(null); }}>
-        <DialogContent className="max-w-sm">
-          <DialogTitle>Delete Location</DialogTitle>
-          <p className="text-sm text-muted-foreground py-2">
+      <AlertDialog open={!!deleteTarget} onOpenChange={(v) => { if (!v) setDeleteTarget(null); }}>
+        <AlertDialogContent className="max-w-sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Location</AlertDialogTitle>
+          </AlertDialogHeader>
+          <p className="text-sm text-muted-foreground">
             Are you sure you want to delete{" "}
             <span className="font-semibold text-foreground">{deleteTarget?.locationName}</span>?
             This will also delete the linked address record.
           </p>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteTarget(null)}>Cancel</Button>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDeleteTarget(null)}>Cancel</AlertDialogCancel>
             <Button
               variant="destructive"
               onClick={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
@@ -255,9 +289,9 @@ export default function ManageLocations({
                 ? <><Loader2 className="w-4 h-4 animate-spin mr-2" />Deleting...</>
                 : "Delete"}
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
