@@ -19,14 +19,14 @@ const GetAppointmentPage = async ({
   const searchKeyword = sParams.searchKeyword || "";
   const searchType = sParams.searchType || "DOCTOR";
   const city = sParams.city || "ALL";
-  const page = Math.max(0, Number(sParams.page || 1) - 1);
+  const pageNo = Math.max(0, Number(sParams.page || 1) - 1);
 
   const response = await globalSearch({
     lang,
     searchType,
     searchKeyword,
     city,
-    page,
+    pageNo,
   });
 
   const results: SearchResultIteam[] = response?.payload?.content || [];
