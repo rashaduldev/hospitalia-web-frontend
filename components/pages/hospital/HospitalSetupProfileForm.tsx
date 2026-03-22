@@ -99,20 +99,20 @@ export default function HospitalSetupProfileForm({
   useEffect(() => {
     const info = hospitalData?.payload;
     if (!info) return;
-    const d = info.userDetails;
+    const p = info.professionalInfoResponse;
     reset({
-      hospitalName: d?.firstName ?? "",
-      hospitalType: d?.hospitalType ?? "",
-      workPhoneNumber: d?.workPhoneNumber ?? "",
-      websiteUrl: d?.websiteUrl ?? "",
-      numberOfBeds: d?.numberOfBeds != null ? String(d.numberOfBeds) : "",
-      foundedYear: d?.foundedYear != null ? String(d.foundedYear) : "",
-      onmsRegistrationNumber: d?.onmsRegistrationNumber ?? "",
-      about: d?.about ?? "",
+      hospitalName: info.hospitalName ?? "",
+      hospitalType: info.hospitalType ?? "",
+      workPhoneNumber: info.workPhoneNumber ?? p?.workPhoneNumber ?? "",
+      websiteUrl: info.websiteUrl ?? "",
+      numberOfBeds: info.numberOfBeds != null ? String(info.numberOfBeds) : "",
+      foundedYear: info.foundedYear != null ? String(info.foundedYear) : "",
+      onmsRegistrationNumber: p?.onmsregistrationNumber ?? "",
+      about: p?.professionalStatement ?? "",
       specialityIds: [],
     });
-    if (d?.specialities?.length) {
-      setSelectedSpecialities(d.specialities);
+    if (p?.specialities?.length) {
+      setSelectedSpecialities(p.specialities);
     }
   }, [hospitalData, reset]);
 

@@ -61,16 +61,18 @@ const InfoRow = ({
 );
 
 const HospitalProfile = ({ hospital }: { hospital: HospitalInfo }) => {
-  const d = hospital.userDetails;
-  const specialities: Speciality[] = d?.specialities ?? [];
-  const displayName = d?.firstName ?? hospital.email ?? "Hospital";
-  const hospitalTypeLabel = d?.hospitalType
-    ? d.hospitalType.charAt(0) + d.hospitalType.slice(1).toLowerCase().replace(/_/g, " ")
+  const p = hospital.professionalInfoResponse;
+  const specialities: Speciality[] = p?.specialities ?? [];
+  const displayName = hospital.hospitalName ?? hospital.email ?? "Hospital";
+  const workPhone = hospital.workPhoneNumber ?? p?.workPhoneNumber;
+  const about = p?.professionalStatement;
+  const hospitalTypeLabel = hospital.hospitalType
+    ? hospital.hospitalType.charAt(0) + hospital.hospitalType.slice(1).toLowerCase().replace(/_/g, " ")
     : null;
 
   return (
     <div className="border border-border rounded-xl overflow-hidden bg-card shadow-sm flex-1">
-      {/* Header: icon + name + type + reg */}
+      {/* Header */}
       <div className="flex flex-col items-center text-center px-6 pt-8 pb-6">
         <div className="relative mb-4">
           <div className="w-[120px] h-[120px] rounded-full bg-primary/10 border-2 border-border flex items-center justify-center">
@@ -84,11 +86,11 @@ const HospitalProfile = ({ hospital }: { hospital: HospitalInfo }) => {
           <p className="text-sm text-muted-foreground mt-1">{hospitalTypeLabel}</p>
         )}
 
-        {d?.onmsRegistrationNumber && (
+        {p?.onmsregistrationNumber && (
           <div className="flex items-center gap-1.5 mt-2">
             <BadgeCheck className="w-3.5 h-3.5 text-primary shrink-0" />
             <span className="text-xs text-primary font-medium">
-              Reg. {d.onmsRegistrationNumber}
+              Reg. {p.onmsregistrationNumber}
             </span>
           </div>
         )}
@@ -107,20 +109,20 @@ const HospitalProfile = ({ hospital }: { hospital: HospitalInfo }) => {
       <Separator />
 
       {/* Quick stats: beds + founded */}
-      {(d?.numberOfBeds || d?.foundedYear) && (
+      {(hospital.numberOfBeds || hospital.foundedYear) && (
         <>
-          <div className="grid grid-cols-2 divide-x divide-border px-0">
-            {d?.numberOfBeds && (
+          <div className="grid grid-cols-2 divide-x divide-border">
+            {hospital.numberOfBeds && (
               <div className="flex flex-col items-center py-4">
                 <BedDouble className="w-4 h-4 text-primary mb-1" />
-                <p className="text-base font-bold text-foreground">{d.numberOfBeds}</p>
+                <p className="text-base font-bold text-foreground">{hospital.numberOfBeds}</p>
                 <p className="text-xs text-muted-foreground">Beds</p>
               </div>
             )}
-            {d?.foundedYear && (
+            {hospital.foundedYear && (
               <div className="flex flex-col items-center py-4">
                 <CalendarDays className="w-4 h-4 text-primary mb-1" />
-                <p className="text-base font-bold text-foreground">{d.foundedYear}</p>
+                <p className="text-base font-bold text-foreground">{hospital.foundedYear}</p>
                 <p className="text-xs text-muted-foreground">Founded</p>
               </div>
             )}
@@ -130,13 +132,13 @@ const HospitalProfile = ({ hospital }: { hospital: HospitalInfo }) => {
       )}
 
       {/* Contact */}
-      {(d?.workPhoneNumber || hospital.email || d?.websiteUrl) && (
+      {(workPhone || hospital.email || hospital.websiteUrl) && (
         <>
           <div className="px-6 py-5">
             <SectionHeading icon={Phone} label="Contact" />
             <div className="pl-1">
-              {d?.workPhoneNumber && (
-                <InfoRow icon={Phone} label="Phone" value={d.workPhoneNumber} />
+              {workPhone && (
+                <InfoRow icon={Phone} label="Phone" value={workPhone} />
               )}
               {hospital.email && (
                 <InfoRow
@@ -146,12 +148,12 @@ const HospitalProfile = ({ hospital }: { hospital: HospitalInfo }) => {
                   href={`mailto:${hospital.email}`}
                 />
               )}
-              {d?.websiteUrl && (
+              {hospital.websiteUrl && (
                 <InfoRow
                   icon={Globe}
                   label="Website"
-                  value={d.websiteUrl}
-                  href={d.websiteUrl}
+                  value={hospital.websiteUrl}
+                  href={hospital.websiteUrl}
                 />
               )}
             </div>
@@ -178,11 +180,11 @@ const HospitalProfile = ({ hospital }: { hospital: HospitalInfo }) => {
       )}
 
       {/* About */}
-      {d?.about && (
+      {about && (
         <>
           <div className="px-6 py-5">
             <SectionHeading icon={BookOpen} label="About" />
-            <p className="text-sm text-muted-foreground leading-relaxed pl-1">{d.about}</p>
+            <p className="text-sm text-muted-foreground leading-relaxed pl-1">{about}</p>
           </div>
           <Separator />
         </>
