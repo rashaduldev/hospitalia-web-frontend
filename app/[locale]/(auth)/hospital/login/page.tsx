@@ -34,7 +34,11 @@ const HospitalLoginPage = () => {
                   Hospital Login
                 </span>
               </div>
-              <LoginForm />
+              <LoginForm
+                subtitle="Sign in to your hospital account"
+                registerHref="/hospital/register"
+                registerLabel="Don't have an account? Register your hospital"
+              />
             </div>
           </div>
         </main>

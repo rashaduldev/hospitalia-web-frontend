@@ -15,7 +15,15 @@ import { ControlledPhoneInput } from "@/components/common/FormUIControllers/Cont
 import { getCleanPhoneData } from "@/lib/phone-utils";
 import { Loader2 } from "lucide-react";
 
-const LoginForm = () => {
+const LoginForm = ({
+  subtitle = "Sign in to your doctor or secretary account",
+  registerHref = "/doctor/register",
+  registerLabel,
+}: {
+  subtitle?: string;
+  registerHref?: string;
+  registerLabel?: string;
+}) => {
   const t = useI18n();
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
@@ -61,7 +69,7 @@ const LoginForm = () => {
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-foreground">Welcome back</h1>
-        <p className="text-sm text-muted-foreground mt-1">Sign in to your doctor or secretary account</p>
+        <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>
       </div>
 
       <div className="space-y-4">
@@ -111,8 +119,8 @@ const LoginForm = () => {
       </div>
 
       <div className="mt-8 flex flex-col gap-3">
-        <Link href="/doctor/register" className="text-sm font-medium text-primary hover:underline">
-          {t("login.noAccount")}
+        <Link href={registerHref} className="text-sm font-medium text-primary hover:underline">
+          {registerLabel ?? t("login.noAccount")}
         </Link>
         <Link href="/forgot-password" className="text-sm font-medium text-muted-foreground hover:underline hover:text-foreground">
           {t("login.forgotPassword")}
