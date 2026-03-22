@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { Eye, EyeOff, User, Stethoscope, Loader2 } from "lucide-react";
+import { Eye, EyeOff, User, Stethoscope, Loader2, CheckCircle2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { getSpecialitiesAllCustomer } from "@/actions/speciality.customer";
 import { useQuery } from "@tanstack/react-query";
@@ -19,11 +19,13 @@ import { Button } from "@/components/ui/button";
 import { RegisterUser } from "@/types/user.type";
 import { getCleanPhoneData } from "@/lib/phone-utils";
 import { ControlledPhoneInput } from "@/components/common/FormUIControllers/ControlledPhoneInput";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 export default function PatinetRegistrationForm({ lang }: { lang: string }) {
   const t = useI18n();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const {
     handleSubmit,
@@ -89,11 +91,35 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
       setError("root", { type: "manual", message: res.message });
       return;
     }
-    router.replace("/doctor/login");
     reset();
+    setShowSuccess(true);
   };
 
   return (
+    <>
+    <Dialog open={showSuccess} onOpenChange={setShowSuccess}>
+      <DialogContent className="max-w-sm text-center">
+        <DialogTitle className="sr-only">Registration Successful</DialogTitle>
+        <div className="flex flex-col items-center gap-4 py-4">
+          <div className="p-4 bg-secondary/15 rounded-full">
+            <CheckCircle2 className="w-10 h-10 text-secondary" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-foreground">Account Created!</h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Your account has been successfully registered. You can now sign in.
+            </p>
+          </div>
+          <Button
+            className="w-full mt-2 font-semibold"
+            onClick={() => router.replace("/doctor/login")}
+          >
+            Go to Login
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 pb-3">
       {/* Personal Info */}
       <div className="border border-border rounded-xl bg-card shadow-sm overflow-hidden">
@@ -278,5 +304,6 @@ export default function PatinetRegistrationForm({ lang }: { lang: string }) {
         </Link>
       </div>
     </form>
+    </>
   );
 }
