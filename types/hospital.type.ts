@@ -1,24 +1,29 @@
 import { Speciality } from "./speciality.type";
 
 export type HospitalInfo = {
-  userId: number;
-  firstName: string;
-  lastName: string;
+  id: number;
+  userType: string;
   email: string;
-  phoneNumber: string;
-  hospitalName?: string;
-  professionalInfoResponse?: {
-    designation?: string | null;
+  mobileNumber?: string;
+  onboardingStatus?: string;
+  userDetails?: {
+    id?: number;
+    firstName?: string | null;       // hospital name
+    lastName?: string | null;
     hospitalType?: string | null;
     workPhoneNumber?: string | null;
     websiteUrl?: string | null;
     numberOfBeds?: number | null;
     foundedYear?: number | null;
-    onmsregistrationNumber?: string | null;
-    professionalStatement?: string | null;
+    onmsRegistrationNumber?: string | null;
     about?: string | null;
-    fileObjectId?: number | null;
     specialities?: Speciality[];
-    departments?: any[];
+  };
+  contactInfo?: {
+    email?: string;
+    countryCode?: string;
+    mobileNumber?: string;
+    isEmailVerified?: boolean;
+    isMobileNumberVerified?: boolean;
   };
 };
