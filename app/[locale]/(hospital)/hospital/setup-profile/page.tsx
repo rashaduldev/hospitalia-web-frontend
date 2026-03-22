@@ -1,5 +1,6 @@
 import { getCurrentLocale } from "@/locales/server";
 import { getCurrentUser } from "@/actions/user.actions";
+import { getHospitalInfoByUserId } from "@/actions/hospital/hospitaldata";
 import { redirect } from "next/navigation";
 import HospitalSetupProfileForm from "@/components/pages/hospital/HospitalSetupProfileForm";
 import { Building2 } from "lucide-react";
@@ -15,10 +16,12 @@ export default async function HospitalSetupProfilePage() {
 
   if (!user) redirect("/hospital/login");
 
-  // If already set up, skip this page
   if (user.onboardingStatus !== "REGISTERED") {
     redirect("/hospital/dashboard");
   }
+
+  const hospitalRes = await getHospitalInfoByUserId({ lang, hospitalUserId: user.id });
+  const hospitalData = hospitalRes?.payload ?? null;
 
   return (
     <div className="py-6 max-w-3xl">
@@ -37,7 +40,7 @@ export default async function HospitalSetupProfilePage() {
         </p>
       </div>
 
-      <HospitalSetupProfileForm userId={user.id} lang={lang} />
+      <HospitalSetupProfileForm userId={user.id} lang={lang} initialData={hospitalData} />
     </div>
   );
 }

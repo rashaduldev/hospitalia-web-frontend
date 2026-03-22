@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Building2, Phone, BookOpen, Stethoscope, Loader2 } from "lucide-react";
 import { ControlledInput } from "@/components/common/FormUIControllers/ControlledInput";
@@ -11,9 +11,10 @@ import { ControlledSelect } from "@/components/common/FormUIControllers/Controll
 import { ControlledTextarea } from "@/components/common/FormUIControllers/ControlledTextarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { setupHospitalProfile, getHospitalInfoByUserId } from "@/actions/hospital/hospitaldata";
+import { setupHospitalProfile } from "@/actions/hospital/hospitaldata";
 import { getSpecialitiesAllCustomer } from "@/actions/speciality.customer";
 import { HospitalSetupSchema, HospitalSetupFormValues } from "@/schema/hospital.setup.schema";
+import { HospitalInfo } from "@/types/hospital.type";
 import { Speciality } from "@/types/speciality.type";
 
 const HOSPITAL_TYPES = [
@@ -52,12 +53,18 @@ const SectionCard = ({ icon: Icon, title, subtitle, children }: {
 export default function HospitalSetupProfileForm({
   userId,
   lang,
+  initialData,
 }: {
   userId: number;
   lang: string;
+  initialData?: HospitalInfo | null;
 }) {
   const router = useRouter();
-  const [selectedSpecialities, setSelectedSpecialities] = useState<Speciality[]>([]);
+  const p = initialData?.professionalInfoResponse;
+
+  const [selectedSpecialities, setSelectedSpecialities] = useState<Speciality[]>(
+    p?.specialities ?? [],
+  );
 
   const { data: specialitiesData } = useQuery({
     queryKey: ["specialities"],
@@ -69,52 +76,25 @@ export default function HospitalSetupProfileForm({
   });
   const specialities: Speciality[] = specialitiesData?.content ?? [];
 
-  const { data: hospitalData, isLoading: hospitalLoading } = useQuery({
-    queryKey: ["hospital-info", userId],
-    queryFn: () => getHospitalInfoByUserId({ lang, hospitalUserId: userId }),
-  });
-
   const {
     handleSubmit,
     control,
     setError,
-    reset,
     formState: { errors, isSubmitting },
   } = useForm<HospitalSetupFormValues>({
     resolver: zodResolver(HospitalSetupSchema),
     defaultValues: {
-      hospitalName: "",
-      hospitalType: "",
-      workPhoneNumber: "",
-      websiteUrl: "",
-      numberOfBeds: "",
-      foundedYear: "",
-      onmsRegistrationNumber: "",
-      about: "",
-      specialityIds: [],
-    },
-  });
-
-  // Pre-populate form when hospital data loads
-  useEffect(() => {
-    const info = hospitalData?.payload;
-    if (!info) return;
-    const p = info.professionalInfoResponse;
-    reset({
-      hospitalName: info.hospitalName ?? "",
-      hospitalType: info.hospitalType ?? "",
-      workPhoneNumber: info.workPhoneNumber ?? p?.workPhoneNumber ?? "",
-      websiteUrl: info.websiteUrl ?? "",
-      numberOfBeds: info.numberOfBeds != null ? String(info.numberOfBeds) : "",
-      foundedYear: info.foundedYear != null ? String(info.foundedYear) : "",
+      hospitalName: initialData?.hospitalName ?? "",
+      hospitalType: initialData?.hospitalType ?? "",
+      workPhoneNumber: initialData?.workPhoneNumber ?? p?.workPhoneNumber ?? "",
+      websiteUrl: initialData?.websiteUrl ?? "",
+      numberOfBeds: initialData?.numberOfBeds != null ? String(initialData.numberOfBeds) : "",
+      foundedYear: initialData?.foundedYear != null ? String(initialData.foundedYear) : "",
       onmsRegistrationNumber: p?.onmsregistrationNumber ?? "",
       about: p?.professionalStatement ?? "",
       specialityIds: [],
-    });
-    if (p?.specialities?.length) {
-      setSelectedSpecialities(p.specialities);
-    }
-  }, [hospitalData, reset]);
+    },
+  });
 
   const toggleSpeciality = (spec: Speciality) => {
     setSelectedSpecialities((prev) =>
@@ -148,14 +128,6 @@ export default function HospitalSetupProfileForm({
 
     router.replace("/hospital/dashboard");
   };
-
-  if (hospitalLoading) {
-    return (
-      <div className="flex items-center justify-center py-16">
-        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 pb-6">
