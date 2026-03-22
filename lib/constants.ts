@@ -56,6 +56,16 @@ export const ROUTES = {
       icon: LayoutDashboardIcon,
     },
     {
+      name: "Manage Doctors",
+      url: "/hospital/manage-doctors",
+      icon: Stethoscope,
+    },
+    {
+      name: "Manage Locations",
+      url: "/hospital/manage-locations",
+      icon: MapPin,
+    },
+    {
       name: "Set Availability",
       url: "/hospital/availability",
       icon: ChartBarIcon,

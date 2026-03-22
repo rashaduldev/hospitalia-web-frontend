@@ -13,9 +13,11 @@ export default async function HospitalDashboard() {
   const lang = await getCurrentLocale();
   const user = await getCurrentUser({ lang });
 
-  if (user?.onboardingStatus === "REGISTERED") {
+  if (!user) redirect("/hospital/login");
+
+  if (user.onboardingStatus === "REGISTERED") {
     redirect("/hospital/setup-profile");
   }
 
-  return <HospitalDashboardPage hospitalUserId={user?.id} lang={lang} />;
+  return <HospitalDashboardPage hospitalUserId={user.id} lang={lang} />;
 }

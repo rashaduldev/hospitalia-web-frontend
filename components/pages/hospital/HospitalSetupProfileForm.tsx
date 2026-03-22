@@ -3,15 +3,15 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Building2, Phone, Globe, BedDouble, CalendarDays, FileText, BookOpen, Stethoscope, Loader2 } from "lucide-react";
+import { Building2, Phone, BookOpen, Stethoscope, Loader2 } from "lucide-react";
 import { ControlledInput } from "@/components/common/FormUIControllers/ControlledInput";
 import { ControlledSelect } from "@/components/common/FormUIControllers/ControlledSelect";
 import { ControlledTextarea } from "@/components/common/FormUIControllers/ControlledTextarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { setupHospitalProfile } from "@/actions/hospital/hospitaldata";
+import { setupHospitalProfile, getHospitalInfoByUserId } from "@/actions/hospital/hospitaldata";
 import { getSpecialitiesAllCustomer } from "@/actions/speciality.customer";
 import { HospitalSetupSchema, HospitalSetupFormValues } from "@/schema/hospital.setup.schema";
 import { Speciality } from "@/types/speciality.type";
@@ -69,10 +69,16 @@ export default function HospitalSetupProfileForm({
   });
   const specialities: Speciality[] = specialitiesData?.content ?? [];
 
+  const { data: hospitalData, isLoading: hospitalLoading } = useQuery({
+    queryKey: ["hospital-info", userId],
+    queryFn: () => getHospitalInfoByUserId({ lang, hospitalUserId: userId }),
+  });
+
   const {
     handleSubmit,
     control,
     setError,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<HospitalSetupFormValues>({
     resolver: zodResolver(HospitalSetupSchema),
@@ -88,6 +94,27 @@ export default function HospitalSetupProfileForm({
       specialityIds: [],
     },
   });
+
+  // Pre-populate form when hospital data loads
+  useEffect(() => {
+    const info = hospitalData?.payload;
+    if (!info) return;
+    const p = info.professionalInfoResponse;
+    reset({
+      hospitalName: info.hospitalName ?? "",
+      hospitalType: p?.hospitalType ?? "",
+      workPhoneNumber: p?.workPhoneNumber ?? "",
+      websiteUrl: p?.websiteUrl ?? "",
+      numberOfBeds: p?.numberOfBeds != null ? String(p.numberOfBeds) : "",
+      foundedYear: p?.foundedYear != null ? String(p.foundedYear) : "",
+      onmsRegistrationNumber: p?.onmsregistrationNumber ?? "",
+      about: p?.about ?? "",
+      specialityIds: [],
+    });
+    if (p?.specialities?.length) {
+      setSelectedSpecialities(p.specialities);
+    }
+  }, [hospitalData, reset]);
 
   const toggleSpeciality = (spec: Speciality) => {
     setSelectedSpecialities((prev) =>
@@ -121,6 +148,14 @@ export default function HospitalSetupProfileForm({
 
     router.replace("/hospital/dashboard");
   };
+
+  if (hospitalLoading) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 pb-6">
