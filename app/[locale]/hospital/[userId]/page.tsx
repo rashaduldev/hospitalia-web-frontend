@@ -2,6 +2,7 @@ import { getHospitalInfoByUserId } from "@/actions/hospital/hospitaldata";
 import Header from "@/components/pages/home/Header";
 import { getCurrentLocale } from "@/locales/server";
 import HospitalProfile from "@/components/pages/hospital/HospitalProfile";
+import { HospitalInfo } from "@/types/hospital.type";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -20,7 +21,7 @@ const HospitalProfilePage = async ({ params }: Props) => {
   const hospitalUserId = Number(userId);
 
   const hospitalData = await getHospitalInfoByUserId({ lang, hospitalUserId });
-  const hospital = hospitalData?.payload;
+  const hospital: HospitalInfo | null = hospitalData?.payload ?? null;
 
   if (!hospital) {
     notFound();
