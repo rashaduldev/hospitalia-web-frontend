@@ -3,6 +3,7 @@
 import { Stethoscope, MapPin } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ManageDoctors from "./ManageDoctors";
+import ManageLocations from "./ManageLocations";
 
 export default function HospitalDashboardPage({
   hospitalUserId,
@@ -58,12 +59,8 @@ export default function HospitalDashboardPage({
                 <p className="text-xs text-muted-foreground mt-1">Branches and facilities of your hospital</p>
               </div>
             </div>
-            <div className="flex flex-col items-center justify-center py-20 gap-3 text-center px-4">
-              <MapPin className="w-10 h-10 text-muted-foreground/30" />
-              <p className="text-sm font-semibold text-foreground">Coming soon</p>
-              <p className="text-xs text-muted-foreground max-w-xs">
-                Location management will be available here once the API is ready.
-              </p>
+            <div className="p-6">
+              <ManageLocations hospitalUserId={hospitalUserId} lang={lang} />
             </div>
           </div>
         </TabsContent>

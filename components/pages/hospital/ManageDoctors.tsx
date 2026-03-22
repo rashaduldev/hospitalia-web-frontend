@@ -13,6 +13,7 @@ import {
   unassignDoctorFromHospital,
   HospitalDoctorResponse,
 } from "@/actions/hospital/hospitalDoctors";
+import { getHospitalLocations, HospitalLocation } from "@/actions/hospital/hospitalLocations";
 import { globalSearch } from "@/actions/global.search";
 import { SearchResultIteam } from "@/types/search.type";
 
@@ -32,8 +33,16 @@ export default function ManageDoctors({
   const [suggestions, setSuggestions] = useState<SearchResultIteam[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState<SearchResultIteam | null>(null);
-  const [locationId, setLocationId] = useState("");
+  const [selectedLocationId, setSelectedLocationId] = useState<string>("");
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  // Fetch hospital locations for the assign dropdown
+  const { data: locationsData } = useQuery({
+    queryKey: ["hospital-locations", hospitalUserId],
+    queryFn: () => getHospitalLocations({ lang, hospitalUserId }),
+    enabled: assignOpen,
+  });
+  const hospitalLocations: HospitalLocation[] = locationsData?.payload ?? [];
 
   // Fetch assigned doctors
   const { data, isLoading } = useQuery({
@@ -88,13 +97,13 @@ export default function ManageDoctors({
     setDoctorSearch("");
     setSuggestions([]);
     setSelectedDoctor(null);
-    setLocationId("");
+    setSelectedLocationId("");
   };
 
   const handleAssignSubmit = () => {
     if (!selectedDoctor) { toast.error("Please select a doctor"); return; }
-    if (!locationId || isNaN(Number(locationId))) { toast.error("Please enter a valid location ID"); return; }
-    assignMutation.mutate({ doctorUserId: selectedDoctor.userId, hospitalLocationId: Number(locationId) });
+    if (!selectedLocationId) { toast.error("Please select a location"); return; }
+    assignMutation.mutate({ doctorUserId: selectedDoctor.userId, hospitalLocationId: Number(selectedLocationId) });
   };
 
   return (
@@ -206,18 +215,26 @@ export default function ManageDoctors({
               )}
             </div>
 
-            {/* Hospital Location ID */}
+            {/* Hospital Location Select */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                Hospital Location ID <span className="text-destructive">*</span>
+                Hospital Location <span className="text-destructive">*</span>
               </label>
-              <Input
-                type="number"
-                value={locationId}
-                onChange={(e) => setLocationId(e.target.value)}
-                placeholder="Enter hospital location ID"
-              />
-              <p className="text-xs text-muted-foreground">Location picker coming soon — enter the ID manually for now.</p>
+              <select
+                value={selectedLocationId}
+                onChange={(e) => setSelectedLocationId(e.target.value)}
+                className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              >
+                <option value="">Select a location...</option>
+                {hospitalLocations.map((loc) => (
+                  <option key={loc.id} value={loc.id}>
+                    {loc.locationName}{loc.city ? ` — ${loc.city}` : ""}
+                  </option>
+                ))}
+              </select>
+              {hospitalLocations.length === 0 && (
+                <p className="text-xs text-destructive">No locations found. Add a location first from the Locations tab.</p>
+              )}
             </div>
           </div>
           <DialogFooter>
