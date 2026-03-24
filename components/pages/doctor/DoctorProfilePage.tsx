@@ -175,9 +175,13 @@ function formatExpiryDisplay(raw?: string | number[]): string | undefined {
 export default function DoctorProfilePage({
   userId,
   lang,
+  mobileNumber: userMobileNumber = "",
+  countryCode: userCountryCode = "",
 }: {
   userId: number;
   lang: string;
+  mobileNumber?: string;
+  countryCode?: string;
 }) {
   const [editOpen, setEditOpen] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
@@ -266,8 +270,8 @@ export default function DoctorProfilePage({
           lastName: values.lastName,
           gender: values.gender,
           email: values.email,
-          ...(doctor?.countryCode && { countryCode: doctor.countryCode }),
-          ...(doctor?.mobileNumber && { mobileNumber: doctor.mobileNumber }),
+          countryCode: userCountryCode,
+          mobileNumber: userMobileNumber,
           professionalInfoRequest: {
             designation: values.designation,
             specialityId: values.specialityIds ?? [],
@@ -311,6 +315,8 @@ export default function DoctorProfilePage({
         lastName: doctor?.lastName ?? "",
         gender: doctor?.gender ?? "MALE",
         email: doctor?.email ?? "",
+        countryCode: userCountryCode,
+        mobileNumber: userMobileNumber,
         password: newPassword,
         professionalInfoRequest: {
           designation: doctor?.professionalInfoResponse?.designation ?? "",
@@ -357,11 +363,11 @@ export default function DoctorProfilePage({
         <InfoRow label="Gender" value={doctor.gender} />
         <InfoRow label="Email" value={doctor.email} />
         <InfoRow
-          label="Phone"
+          label="Mobile"
           value={
-            doctor.mobileNumber
-              ? `+${doctor.countryCode} ${doctor.mobileNumber}`
-              : doctor.phoneNumber
+            userCountryCode && userMobileNumber
+              ? `+${userCountryCode} ${userMobileNumber}`
+              : userMobileNumber || undefined
           }
         />
         <InfoRow label="Date of Birth" value={doctor.dateOfBirth} />

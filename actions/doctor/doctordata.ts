@@ -57,7 +57,7 @@ export const updateDoctorProfile = async ({
   data: UpdateDoctorProfileRequest;
 }) => {
   const token = await getAccessToken();
-  const { password: _p, mobileNumber: _m, ...safeData } = data as any;
+  const { password: _p, ...safeData } = data as any;
   const res = await apiClient({
     endpoint: "/api/doctors/update",
     method: "PUT",

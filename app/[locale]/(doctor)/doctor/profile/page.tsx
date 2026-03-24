@@ -17,5 +17,12 @@ export default async function DoctorProfile() {
     return <ErrorHandle message="Failed to load user information." status={401} />;
   }
 
-  return <DoctorProfilePage userId={res.id} lang={lang} />;
+  return (
+    <DoctorProfilePage
+      userId={res.id}
+      lang={lang}
+      mobileNumber={res.contactInfo?.mobileNumber ?? res.mobileNumber ?? ""}
+      countryCode={res.contactInfo?.countryCode ?? res.countryCode ?? ""}
+    />
+  );
 }
