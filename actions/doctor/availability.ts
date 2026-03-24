@@ -41,6 +41,24 @@ export const getDoctorAvailabilityWithLocation = async ({
   return res;
 };
 
+// Get doctor's weekly availability by doctorId and location (public)
+export const getDoctorAvailabilityByDoctorId = async ({
+  doctorId,
+  doctorLocationId,
+  lang,
+}: {
+  doctorId: number;
+  doctorLocationId: number;
+  lang: string;
+}) => {
+  const res = await apiClient({
+    endpoint: `/api/doctors/availability/all/doctorId/${doctorId}/location/${doctorLocationId}`,
+    method: "GET",
+    params: { lang },
+  });
+  return res;
+};
+
 // Create/Set doctors weekly availability schedule
 export const createDoctorAvailability = async ({
   lang,

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { MapPin, Stethoscope, BookOpen, BadgeCheck } from "lucide-react";
+import { MapPin, Stethoscope, BookOpen, BadgeCheck, ShieldCheck } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Speciality } from "@/types/speciality.type";
@@ -7,7 +7,6 @@ import { SingleDoctorInfo } from "@/types/doctor";
 import { DoctorLocation } from "@/types/doctor.location.type";
 import doctorMale from "../../../public/assets/doctor_male.jpg";
 import doctorFemale from "../../../public/assets/doctor_female.jpg";
-
 
 const SectionHeading = ({
   icon: Icon,
@@ -54,9 +53,14 @@ const DoctorProfile = ({
           />
         </div>
 
-        <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100 leading-snug">
-          {doctor.firstName} {doctor.lastName}
-        </h2>
+        <div className="flex items-center justify-center gap-1.5">
+          <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100 leading-snug">
+            {doctor.firstName} {doctor.lastName}
+          </h2>
+          {doctor.verified && (
+            <BadgeCheck className="w-5 h-5 text-primary shrink-0" aria-label="Verified Doctor" />
+          )}
+        </div>
 
         {doctor.professionalInfoResponse?.designation && (
           <p className="text-sm text-muted-foreground mt-1 px-4">
@@ -64,11 +68,37 @@ const DoctorProfile = ({
           </p>
         )}
 
-        {doctor.professionalInfoResponse?.onmsregistrationNumber && (
+        {/* Qualification + experience inline */}
+        {(doctor.qualification || doctor.yearsOfExperience != null) && (
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 mt-1.5">
+            {doctor.qualification && (
+              <span className="text-xs text-foreground font-medium">{doctor.qualification}</span>
+            )}
+            {doctor.qualification && doctor.yearsOfExperience != null && (
+              <span className="text-xs text-muted-foreground">·</span>
+            )}
+            {doctor.yearsOfExperience != null && (
+              <span className="text-xs text-muted-foreground">
+                {doctor.yearsOfExperience} yrs experience
+              </span>
+            )}
+          </div>
+        )}
+
+        {doctor.professionalInfoResponse?.onmsRegistrationNumber && (
           <div className="flex items-center gap-1.5 mt-2">
             <BadgeCheck className="w-3.5 h-3.5 text-primary shrink-0" />
             <span className="text-xs text-primary font-medium">
-              Reg. {doctor.professionalInfoResponse.onmsregistrationNumber}
+              Reg. {doctor.professionalInfoResponse.onmsRegistrationNumber}
+            </span>
+          </div>
+        )}
+
+        {doctor.medicalLicenseNumber && (
+          <div className="flex items-center gap-1.5 mt-1">
+            <ShieldCheck className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+            <span className="text-xs text-muted-foreground">
+              License: {doctor.medicalLicenseNumber}
             </span>
           </div>
         )}
@@ -91,8 +121,7 @@ const DoctorProfile = ({
       <Separator />
 
       {/* Specialist in */}
-      {(specialities.length > 0 ||
-        doctor.professionalInfoResponse?.departments) && (
+      {(specialities.length > 0 || doctor.professionalInfoResponse?.departments) && (
         <>
           <div className="px-6 py-5">
             <SectionHeading icon={Stethoscope} label="Specialist In" />
@@ -164,7 +193,6 @@ const DoctorProfile = ({
           <Separator />
         </>
       )}
-
     </div>
   );
 };

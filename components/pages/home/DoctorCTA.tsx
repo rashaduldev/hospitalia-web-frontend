@@ -1,14 +1,21 @@
+"use client";
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Stethoscope, CalendarCheck, Users } from "lucide-react";
+import { useI18n } from "@/locales/client";
 
-const perks = [
-  { icon: CalendarCheck, text: "Manage your schedule & appointments easily" },
-  { icon: Users, text: "Reach thousands of patients actively seeking care" },
-  { icon: Stethoscope, text: "Professional tools built for modern healthcare" },
-];
+const PERK_ICONS = [CalendarCheck, Users, Stethoscope];
 
 const DoctorCTA = () => {
+  const t = useI18n();
+
+  const perks = [
+    { icon: PERK_ICONS[0], text: t("doctorCta.perk0") },
+    { icon: PERK_ICONS[1], text: t("doctorCta.perk1") },
+    { icon: PERK_ICONS[2], text: t("doctorCta.perk2") },
+  ];
+
   return (
     <section className="relative overflow-hidden bg-primary py-16 md:py-24">
       {/* Decorative blobs */}
@@ -19,22 +26,22 @@ const DoctorCTA = () => {
         {/* Text */}
         <div className="flex-1 text-center md:text-left">
           <p className="text-sm font-semibold text-white/70 uppercase tracking-widest mb-3">
-            For Healthcare Professionals
+            {t("doctorCta.label")}
           </p>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white leading-snug mb-4">
-            Are You a Doctor?
+            {t("doctorCta.title")}
             <br />
-            <span className="text-secondary">Join Our Network</span>
+            <span className="text-secondary">{t("doctorCta.highlight")}</span>
           </h2>
           <p className="text-white/75 text-base leading-relaxed max-w-md mx-auto md:mx-0 mb-8">
-            Hospitalia gives healthcare professionals a powerful platform to manage availability, accept bookings, and grow their practice — all in one place.
+            {t("doctorCta.description")}
           </p>
           <Link href="/doctor/register">
             <Button
               size="lg"
               className="bg-white text-primary font-bold hover:bg-white/90 shadow-lg px-8"
             >
-              Get Started as a Doctor
+              {t("doctorCta.button")}
             </Button>
           </Link>
         </div>

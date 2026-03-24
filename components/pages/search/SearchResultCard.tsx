@@ -23,7 +23,7 @@ export function SearchResultCard({
   searchType: string;
 }) {
   const isDoctor = searchType !== "HOSPITAL";
-  const profileHref = isDoctor ? `/doctor/${item.userId}` : `/hospital/${item.hospitalId ?? item.userId}`;
+  const profileHref = isDoctor ? `/doctor/${item.doctorId ?? item.userId}` : `/hospital/${item.hospitalId ?? item.userId}`;
 
   return (
     <div className="overflow-hidden">

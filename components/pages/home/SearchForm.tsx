@@ -15,7 +15,7 @@ import { SearchFormSchema } from "@/schema/search.schema";
 import { cn } from "@/lib/utils";
 import { getDoctorCities, getHospitalCities } from "@/actions/global.search";
 
-const ALL_OPTION = { label: "All Cities", value: "ALL" };
+const ALL_OPTION_VALUE = "ALL";
 
 const SEARCH_OPTIONS = [
   { value: "DOCTOR", labelKey: "banner.doctor", icon: Stethoscope },
@@ -33,8 +33,9 @@ export const SearchForm = ({
 }: SearchFormProps) => {
   const router = useRouter();
   const t = useI18n();
+  const allCitiesOption = { label: t("banner.allCities"), value: ALL_OPTION_VALUE };
   const [isPending, startTransition] = useTransition();
-  const [cityOptions, setCityOptions] = useState([ALL_OPTION]);
+  const [cityOptions, setCityOptions] = useState([allCitiesOption]);
   const [citiesLoading, setCitiesLoading] = useState(false);
 
   const { control, handleSubmit, setValue } = useForm<SearchFormValues>({
@@ -59,9 +60,9 @@ export const SearchForm = ({
           currentType === "DOCTOR"
             ? await getDoctorCities()
             : await getHospitalCities();
-        setCityOptions([ALL_OPTION, ...cities.map((c) => ({ label: c, value: c }))]);
+        setCityOptions([allCitiesOption, ...cities.map((c) => ({ label: c, value: c }))]);
       } catch {
-        setCityOptions([ALL_OPTION]);
+        setCityOptions([allCitiesOption]);
       } finally {
         setCitiesLoading(false);
       }
@@ -136,7 +137,7 @@ export const SearchForm = ({
           name="city"
           control={control}
           options={cityOptions}
-          placeholder={citiesLoading ? "Loading cities..." : "All Cities"}
+          placeholder={citiesLoading ? t("banner.loadingCities") : t("banner.allCities")}
           disabled={citiesLoading}
         />
       </div>
@@ -154,8 +155,8 @@ export const SearchForm = ({
           city={currentCity}
           placeholder={
             currentType === "DOCTOR"
-              ? "Doctor name, specialty..."
-              : "Hospital name, location..."
+              ? t("banner.doctorSearch")
+              : t("banner.hospitalSearch")
           }
         />
       </div>

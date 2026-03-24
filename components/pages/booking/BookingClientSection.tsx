@@ -8,6 +8,7 @@ import { SingleDoctorInfo } from "@/types/doctor";
 
 const BookingClientSection = ({
   doctor,
+  doctorId,
   doctorLocations,
   locationOptions,
   lang,
@@ -16,6 +17,7 @@ const BookingClientSection = ({
   doctorUnAvailable,
 }: {
   doctor: SingleDoctorInfo;
+  doctorId: number;
   doctorLocations: DoctorLocation[];
   locationOptions: LocationOption[];
   lang: string;
@@ -32,6 +34,7 @@ const BookingClientSection = ({
         <DoctorBooking
           lang={lang}
           doctor={doctor}
+          doctorId={doctorId}
           locationOptions={locationOptions}
           doctorLocations={doctorLocations}
           token={token}

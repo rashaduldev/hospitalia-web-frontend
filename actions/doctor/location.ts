@@ -21,6 +21,22 @@ export const getDoctorLocations = async ({
   return res;
 };
 
+// Get all locations for a doctor by doctorId (public)
+export const getDoctorLocationsByDoctorId = async ({
+  lang,
+  doctorId,
+}: {
+  lang: string;
+  doctorId: number;
+}) => {
+  const res = await apiClient({
+    endpoint: `/api/doctors/location/all/${doctorId}`,
+    method: "GET",
+    params: { lang },
+  });
+  return res;
+};
+
 //  Get a doctor's location by location ID
 
 export const getDoctorLocationById = async ({

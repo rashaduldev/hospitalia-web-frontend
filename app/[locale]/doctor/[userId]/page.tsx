@@ -1,9 +1,10 @@
-import { getDoctorInfobyUserid } from "@/actions/doctor/doctordata";
+import { getDoctorInfoByDoctorId } from "@/actions/doctor/doctordata";
 import Header from "@/components/pages/home/Header";
+import FooterSection from "@/components/common/Footer";
 import { getCurrentLocale } from "@/locales/server";
-import { getDoctorLocations } from "@/actions/doctor/location";
+import { getDoctorLocationsByDoctorId } from "@/actions/doctor/location";
 import { Location } from "@/types/doctor.location.type";
-import { getDoctorUnAvailability } from "@/actions/doctor/unavailability";
+import { getDoctorUnAvailabilityByDoctorId } from "@/actions/doctor/unavailability";
 import { getCurrentUser } from "@/actions/user.actions";
 import { getAccessToken } from "@/actions/auth";
 import BookingClientSection from "@/components/pages/booking/BookingClientSection";
@@ -25,22 +26,15 @@ const DoctorBookingPage = async ({ params }: Props) => {
   const { userId } = await params;
   const currentUser = await getCurrentUser({ lang });
   const token = await getAccessToken();
-  const SignleDoctorUserId = Number(userId);
+  const doctorId = Number(userId);
 
-  const singleDoctor = await getDoctorInfobyUserid({
-    lang,
-    SignleDoctorUserId,
-  });
-  const doctorUserId = singleDoctor?.payload?.userId;
+  const singleDoctor = await getDoctorInfoByDoctorId({ lang, doctorId });
 
-  if (!doctorUserId) {
+  if (!singleDoctor?.payload) {
     notFound();
   }
-  const doctorLocations = await getDoctorLocations({ lang, doctorUserId });
-  const doctorUnAvailable = await getDoctorUnAvailability({
-    lang,
-    doctorUserId,
-  });
+  const doctorLocations = await getDoctorLocationsByDoctorId({ lang, doctorId });
+  const doctorUnAvailable = await getDoctorUnAvailabilityByDoctorId({ lang, doctorId });
 
   const locationOptions =
     doctorLocations?.payload?.map((item: Location) => ({
@@ -55,6 +49,7 @@ const DoctorBookingPage = async ({ params }: Props) => {
       <div className="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <BookingClientSection
           doctor={singleDoctor?.payload}
+          doctorId={doctorId}
           doctorLocations={locations}
           locationOptions={locationOptions}
           lang={lang}
@@ -63,6 +58,7 @@ const DoctorBookingPage = async ({ params }: Props) => {
           doctorUnAvailable={doctorUnAvailable?.payload?.content || []}
         />
       </div>
+      <FooterSection />
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import { getHospitalPublicProfile } from "@/actions/hospital/hospitaldata";
 import Header from "@/components/pages/home/Header";
+import FooterSection from "@/components/common/Footer";
 import { getCurrentLocale } from "@/locales/server";
 import HospitalProfile from "@/components/pages/hospital/HospitalProfile";
 import { HospitalInfo } from "@/types/hospital.type";
@@ -45,6 +46,7 @@ const HospitalProfilePage = async ({ params }: Props) => {
           </div>
         </div>
       </div>
+      <FooterSection />
     </div>
   );
 };

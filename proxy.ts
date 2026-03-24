@@ -35,11 +35,14 @@ const publicProfileRegex = /^\/(doctor|hospital)\/\d+(\/.*)?$/i;
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  // Strip locale prefix (e.g. /fr/search → /search) before checking public routes
+  const pathnameWithoutLocale = pathname.replace(/^\/(en|fr)/, "") || "/";
+
   const token = await getAccessToken();
 
   const isPublicPage =
-    publicPathnameRegex.test(pathname) ||
-    publicProfileRegex.test(pathname);
+    publicPathnameRegex.test(pathnameWithoutLocale) ||
+    publicProfileRegex.test(pathnameWithoutLocale);
 
   if (!isPublicPage && !token) {
     return NextResponse.redirect(new URL("/", req.url));

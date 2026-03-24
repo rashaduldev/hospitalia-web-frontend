@@ -41,7 +41,9 @@
       "Bash(curl -s \"https://hospitalia-api.dhrubok.xyz/api/global-search/search?searchKeyword=dakar&searchType=DOCTOR&pageNo=0&pageSize=10\")",
       "Bash(curl -s \"https://hospitalia-api.dhrubok.xyz/api/global-search/search?searchKeyword=doctor&searchType=DOCTOR&pageNo=0&pageSize=10\")",
       "Bash(curl -s \"http://localhost:3000/en/search?searchKeyword=dakar&searchType=DOCTOR\")",
-      "Bash(git diff:*)"
+      "Bash(git diff:*)",
+      "Bash(find /Volumes/Works/projects/web/hospitalia-web/app/[locale]/\\\\\\(patient\\\\\\) -name \"*.tsx\")",
+      "Bash(sort find:*)"
     ]
   }
 }

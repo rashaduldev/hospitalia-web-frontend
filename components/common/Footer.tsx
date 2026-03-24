@@ -4,48 +4,51 @@ import Link from "next/link";
 import { Label } from "../ui/label";
 import ThemeToggle from "./theme-toggle";
 import DashboardLogo from "@/public/icons/dashLogo";
-
-const Sections = [
-  {
-    title: "Services",
-    links: [
-      { title: "Find a Doctor", href: "/search" },
-      { title: "Book Appointment", href: "/patient/login" },
-      { title: "Health Packages", href: "#packages" },
-      { title: "Emergency Care", href: "#" },
-      { title: "Teleconsultation", href: "#" },
-    ],
-  },
-  {
-    title: "Providers",
-    links: [
-      { title: "Doctor / Secretary Login", href: "/doctor/login" },
-      { title: "Hospital Login", href: "/hospital/login" },
-      { title: "Admin Login", href: "/admin/login" },
-    ],
-  },
-  {
-    title: "Company",
-    links: [
-      { title: "About Us", href: "#" },
-      { title: "Our Doctors", href: "/search" },
-      { title: "Careers", href: "#" },
-      { title: "Blog", href: "#" },
-      { title: "Contact Us", href: "#" },
-    ],
-  },
-  {
-    title: "Legal",
-    links: [
-      { title: "Privacy Policy", href: "#" },
-      { title: "Terms of Service", href: "#" },
-      { title: "Cookie Policy", href: "#" },
-      { title: "Accessibility", href: "#" },
-    ],
-  },
-];
+import { useI18n } from "@/locales/client";
 
 const FooterSection = () => {
+  const t = useI18n();
+
+  const Sections = [
+    {
+      title: t("footer.services"),
+      links: [
+        { title: t("footer.findDoctor"), href: "/search" },
+        { title: t("footer.bookAppointment"), href: "/patient/login" },
+        { title: t("footer.healthPackages"), href: "#packages" },
+        { title: t("footer.emergencyCare"), href: "#" },
+        { title: t("footer.teleconsultation"), href: "#" },
+      ],
+    },
+    {
+      title: t("footer.providers"),
+      links: [
+        { title: t("footer.doctorLogin"), href: "/doctor/login" },
+        { title: t("footer.hospitalLogin"), href: "/hospital/login" },
+        { title: t("footer.adminLogin"), href: "/admin/login" },
+      ],
+    },
+    {
+      title: t("footer.company"),
+      links: [
+        { title: t("footer.about"), href: "#" },
+        { title: t("footer.ourDoctors"), href: "/search" },
+        { title: t("footer.careers"), href: "#" },
+        { title: t("footer.blog"), href: "#" },
+        { title: t("footer.contact"), href: "#" },
+      ],
+    },
+    {
+      title: t("footer.legal"),
+      links: [
+        { title: t("footer.privacy"), href: "#" },
+        { title: t("footer.terms"), href: "#" },
+        { title: t("footer.cookie"), href: "#" },
+        { title: t("footer.accessibility"), href: "#" },
+      ],
+    },
+  ];
+
   return (
     <footer className="bg-gray-950 text-gray-300 pt-14 pb-8">
       <div className="container mx-auto px-6">
@@ -54,14 +57,14 @@ const FooterSection = () => {
           <div className="flex flex-col gap-4 min-w-56">
             <DashboardLogo className="text-white" />
             <p className="text-sm text-gray-400 leading-relaxed max-w-xs">
-              Connecting patients with trusted healthcare professionals for better, faster, and accessible care.
+              {t("footer.tagline")}
             </p>
             <div className="flex items-center gap-2 text-xs text-gray-500">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-secondary"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
               </span>
-              All systems operational
+              {t("footer.status")}
             </div>
           </div>
 
@@ -88,17 +91,17 @@ const FooterSection = () => {
 
           {/* Preferences Column */}
           <div className="flex flex-col gap-3 text-sm">
-            <Label className="text-gray-400 font-medium">Preferences</Label>
+            <Label className="text-gray-400 font-medium">{t("footer.preferences")}</Label>
             <ThemeToggle />
           </div>
         </div>
 
         <div className="border-t border-gray-800 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3">
           <p className="text-xs text-gray-500">
-            © {new Date().getFullYear()} Hospitalia. All rights reserved.
+            © {new Date().getFullYear()} Hospitalia. {t("footer.copyright")}
           </p>
           <p className="text-xs text-gray-500">
-            Built with care by{" "}
+            {t("footer.builtBy")}{" "}
             <a
               href="https://dhrubokinfotech.com"
               target="_blank"

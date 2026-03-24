@@ -22,6 +22,22 @@ export const getDoctorUnAvailability = async ({
   return res;
 };
 
+// Get all weekly unavailability by doctorId (public)
+export const getDoctorUnAvailabilityByDoctorId = async ({
+  lang,
+  doctorId,
+}: {
+  lang: string;
+  doctorId: number;
+}) => {
+  const res = await apiClient({
+    endpoint: `/api/doctors/unavailability/all/doctorId/${doctorId}`,
+    method: "GET",
+    params: { lang },
+  });
+  return res;
+};
+
 // doctors weekly unavailability schedule set
 export const createDoctorUnAvailability = async ({
   lang,

@@ -11,7 +11,7 @@ const WhyChooseUs = () => {
       {/* Heading */}
       <div className="md:flex-1 text-center md:text-left">
         <p className="text-sm font-semibold text-primary uppercase tracking-widest mb-2">
-          Why Choose Us
+          {t("whyChooseUs.label")}
         </p>
         <h2 className="text-2xl sm:text-4xl font-bold text-foreground leading-snug mb-3">
           {t("whyChooseUs.title")}

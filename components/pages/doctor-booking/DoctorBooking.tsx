@@ -25,7 +25,7 @@ import {
 } from "@/schema/doctor.booking.schema";
 import { bookAppointment } from "@/actions/doctor/booking";
 import { getOrCreateThread } from "@/actions/chat/chat.actions";
-import { getDoctorAvailabilityWithLocation } from "@/actions/doctor/availability";
+import { getDoctorAvailabilityByDoctorId } from "@/actions/doctor/availability";
 import { getAvailableSlots } from "@/actions/doctor/slot";
 import { getAppointmentsByDate } from "@/actions/doctor/appointment";
 import { UnavailableDate } from "@/types/doctor.unavailable";
@@ -54,6 +54,7 @@ const DoctorBooking = ({
   locationOptions,
   doctorLocations,
   doctor,
+  doctorId,
   currentUserId,
   token,
   doctorUnAvailable = [],
@@ -62,6 +63,7 @@ const DoctorBooking = ({
   locationOptions: { label: string; value: number }[];
   doctorLocations: DoctorLocation[];
   doctor: SingleDoctorInfo;
+  doctorId: number;
   token: string | null;
   currentUserId: number;
   doctorUnAvailable: UnavailableDate[];
@@ -100,11 +102,11 @@ const DoctorBooking = ({
   const { field: appointmentTypeField } = useController({ name: "appointmentTypeId", control });
 
   const { data: locationAvailability, isLoading: isLoadingAvailability } = useQuery({
-    queryKey: ["doctorAvailability", doctorUserId, selectedLocation],
+    queryKey: ["doctorAvailability", doctorId, selectedLocation],
     queryFn: async () => {
-      const res = await getDoctorAvailabilityWithLocation({
+      const res = await getDoctorAvailabilityByDoctorId({
         lang,
-        doctorUserId,
+        doctorId,
         doctorLocationId: Number(selectedLocation),
       });
       return res.payload || [];

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useCurrentLocale, useI18n } from "@/locales/client";
+import { useChangeLocale, useCurrentLocale, useI18n } from "@/locales/client";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import DashboardLogo from "@/public/icons/dashLogo";
@@ -23,6 +23,38 @@ import AppButton from "@/components/common/AppButton";
 import { getCurrentUser } from "@/actions/user.actions";
 import { handleLogout } from "@/actions/auth.actions";
 import { Typography } from "@/components/ui/Typography";
+
+function LanguageSwitcher() {
+  const locale = useCurrentLocale();
+  const changeLocale = useChangeLocale();
+
+  return (
+    <div className="flex items-center text-sm font-medium border rounded-md overflow-hidden">
+      <button
+        onClick={() => changeLocale("en")}
+        className={cn(
+          "px-2 py-1 transition-colors",
+          locale === "en"
+            ? "bg-primary text-primary-foreground"
+            : "hover:bg-muted text-ghost-foreground cursor-pointer",
+        )}
+      >
+        EN
+      </button>
+      <button
+        onClick={() => changeLocale("fr")}
+        className={cn(
+          "px-2 py-1 transition-colors",
+          locale === "fr"
+            ? "bg-primary text-primary-foreground"
+            : "hover:bg-muted text-ghost-foreground cursor-pointer",
+        )}
+      >
+        FR
+      </button>
+    </div>
+  );
+}
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -71,7 +103,7 @@ export default function Header() {
     },
     {
       href: dashboardUrl,
-      label: "Dashboard",
+      label: t("nav.dashboard"),
       hidden: !currentUser,
     },
   ];
@@ -106,6 +138,8 @@ export default function Header() {
               ),
           )}
 
+          <LanguageSwitcher />
+
           {/* User Avatar Menu */}
           {isLoading ? (
             <div className="w-9 h-9 rounded-full bg-background animate-pulse" />
@@ -138,7 +172,7 @@ export default function Header() {
                       href={dashboardUrl}
                       className="cursor-pointer"
                     >
-                      Dashboard
+                      {t("nav.dashboard")}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
@@ -208,6 +242,10 @@ export default function Header() {
                 ),
             )}
 
+            <li>
+              <LanguageSwitcher />
+            </li>
+
             {/* Mobile User Info */}
             {isLoading ? (
               <div className="w-full h-16 bg-background animate-pulse rounded-lg" />
@@ -247,7 +285,7 @@ export default function Header() {
                       onClick={() => setIsOpen(false)}
                       className="text-sm font-medium text-primary hover:underline"
                     >
-                      Dashboard
+                      {t("nav.dashboard")}
                     </Link>
                     <AppButton
                       variant="ghost"

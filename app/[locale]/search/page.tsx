@@ -1,5 +1,6 @@
 import { globalSearch } from "@/actions/global.search";
 import Header from "@/components/pages/home/Header";
+import FooterSection from "@/components/common/Footer";
 import { getCurrentLocale } from "@/locales/server";
 import Pagination from "@/components/common/Pagination";
 import SearchForm from "@/components/pages/home/SearchForm";
@@ -91,6 +92,7 @@ const SearchPage = async ({ searchParams }: { searchParams: Promise<any> }) => {
           )}
         </div>
       </div>
+      <FooterSection />
     </div>
   );
 };

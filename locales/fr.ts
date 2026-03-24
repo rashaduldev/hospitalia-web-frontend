@@ -2,7 +2,7 @@ export default {
   nav: {
     home: 'Accueil',
     logout: 'Déconnexion',
-    dashboard: 'Tableau de bord patient',
+    dashboard: 'Tableau de bord',
     patient: 'Connexion Patient',
     doctor: 'Connexion Docteur / Secrétaire',
   },
@@ -19,6 +19,10 @@ export default {
     searchBtn: 'Rechercher',
     searching: 'Recherche en cours...',
     searchSchema: 'Veuillez entrer un nom ou un mot-clé',
+    allCities: 'Toutes les villes',
+    loadingCities: 'Chargement des villes...',
+    doctorSearch: 'Nom du médecin, spécialité...',
+    hospitalSearch: "Nom de l'hôpital, lieu...",
   },
 
   stats: {
@@ -28,6 +32,7 @@ export default {
   },
 
   whyChooseUs: {
+    label: 'Pourquoi nous choisir',
     title: 'Pourquoi nous choisir ?',
     subtitle:
       "Approuvé par des milliers de personnes pour la qualité, l'expertise et les résultats.",
@@ -40,6 +45,7 @@ export default {
   },
 
   ourPackages: {
+    label: 'Nos Services',
     title: 'Nos forfaits de santé',
     earlyPregnancy: 'Forfait grossesse précoce',
     generalHealth: 'Bilan de santé général',
@@ -60,6 +66,44 @@ export default {
     checkBtn: 'Voir les détails',
   },
 
+  doctorCta: {
+    label: 'Pour les professionnels de santé',
+    title: 'Êtes-vous médecin ?',
+    highlight: 'Rejoignez notre réseau',
+    description: 'Hospitalia offre aux professionnels de santé une plateforme puissante pour gérer les disponibilités, accepter des réservations et développer leur pratique — tout en un seul endroit.',
+    button: 'Commencer en tant que médecin',
+    perk0: 'Gérez facilement votre planning et vos rendez-vous',
+    perk1: 'Atteignez des milliers de patients à la recherche de soins',
+    perk2: 'Des outils professionnels conçus pour la santé moderne',
+  },
+  footer: {
+    tagline: 'Connecter les patients avec des professionnels de santé de confiance pour des soins meilleurs, plus rapides et accessibles.',
+    status: 'Tous les systèmes opérationnels',
+    preferences: 'Préférences',
+    copyright: 'Tous droits réservés.',
+    builtBy: 'Conçu avec soin par',
+    services: 'Services',
+    findDoctor: 'Trouver un médecin',
+    bookAppointment: 'Prendre rendez-vous',
+    healthPackages: 'Forfaits santé',
+    emergencyCare: 'Soins d\'urgence',
+    teleconsultation: 'Téléconsultation',
+    providers: 'Prestataires',
+    doctorLogin: 'Connexion Docteur / Secrétaire',
+    hospitalLogin: 'Connexion Hôpital',
+    adminLogin: 'Connexion Administrateur',
+    company: 'Entreprise',
+    about: 'À propos',
+    ourDoctors: 'Nos médecins',
+    careers: 'Carrières',
+    blog: 'Blog',
+    contact: 'Contactez-nous',
+    legal: 'Mentions légales',
+    privacy: 'Politique de confidentialité',
+    terms: 'Conditions d\'utilisation',
+    cookie: 'Politique des cookies',
+    accessibility: 'Accessibilité',
+  },
   patientLogin: {
     title: 'Bienvenue',
     description:

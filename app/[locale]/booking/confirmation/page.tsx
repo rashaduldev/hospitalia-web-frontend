@@ -1,4 +1,5 @@
 import Header from "@/components/pages/home/Header";
+import FooterSection from "@/components/common/Footer";
 import { getCurrentLocale } from "@/locales/server";
 import { CheckCircle2, CalendarDays, Clock, MapPin, Banknote, Info } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -84,6 +85,7 @@ const BookingConfirmationPage = async ({ searchParams }: { searchParams: Promise
           </div>
         </div>
       </div>
+      <FooterSection />
     </div>
   );
 };
