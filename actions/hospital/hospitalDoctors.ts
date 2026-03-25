@@ -6,7 +6,7 @@ import { getAccessToken } from "../auth";
 export type HospitalDoctorResponse = {
   id: number;
   hospitalId: number;
-  doctorUserId: number;
+  doctorId: number;
   hospitalLocationId: number;
   doctorLocationId: number;
   doctorName: string;
@@ -47,6 +47,20 @@ export const assignDoctorToHospital = async ({
     params: { lang },
     headers: { Authorization: `Bearer ${token}` },
     body: { hospitalId, doctorUserId, hospitalLocationId },
+  });
+};
+
+export const getPublicHospitalDoctors = async ({
+  lang,
+  hospitalId,
+}: {
+  lang: string;
+  hospitalId: number;
+}) => {
+  return apiClient<HospitalDoctorResponse[]>({
+    endpoint: `/api/hospital-doctors/hospital/${hospitalId}`,
+    method: "GET",
+    params: { lang },
   });
 };
 

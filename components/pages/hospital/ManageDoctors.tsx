@@ -23,7 +23,7 @@ import {
   HospitalDoctorResponse,
 } from "@/actions/hospital/hospitalDoctors";
 import { getHospitalLocations, HospitalLocation } from "@/actions/hospital/hospitalLocations";
-import { getDoctorInfobyUserid } from "@/actions/doctor/doctordata";
+import { getDoctorInfoByDoctorId } from "@/actions/doctor/doctordata";
 import { globalSearch } from "@/actions/global.search";
 import { SearchResultIteam } from "@/types/search.type";
 import { SingleDoctorInfo } from "@/types/doctor";
@@ -65,8 +65,8 @@ export default function ManageDoctors({
   // Fetch each doctor's profile in parallel
   const doctorProfileQueries = useQueries({
     queries: doctors.map((doc) => ({
-      queryKey: ["doctor-profile", doc.doctorUserId],
-      queryFn: () => getDoctorInfobyUserid({ lang, SignleDoctorUserId: doc.doctorUserId }),
+      queryKey: ["doctor-profile", doc.doctorId],
+      queryFn: () => getDoctorInfoByDoctorId({ lang, doctorId: doc.doctorId }),
       staleTime: 5 * 60 * 1000,
     })),
   });
@@ -74,7 +74,7 @@ export default function ManageDoctors({
   const doctorProfiles = new Map<number, SingleDoctorInfo>();
   doctorProfileQueries.forEach((q, i) => {
     if (q.data?.payload) {
-      doctorProfiles.set(doctors[i].doctorUserId, q.data.payload as SingleDoctorInfo);
+      doctorProfiles.set(doctors[i].doctorId, q.data.payload as SingleDoctorInfo);
     }
   });
 
@@ -160,10 +160,10 @@ export default function ManageDoctors({
       ) : (
         <div className="border border-border rounded-xl overflow-hidden">
           {doctors.map((doc, i) => {
-            const profile = doctorProfiles.get(doc.doctorUserId);
+            const profile = doctorProfiles.get(doc.doctorId);
             const name = profile
               ? `${profile.firstName} ${profile.lastName}`.trim()
-              : (doc.doctorName || `Doctor #${doc.doctorUserId}`);
+              : (doc.doctorName || `Doctor #${doc.doctorId}`);
             const designation = profile?.professionalInfoResponse?.designation;
             const specialities = profile?.professionalInfoResponse?.specialities?.slice(0, 2) ?? [];
 
@@ -180,7 +180,7 @@ export default function ManageDoctors({
                 {/* Info */}
                 <div className="flex-1 min-w-0">
                   <Link
-                    href={`/doctor/${doc.doctorUserId}`}
+                    href={`/doctor/${doc.doctorId}`}
                     className="text-sm font-semibold text-foreground hover:text-primary transition-colors truncate block"
                   >
                     {name}
@@ -213,7 +213,7 @@ export default function ManageDoctors({
                     className="h-8 w-8 text-muted-foreground hover:text-primary"
                     asChild
                   >
-                    <Link href={`/doctor/${doc.doctorUserId}`}>
+                    <Link href={`/doctor/${doc.doctorId}`}>
                       <ExternalLink className="w-3.5 h-3.5" />
                     </Link>
                   </Button>
@@ -327,8 +327,8 @@ export default function ManageDoctors({
           <p className="text-sm text-muted-foreground">
             Are you sure you want to remove{" "}
             <span className="font-semibold text-foreground">
-              {unassignTarget ? (doctorProfiles.get(unassignTarget.doctorUserId)
-                ? `${doctorProfiles.get(unassignTarget.doctorUserId)!.firstName} ${doctorProfiles.get(unassignTarget.doctorUserId)!.lastName}`
+              {unassignTarget ? (doctorProfiles.get(unassignTarget.doctorId)
+                ? `${doctorProfiles.get(unassignTarget.doctorId)!.firstName} ${doctorProfiles.get(unassignTarget.doctorId)!.lastName}`
                 : unassignTarget.doctorName) : ""}
             </span>{" "}
             from this hospital?
