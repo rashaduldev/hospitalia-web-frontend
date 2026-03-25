@@ -64,6 +64,25 @@ export const getPublicHospitalDoctors = async ({
   });
 };
 
+export const importDoctorsFromXlsx = async ({
+  lang,
+  formData,
+}: {
+  lang: string;
+  formData: FormData;
+}) => {
+  const token = await getAccessToken();
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/doctors/import/xlsx?lang=${lang}`,
+    {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
+    },
+  );
+  return res.json();
+};
+
 export const unassignDoctorFromHospital = async ({
   lang,
   id,

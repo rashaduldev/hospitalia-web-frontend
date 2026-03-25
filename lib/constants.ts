@@ -61,6 +61,11 @@ export const ROUTES = {
       url: "/hospital/hospitals",
       icon: Building2,
     },
+    {
+      name: "Doctors & Consultants",
+      url: "/hospital/doctors",
+      icon: Stethoscope,
+    },
   ],
   ADMIN: [
     {
