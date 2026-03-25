@@ -72,7 +72,7 @@ const GetAppointmentPage = async ({
         {results.length > 0 ? (
           <div className="px-5">
             {results.map((item) => (
-              <SearchResultCard key={item.userId} item={item} searchType={searchType} />
+              <SearchResultCard key={item.doctorId ?? item.hospitalId ?? item.userId} item={item} searchType={searchType} />
             ))}
             <div className="py-5">
               <Pagination totalRows={total} itemsPerPage={20} />

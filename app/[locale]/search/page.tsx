@@ -6,7 +6,7 @@ import Pagination from "@/components/common/Pagination";
 import SearchForm from "@/components/pages/home/SearchForm";
 import { SearchResultCard } from "@/components/pages/search/SearchResultCard";
 import { SearchResultIteam } from "@/types/search.type";
-import { Stethoscope, Building2, SearchX } from "lucide-react";
+import { Stethoscope, Building2, Search, SearchX } from "lucide-react";
 
 export const metadata = { title: "Hospitalia - Search" };
 
@@ -19,13 +19,11 @@ const SearchPage = async ({ searchParams }: { searchParams: Promise<any> }) => {
   const city = sParams.city || "ALL";
   const pageNo = Math.max(0, Number(sParams.page || 1) - 1);
 
-  const response = await globalSearch({
-    lang,
-    searchType,
-    searchKeyword,
-    city,
-    pageNo,
-  });
+  const hasKeyword = searchKeyword.trim().length > 0;
+
+  const response = hasKeyword
+    ? await globalSearch({ lang, searchType, searchKeyword, city, pageNo })
+    : null;
 
   const results: SearchResultIteam[] = response?.payload?.content || [];
   const total: number = response?.payload?.totalElements || 0;
@@ -53,7 +51,7 @@ const SearchPage = async ({ searchParams }: { searchParams: Promise<any> }) => {
             <TypeIcon className="w-5 h-5 text-primary" />
             <div>
               <h2 className="text-base font-bold text-foreground leading-none">
-                {searchKeyword ? (
+                {hasKeyword ? (
                   <>
                     {total.toLocaleString()} {typeLabel}{total !== 1 ? "s" : ""} found
                     <span className="font-normal text-muted-foreground ml-1">
@@ -69,10 +67,20 @@ const SearchPage = async ({ searchParams }: { searchParams: Promise<any> }) => {
           </div>
 
           {/* Result list */}
-          {results.length > 0 ? (
+          {!hasKeyword ? (
+            <div className="flex flex-col items-center justify-center py-20 gap-3 text-center px-4">
+              <Search className="w-12 h-12 text-muted-foreground/40" />
+              <p className="text-base font-semibold text-foreground">
+                Start your search
+              </p>
+              <p className="text-sm text-muted-foreground max-w-xs">
+                Enter a doctor or hospital name above to find results.
+              </p>
+            </div>
+          ) : results.length > 0 ? (
             <div className="px-5">
               {results.map((item) => (
-                <SearchResultCard key={item.userId} item={item} searchType={searchType} />
+                <SearchResultCard key={item.doctorId ?? item.hospitalId ?? item.userId} item={item} searchType={searchType} />
               ))}
 
               <div className="py-5">

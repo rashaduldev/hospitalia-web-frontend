@@ -40,9 +40,17 @@ export function SearchAutocomplete({
   const [activeIndex, setActiveIndex] = useState(-1);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const anchorRef = useRef<HTMLDivElement>(null);
+  const isInitialMount = useRef(true);
 
   // Fetch suggestions with debounce
   useEffect(() => {
+    // Skip the first run — avoids auto-opening when the field is pre-filled
+    // from initialValues (e.g. navigating to the search results page)
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
     const keyword = (field.value ?? "").trim();
 
     if (keyword.length < 2) {
@@ -106,7 +114,13 @@ export function SearchAutocomplete({
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover
+      open={open}
+      onOpenChange={(o) => {
+        setOpen(o);
+        if (!o) setSuggestions([]);
+      }}
+    >
       <PopoverAnchor asChild>
         <div ref={anchorRef} className="relative">
           <Input
@@ -149,7 +163,7 @@ export function SearchAutocomplete({
       >
         {suggestions.map((item, i) => (
           <button
-            key={item.userId}
+            key={`${item.doctorId ?? item.hospitalId ?? item.userId}-${i}`}
             type="button"
             onMouseDown={(e) => {
               e.preventDefault(); // prevent blur closing before click

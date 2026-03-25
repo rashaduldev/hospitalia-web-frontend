@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Search, MapPin, Stethoscope, Building2 } from "lucide-react";
@@ -32,6 +32,7 @@ export const SearchForm = ({
   actionPath = "/search",
 }: SearchFormProps) => {
   const router = useRouter();
+  const pathname = usePathname();
   const t = useI18n();
   const allCitiesOption = { label: t("banner.allCities"), value: ALL_OPTION_VALUE };
   const [isPending, startTransition] = useTransition();
@@ -49,6 +50,7 @@ export const SearchForm = ({
 
   const currentType = useWatch({ control, name: "searchType" });
   const currentCity = useWatch({ control, name: "city" });
+  const currentKeyword = useWatch({ control, name: "searchKeyword" });
 
   // Load cities dynamically based on search type
   useEffect(() => {
@@ -111,7 +113,13 @@ export const SearchForm = ({
           <button
             key={value}
             type="button"
-            onClick={() => setValue("searchType", value)}
+            onClick={() => {
+              setValue("searchType", value);
+              setValue("searchKeyword", "");
+              if (pathname.includes("/search")) {
+                router.push(`${pathname}?searchType=${value}`);
+              }
+            }}
             className={cn(
               "flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-md text-sm font-semibold transition-all duration-200",
               currentType === value
@@ -164,7 +172,7 @@ export const SearchForm = ({
       {/* Submit */}
       <Button
         type="submit"
-        disabled={isPending}
+        disabled={isPending || !currentKeyword?.trim()}
         className="w-full font-semibold text-sm h-11"
       >
         <Search className="w-4 h-4 mr-2" />
