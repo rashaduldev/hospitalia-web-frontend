@@ -1,34 +1,23 @@
 export type Appointment = {
-  fees: number;
-  designation: string;
-  doctorName: string;
-  id?: string;
   appointmentId: number;
-  doctorUserId: number;
+  doctorId?: number;
+  doctorUserId?: number;
   patientUserId: number;
+  doctorName: string;
+  designation: string;
   patientName: string;
   appointmentDate: number[] | string;
   dayOfWeek?: string;
+  locationName: string;
   startTime: string;
   endTime: string;
   slotDuration: number;
-  locationName: string;
-  status?: "PENDING" | "CONFIRMED" | "CANCELLED" | "COMPLETED";
-  appointmentStatus: "PENDING" | "CONFIRMED" | "CANCELLED" | "COMPLETED";
-  doctorLocationId?: string;
+  fees: number;
   notes?: string;
-  createdAt?: string;
+  appointmentStatus: "PENDING" | "CONFIRMED" | "CANCELLED" | "COMPLETED";
   cancellationReason?: string | null;
-  cancelledAt?: number | null;
+  cancelledAt?: string | number | null;
   cancelledByUserId?: number | null;
-};
-
-export type AppointmentBookingRequest = {
-  doctorUserId: string;
-  doctorLocationId: string;
-  appointmentDate: string;
-  slotId: string;
-  patientNotes?: string;
 };
 
 export type AppointmentUpdateRequest = {

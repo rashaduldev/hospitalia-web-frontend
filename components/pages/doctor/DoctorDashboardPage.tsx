@@ -4,6 +4,7 @@ import {
   getUpcomingAppointments,
 } from "@/actions/doctor/appointment";
 import { getDoctorLocations } from "@/actions/doctor/location";
+import { getDoctorInfobyUserid } from "@/actions/doctor/doctordata";
 import { getCurrentLocale, getI18n } from "@/locales/server";
 import { appointmentColumns } from "@/components/common/DataTableColumns";
 import { DataTableWithExport } from "@/components/data-table";
@@ -18,6 +19,14 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Appointment } from "@/types/appointment.type";
+
+function formatTime(t: string): string {
+  if (!t) return "";
+  const [h, m] = t.replace("Z", "").split(":");
+  const hour = parseInt(h);
+  const ampm = hour >= 12 ? "PM" : "AM";
+  return `${hour % 12 || 12}:${m} ${ampm}`;
+}
 
 function formatAppointmentDate(d: Appointment["appointmentDate"]): string {
   if (Array.isArray(d)) {
@@ -46,9 +55,12 @@ export default async function DoctorDashboardPage() {
   const currentUser = await getCurrentUser({ lang });
   const doctorUserId = currentUser?.id;
 
+  const doctorInfoRes = await getDoctorInfobyUserid({ lang, SignleDoctorUserId: doctorUserId });
+  const doctorId = doctorInfoRes?.payload?.id ?? doctorInfoRes?.payload?.doctorId;
+
   const [todayRes, upcomingRes, locationsRes] = await Promise.all([
     getTodaysAppointments({
-      doctorUserId,
+      doctorId,
       pageNo: 0,
       pageSize: 100,
       sortBy: "creationDate",
@@ -56,14 +68,14 @@ export default async function DoctorDashboardPage() {
       lang,
     }),
     getUpcomingAppointments({
-      doctorUserId,
+      doctorId,
       pageNo: 0,
       pageSize: 100,
       sortBy: "appointmentDate",
       ascOrDesc: "asc",
       lang,
     }),
-    getDoctorLocations({ doctorUserId, lang }),
+    doctorId ? getDoctorLocations({ doctorId, lang }) : null,
   ]);
 
   const todayList = todayRes?.payload?.content || [];
@@ -147,7 +159,7 @@ export default async function DoctorDashboardPage() {
             <div>
               <p className="text-xs text-muted-foreground">Time</p>
               <p className="font-medium text-foreground">
-                {nextAppointment.startTime} – {nextAppointment.endTime}
+                {formatTime(nextAppointment.startTime)} – {formatTime(nextAppointment.endTime)}
               </p>
             </div>
             <div>

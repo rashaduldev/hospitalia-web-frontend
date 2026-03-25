@@ -84,11 +84,11 @@ export const SlotActionCell = ({ slot }: { slot: DoctorAvailabilitySlot }) => {
   });
 
   const { data: locationResponse } = useSafeQuery({
-    queryKey: ["doctor-locations", slot.doctorUserId],
+    queryKey: ["doctor-locations", slot.doctorId],
     queryFn: () =>
       getDoctorLocations({
         lang,
-        doctorUserId: slot.doctorUserId,
+        doctorId: slot.doctorId,
       }),
   });
   const locationOptions =
@@ -101,7 +101,7 @@ export const SlotActionCell = ({ slot }: { slot: DoctorAvailabilitySlot }) => {
   const updateMutation = useSafeMutation({
     mutationFn: (formData: FormDataType) =>
       updateDoctorAvailability({
-        doctorUserId: slot.doctorUserId,
+        doctorId: slot.doctorId,
         availabilityIds: [slot.id],
         weeklySchedule: [
           {

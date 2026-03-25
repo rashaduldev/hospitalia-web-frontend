@@ -13,18 +13,19 @@ import {
 
 export function useLocations({
   lang,
-  doctorUserId,
+  doctorId,
 }: {
   lang: string;
-  doctorUserId: number;
+  doctorId: number | undefined;
 }) {
   const queryClient = useQueryClient();
-  const queryKey = ["doctor-locations", doctorUserId];
+  const queryKey = ["doctor-locations", doctorId];
 
   const query = useSafeQuery({
     queryKey,
-    queryFn: () => getDoctorLocations({ lang, doctorUserId }),
+    queryFn: () => getDoctorLocations({ lang, doctorId: doctorId! }),
     staleTime: 1000 * 60 * 5,
+    enabled: !!doctorId,
   });
 
   // 2. Create/Update Mutation with Optimistic Updates
@@ -34,19 +35,19 @@ export function useLocations({
         ? updateDoctorLocation({
             lang,
             locationId: payload.locationId,
-            city: payload.city,
-            postalCode: payload.postalCode,
-            doctorUserId: payload.doctorUserId,
+            doctorId: doctorId!,
             locationName: payload.locationName,
             addressLine1: payload.addressLine1,
+            city: payload.city,
+            postalCode: payload.postalCode,
           })
         : createDoctorLocation({
             lang,
+            doctorId: doctorId!,
             locationName: payload.locationName,
             addressLine1: payload.addressLine1,
             city: payload.city,
             postalCode: payload.postalCode,
-            doctorUserId: payload.doctorUserId,
           });
     },
     onMutate: async (newLocation) => {
@@ -74,7 +75,7 @@ export function useLocations({
   // 3. Delete Mutation
   const deleteMutation = useSafeMutation({
     mutationFn: (locationId: number) =>
-      deleteDoctorLocation({ lang, locationId, doctorUserId }),
+      deleteDoctorLocation({ lang, locationId, doctorId: doctorId! }),
     onMutate: async (deletedId) => {
       await queryClient.cancelQueries({ queryKey });
       const previousLocations = queryClient.getQueryData(queryKey);

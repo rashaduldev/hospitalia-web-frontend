@@ -3,10 +3,8 @@ import { getI18n } from "@/locales/server";
 import { MapPin } from "lucide-react";
 
 export default async function DoctorLocationsPage({
-  doctorUserId,
   lang,
 }: {
-  doctorUserId: number;
   lang: string;
 }) {
   const t = await getI18n();
@@ -28,7 +26,7 @@ export default async function DoctorLocationsPage({
           </div>
         </div>
         <div className="p-6">
-          <DefaultLocationManager doctorUserId={doctorUserId} lang={lang} />
+          <DefaultLocationManager lang={lang} />
         </div>
       </div>
     </div>

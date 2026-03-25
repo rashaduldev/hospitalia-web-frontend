@@ -1,18 +1,29 @@
 import { Speciality } from "./speciality.type";
 
+export type DoctorStatus = "IMPORTED" | "ACTIVE" | "INACTIVE" | "SUSPENDED";
+
+export type Department = {
+  id: number;
+  name: string;
+  hospitalUserId?: number;
+  createdBy?: string;
+  lastModifiedBy?: string;
+  creationDate?: string;
+  lastModifiedDate?: string;
+  creationDateTimeStamp?: number;
+  lastModifiedDateTimeStamp?: number;
+};
+
 export type SingleDoctorInfo = {
+  id?: number;
   userId: number;
-  doctorId?: number;
+  status?: DoctorStatus | null;
   firstName: string;
   lastName: string;
+  gender: "MALE" | "FEMALE" | string;
   email: string;
   phoneNumber?: string;
-  mobileNumber?: string;
-  countryCode?: string;
-  gender: "MALE" | "FEMALE";
-  dateOfBirth?: string;
-  profileImage?: string;
-  verified?: boolean;
+  verified?: boolean | null;
   medicalLicenseNumber?: string;
   licenseIssuingAuthority?: string;
   licenseExpiryDate?: string | number[];
@@ -23,8 +34,8 @@ export type SingleDoctorInfo = {
     onmsRegistrationNumber: string;
     professionalStatement: string;
     workPhoneNumber: string;
-    fileObjectId: string | null;
-    departments: any | null;
+    fileObjectId?: number | null;
+    departments?: Department[] | null;
     specialities: Speciality[];
   };
 };

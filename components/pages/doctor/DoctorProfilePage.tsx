@@ -8,6 +8,7 @@ import { useSafeQuery, useSafeMutation } from "@/lib/safeQuery";
 import { getDoctorInfobyUserid, updateDoctorProfile, changeDoctorPassword } from "@/actions/doctor/doctordata";
 import ChangePasswordDialog from "@/components/pages/patient/profile/ChangePasswordDialog";
 import { getDoctorLocations } from "@/actions/doctor/location";
+import { useDoctorId } from "@/providers/DoctorIdProvider";
 import { getSpecialitiesAllCustomer } from "@/actions/speciality.customer";
 import { doctorProfileSchema, DoctorProfileFormValues } from "@/schema/doctor.profile.schema";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -187,6 +188,8 @@ export default function DoctorProfilePage({
   const [changingPassword, setChangingPassword] = useState(false);
 
   // ── Queries ────────────────────────────────────────────────────────────────
+  const doctorId = useDoctorId();
+
   const {
     data: doctorData,
     isLoading: loadingDoctor,
@@ -197,8 +200,8 @@ export default function DoctorProfilePage({
   });
 
   const { data: locationsData, isLoading: loadingLocations } = useSafeQuery({
-    queryKey: ["doctor-locations", userId],
-    queryFn: () => getDoctorLocations({ lang, doctorUserId: userId }),
+    queryKey: ["doctor-locations", doctorId ?? userId],
+    queryFn: () => getDoctorLocations({ lang, doctorId: doctorId ?? userId }),
   });
 
   const { data: specialitiesData } = useSafeQuery({

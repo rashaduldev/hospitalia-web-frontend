@@ -1,4 +1,5 @@
 import { getCurrentUser } from "@/actions/user.actions";
+import { getDoctorInfobyUserid } from "@/actions/doctor/doctordata";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
@@ -6,6 +7,7 @@ import { SiteHeader } from "@/components/site-header";
 import { getCurrentLocale } from "@/locales/server";
 import { ErrorHandle } from "@/components/common/ErrorHandle";
 import Unauthorized from "@/components/common/Unauthorized";
+import { DoctorIdProvider } from "@/providers/DoctorIdProvider";
 
 export default async function DoctorLayout({
   children,
@@ -28,8 +30,12 @@ export default async function DoctorLayout({
     return <Unauthorized />;
   }
 
+  const doctorInfo = await getDoctorInfobyUserid({ lang, SignleDoctorUserId: res.id });
+  const doctorId = doctorInfo?.payload?.id ?? doctorInfo?.payload?.doctorId;
+
   return (
-    <div>
+    <DoctorIdProvider doctorId={doctorId}>
+      <div>
       <TooltipProvider>
         <SidebarProvider
           style={
@@ -52,6 +58,7 @@ export default async function DoctorLayout({
           </SidebarInset>
         </SidebarProvider>
       </TooltipProvider>
-    </div>
+      </div>
+    </DoctorIdProvider>
   );
 }

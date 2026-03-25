@@ -8,13 +8,13 @@ import { UpdateLocationParams } from "@/types/doctor.location.type";
 // Get all locations for a doctor
 export const getDoctorLocations = async ({
   lang,
-  doctorUserId,
+  doctorId,
 }: {
   lang: string;
-  doctorUserId: number;
+  doctorId: number;
 }) => {
   const res = await apiClient({
-    endpoint: `/api/doctors/location/all/${doctorUserId}`,
+    endpoint: `/api/doctors/location/all/${doctorId}`,
     method: "GET",
     params: { lang },
   });
@@ -58,6 +58,7 @@ export const getDoctorLocationById = async ({
 // Create a new default location
 export const createDoctorLocation = async ({
   lang,
+  doctorId,
   locationName,
   addressLine1,
   addressLine2,
@@ -69,9 +70,9 @@ export const createDoctorLocation = async ({
   oldPatientFee,
   feeCurrency,
   supportedAppointmentTypeIds,
-  doctorUserId,
 }: {
   lang: string;
+  doctorId: number;
   locationName: string;
   addressLine1: string;
   addressLine2?: string;
@@ -83,13 +84,13 @@ export const createDoctorLocation = async ({
   oldPatientFee?: number;
   feeCurrency?: string;
   supportedAppointmentTypeIds?: number[];
-  doctorUserId: number;
 }) => {
   const token = await getAccessToken();
   const res = await apiClient({
     endpoint: "/api/doctors/location/create",
     method: "POST",
     body: {
+      doctorId,
       locationName,
       addressLine1,
       addressLine2: addressLine2 ?? null,
@@ -101,7 +102,6 @@ export const createDoctorLocation = async ({
       oldPatientFee: oldPatientFee ?? null,
       feeCurrency: feeCurrency ?? null,
       supportedAppointmentTypeIds: supportedAppointmentTypeIds ?? null,
-      doctorUserId,
     },
     params: { lang },
     headers: { Authorization: `Bearer ${token}` },
@@ -113,15 +113,15 @@ export const createDoctorLocation = async ({
 export const deleteDoctorLocation = async ({
   lang,
   locationId,
-  doctorUserId,
+  doctorId,
 }: {
   lang: string;
   locationId: number;
-  doctorUserId: number;
+  doctorId: number;
 }) => {
   const token = await getAccessToken();
   const res = await apiClient({
-    endpoint: `/api/doctors/location/delete/locationId/${locationId}/doctorUserId/${doctorUserId}`,
+    endpoint: `/api/doctors/location/delete/locationId/${locationId}/doctorId/${doctorId}`,
     method: "DELETE",
     params: { lang },
     headers: { Authorization: `Bearer ${token}` },
@@ -130,10 +130,11 @@ export const deleteDoctorLocation = async ({
   return res;
 };
 
-// Update a location UpdateLocationParams
+// Update a location
 export const updateDoctorLocation = async ({
   lang,
   locationId,
+  doctorId,
   locationName,
   addressLine1,
   addressLine2,
@@ -145,7 +146,6 @@ export const updateDoctorLocation = async ({
   oldPatientFee,
   feeCurrency,
   supportedAppointmentTypeIds,
-  doctorUserId,
 }: UpdateLocationParams) => {
   const token = await getAccessToken();
 
@@ -154,6 +154,7 @@ export const updateDoctorLocation = async ({
     method: "PUT",
     body: {
       locationId,
+      doctorId,
       locationName,
       addressLine1,
       addressLine2: addressLine2 ?? null,
@@ -165,7 +166,6 @@ export const updateDoctorLocation = async ({
       oldPatientFee: oldPatientFee ?? null,
       feeCurrency: feeCurrency ?? null,
       supportedAppointmentTypeIds: supportedAppointmentTypeIds ?? null,
-      doctorUserId,
     },
     params: { lang },
     headers: { Authorization: `Bearer ${token}` },

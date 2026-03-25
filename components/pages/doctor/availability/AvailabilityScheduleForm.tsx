@@ -5,6 +5,7 @@ import { ControlledInput } from "@/components/common/FormUIControllers/Controlle
 import { ControlledSelect } from "@/components/common/FormUIControllers/ControlledSelect";
 import { Button } from "@/components/ui/button";
 import { useLocations } from "@/hooks/useLocations";
+import { useDoctorId } from "@/providers/DoctorIdProvider";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/locales/client";
 import { useState } from "react";
@@ -45,7 +46,8 @@ export default function AvailabilityScheduleForm({
     message: string;
   } | null>(null);
 
-  const { locations } = useLocations({ lang, doctorUserId });
+  const doctorId = useDoctorId();
+  const { locations } = useLocations({ lang, doctorId: doctorId ?? doctorUserId });
   const t = useI18n();
 
   const {
@@ -102,7 +104,7 @@ export default function AvailabilityScheduleForm({
 
     const res = await createDoctorAvailability({
       lang,
-      doctorUserId,
+      doctorId: doctorId ?? doctorUserId,
       weeklySchedule: finalScheduleArray,
     });
 
@@ -115,7 +117,7 @@ export default function AvailabilityScheduleForm({
     reset();
   };
 
-  const locationOptions = locations?.payload?.map((loc: Location) => ({
+  const locationOptions = locations?.map((loc: Location) => ({
     label: loc.locationName,
     value: String(loc.locationId),
   })) || [];

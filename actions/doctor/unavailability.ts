@@ -6,15 +6,15 @@ import { getAccessToken } from "../auth";
 // Get all weekly unavailability
 export const getDoctorUnAvailability = async ({
   lang,
-  doctorUserId,
+  doctorId,
 }: {
   lang: string;
-  doctorUserId: number;
+  doctorId: number;
 }) => {
   const token = await getAccessToken();
 
   const res = await apiClient({
-    endpoint: `/api/doctors/unavailability/all/doctorUserId/${doctorUserId}`,
+    endpoint: `/api/doctors/unavailability/all/doctorId/${doctorId}`,
     method: "GET",
     params: { lang },
     headers: { Authorization: `Bearer ${token}` },
@@ -41,11 +41,11 @@ export const getDoctorUnAvailabilityByDoctorId = async ({
 // doctors weekly unavailability schedule set
 export const createDoctorUnAvailability = async ({
   lang,
-  doctorUserId,
+  doctorId,
   unavailableDate,
 }: {
   lang: string;
-  doctorUserId: number;
+  doctorId: number;
   unavailableDate: string;
 }) => {
   const token = await getAccessToken();
@@ -54,7 +54,7 @@ export const createDoctorUnAvailability = async ({
     endpoint: "/api/doctors/unavailability/set",
     method: "POST",
     body: {
-      doctorUserId,
+      doctorId,
       unavailableDate,
     },
     params: { lang },

@@ -12,7 +12,7 @@ export type Location = {
   locationName: string;
   addressLine1: string;
   addressLine2?: string;
-  doctorUserId?: number;
+  doctorId?: number;
   latitude?: number | null;
   longitude?: number | null;
   country?: string;
@@ -28,6 +28,7 @@ export type Location = {
 export type UpdateLocationParams = {
   lang: string;
   locationId: number;
+  doctorId: number;
   locationName: string;
   addressLine1: string;
   addressLine2?: string;
@@ -39,7 +40,6 @@ export type UpdateLocationParams = {
   oldPatientFee?: number;
   feeCurrency?: string;
   supportedAppointmentTypeIds?: number[];
-  doctorUserId: number;
 };
 
 export type AppointmentType = {
@@ -50,7 +50,7 @@ export type AppointmentType = {
 
 export type DoctorLocation = {
   locationId: number;
-  doctorUserId: number;
+  doctorId: number;
   locationName: string;
   addressLine1: string;
   addressLine2?: string;
@@ -68,7 +68,7 @@ export type DoctorLocation = {
 
 export interface DoctorUnavailability {
   id: number;
-  doctorUserId: number;
+  doctorId: number;
   unavailableDate: string;
   createdBy: string;
   creationDate: string;

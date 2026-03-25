@@ -1,6 +1,6 @@
 export type DoctorAvailabilitySlot = {
   id: number;
-  doctorUserId: number;
+  doctorId: number;
   dayOfWeek:
     | "MONDAY"
     | "TUESDAY"

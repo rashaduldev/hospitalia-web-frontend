@@ -2,6 +2,7 @@ import {
   getTodaysAppointments,
   getUpcomingAppointments,
 } from "@/actions/doctor/appointment";
+import { getDoctorInfobyUserid } from "@/actions/doctor/doctordata";
 import { getI18n } from "@/locales/server";
 import { CalendarDays, CalendarClock } from "lucide-react";
 import { DoctorAppointmentsTable } from "./DoctorAppointmentsTable";
@@ -15,9 +16,12 @@ export default async function DoctorAppointmentsPage({
 }) {
   const t = await getI18n();
 
+  const doctorInfoRes = await getDoctorInfobyUserid({ lang, SignleDoctorUserId: doctorUserId });
+  const doctorId = doctorInfoRes?.payload?.id ?? doctorInfoRes?.payload?.doctorId;
+
   const [todayRes, upcomingRes] = await Promise.all([
     getTodaysAppointments({
-      doctorUserId,
+      doctorId,
       pageNo: 0,
       pageSize: 100,
       sortBy: "creationDate",
@@ -25,7 +29,7 @@ export default async function DoctorAppointmentsPage({
       lang,
     }),
     getUpcomingAppointments({
-      doctorUserId,
+      doctorId,
       pageNo: 0,
       pageSize: 100,
       sortBy: "creationDate",

@@ -6,15 +6,15 @@ import { revalidatePath } from "next/cache";
 
 // Get all weekly availability
 export const getDoctorAvailability = async ({
-  doctorUserId,
+  doctorId,
   lang,
 }: {
-  doctorUserId: number;
+  doctorId: number;
   lang: string;
 }) => {
   const token = await getAccessToken();
   const res = await apiClient({
-    endpoint: `/api/doctors/availability/all/doctorUserId/${doctorUserId}/status`,
+    endpoint: `/api/doctors/availability/all/doctorId/${doctorId}/status`,
     method: "GET",
     params: { lang },
     headers: { Authorization: `Bearer ${token}` },
@@ -22,19 +22,18 @@ export const getDoctorAvailability = async ({
   return res;
 };
 
-// Get doctor's all weekly availability schedule by doctor user id
-
+// Get doctor's all weekly availability schedule by doctorId and location
 export const getDoctorAvailabilityWithLocation = async ({
-  doctorUserId,
+  doctorId,
   doctorLocationId,
   lang,
 }: {
-  doctorUserId: number;
+  doctorId: number;
   doctorLocationId: number;
   lang: string;
 }) => {
   const res = await apiClient({
-    endpoint: `/api/doctors/availability/all/doctorUserId/${doctorUserId}/location/${doctorLocationId}`,
+    endpoint: `/api/doctors/availability/all/doctorId/${doctorId}/location/${doctorLocationId}`,
     method: "GET",
     params: { lang },
   });
@@ -62,11 +61,11 @@ export const getDoctorAvailabilityByDoctorId = async ({
 // Create/Set doctors weekly availability schedule
 export const createDoctorAvailability = async ({
   lang,
-  doctorUserId,
+  doctorId,
   weeklySchedule,
 }: {
   lang: string;
-  doctorUserId: number;
+  doctorId: number;
   weeklySchedule: {
     availabilityStatus: string;
     doctorLocationId: number;
@@ -82,7 +81,7 @@ export const createDoctorAvailability = async ({
     endpoint: "/api/doctors/availability/create",
     method: "POST",
     body: {
-      doctorUserId,
+      doctorId,
       weeklySchedule,
     },
     params: { lang },
@@ -95,7 +94,7 @@ export const createDoctorAvailability = async ({
 
 // Update a doctor's availability slot
 export const updateDoctorAvailability = async ({
-  doctorUserId,
+  doctorId,
   availabilityIds,
   weeklySchedule: [
     {
@@ -108,7 +107,7 @@ export const updateDoctorAvailability = async ({
     },
   ],
 }: {
-  doctorUserId: number;
+  doctorId: number;
   availabilityIds: [number];
   weeklySchedule: [
     {
@@ -124,7 +123,7 @@ export const updateDoctorAvailability = async ({
   const token = await getAccessToken();
 
   const payload = {
-    doctorUserId,
+    doctorId,
     availabilityIds: [availabilityIds],
     weeklySchedule: [
       {

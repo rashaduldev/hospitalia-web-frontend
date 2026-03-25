@@ -6,6 +6,7 @@ import { DataTableWithExport } from "@/components/data-table";
 import { TableSkeleton } from "@/components/common/TableSkeleton";
 import { getDoctorAvailability } from "@/actions/doctor/availability";
 import { getDoctorLocations } from "@/actions/doctor/location";
+import { useDoctorId } from "@/providers/DoctorIdProvider";
 import {
   parse,
   format,
@@ -24,14 +25,17 @@ type ConfirmSlotsTableProps = {
 };
 
 const ConfirmSlotsTable: React.FC<ConfirmSlotsTableProps> = ({ doctorUserId, lang }) => {
+  const doctorId = useDoctorId();
+  const fetchId = doctorId ?? doctorUserId;
+
   const { data: slotsData, isLoading: slotsLoading } = useSafeQuery({
-    queryKey: ["doctorAvailability", doctorUserId, lang],
-    queryFn: () => getDoctorAvailability({ doctorUserId, lang }),
+    queryKey: ["doctorAvailability", fetchId, lang],
+    queryFn: () => getDoctorAvailability({ doctorId: fetchId, lang }),
   });
 
   const { data: locationsData, isLoading: locationsLoading } = useSafeQuery({
-    queryKey: ["doctorLocations", doctorUserId, lang],
-    queryFn: () => getDoctorLocations({ doctorUserId, lang }),
+    queryKey: ["doctorLocations", fetchId, lang],
+    queryFn: () => getDoctorLocations({ doctorId: fetchId, lang }),
   });
 
   const slots = slotsData?.payload?.content || [];

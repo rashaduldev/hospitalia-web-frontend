@@ -3,24 +3,24 @@
 import { apiClient } from "@/lib/api";
 import { getAccessToken } from "../auth";
 
-// Get available slots by doctor user id, location id and date
+// Get available slots by doctor id, location id and date
 export const getAvailableSlots = async ({
-  doctorUserId,
+  doctorId,
   doctorLocationId,
   requestedDate,
   lang,
 }: {
-  doctorUserId: number;
+  doctorId: number;
   doctorLocationId: number;
   requestedDate: string;
   lang: string;
 }) => {
   const res = await apiClient({
-    endpoint: `/api/appointments/available-slots/doctor-user/${doctorUserId}/doctor-location/${doctorLocationId}`,
+    endpoint: `/api/appointments/available-slots/doctor/${doctorId}/doctor-location/${doctorLocationId}`,
     method: "GET",
     params: {
       requestedDate,
-      doctorUserId,
+      doctorId,
       doctorLocationId,
       lang,
     },

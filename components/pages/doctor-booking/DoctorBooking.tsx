@@ -30,6 +30,7 @@ import { getAvailableSlots } from "@/actions/doctor/slot";
 import { getAppointmentsByDate } from "@/actions/doctor/appointment";
 import { UnavailableDate } from "@/types/doctor.unavailable";
 import { SingleDoctorInfo } from "@/types/doctor";
+import { Appointment } from "@/types/appointment.type";
 import { DoctorLocation } from "@/types/doctor.location.type";
 import { usePathname, useRouter } from "next/navigation";
 import { useI18n } from "@/locales/client";
@@ -115,18 +116,18 @@ const DoctorBooking = ({
   });
 
   const { data: slotData, isLoading: isLoadingSlots } = useQuery({
-    queryKey: ["availableSlots", doctorUserId, selectedLocation, selectedDate],
+    queryKey: ["availableSlots", doctorId, selectedLocation, selectedDate],
     queryFn: async () => {
       if (!selectedDate) return [];
       const res = await getAvailableSlots({
-        doctorUserId,
+        doctorId,
         doctorLocationId: Number(selectedLocation),
         lang,
         requestedDate: format(parseISO(selectedDate), "yyyy-MM-dd"),
       });
       return res.payload || [];
     },
-    enabled: Boolean(selectedDate && doctorUserId && selectedLocation),
+    enabled: Boolean(selectedDate && doctorId && selectedLocation),
   });
 
   const selectedLocationData = doctorLocations.find(
@@ -141,14 +142,14 @@ const DoctorBooking = ({
   const appointmentTypes = selectedLocationData?.supportedAppointmentTypes ?? [];
 
   const { data: appointmentsOnDate = [] } = useQuery({
-    queryKey: ["appointmentsOnDate", doctorUserId, selectedDate],
+    queryKey: ["appointmentsOnDate", doctorId, selectedDate],
     queryFn: () =>
       getAppointmentsByDate({
-        doctorUserId,
+        doctorId,
         date: format(parseISO(selectedDate!), "yyyy-MM-dd"),
         lang,
       }),
-    enabled: Boolean(selectedDate && doctorUserId),
+    enabled: Boolean(selectedDate && doctorId),
   });
 
   const bookedStartTimes = new Set(
@@ -198,7 +199,7 @@ const DoctorBooking = ({
       return;
     }
     const res = await bookAppointment({
-      doctorUserId,
+      doctorId,
       patientUserId: currentUserId,
       appointmentDate: format(parseISO(data.availableDates), "yyyy-MM-dd"),
       dayOfWeek: format(parseISO(data.availableDates), "EEEE").toUpperCase(),
@@ -215,19 +216,25 @@ const DoctorBooking = ({
     });
 
     if (res.success) {
-      // Ensure a chat thread exists between this patient and doctor
-      getOrCreateThread({ doctorUserId, patientUserId: currentUserId, lang }).catch(() => {});
+      const appt = res.payload as Appointment;
 
-      const selectedLocationObj = locationOptions.find((l) => Number(l.value) === Number(selectedLocation));
+      // Ensure a chat thread exists between this patient and doctor
+      if (doctorUserId && currentUserId) {
+        getOrCreateThread({ doctorUserId, patientUserId: currentUserId, lang }).catch(() => {});
+      }
+
+      const apptDate = Array.isArray(appt.appointmentDate)
+        ? new Date(appt.appointmentDate[0], appt.appointmentDate[1] - 1, appt.appointmentDate[2])
+        : parseISO(appt.appointmentDate as string);
+
       const params = new URLSearchParams({
-        doctorUserId: String(doctorUserId),
-        doctorName: `${doctor.firstName} ${doctor.lastName}`,
-        designation: doctor.professionalInfoResponse?.designation || "",
-        location: selectedLocationObj?.label || "",
-        date: format(parseISO(data.availableDates), "do MMMM"),
-        startTime: formatTimeTo12H(selectedSlotObj?.startTime),
-        endTime: formatTimeTo12H(selectedSlotObj?.endTime),
-        price: formatFee(patientType === "new" ? newPatientFee : oldPatientFee),
+        doctorName: appt.doctorName,
+        designation: appt.designation || "",
+        location: appt.locationName || "",
+        date: format(apptDate, "do MMMM"),
+        startTime: formatTimeTo12H(appt.startTime?.replace("Z", "")),
+        endTime: formatTimeTo12H(appt.endTime?.replace("Z", "")),
+        price: formatFee(appt.fees),
       });
       router.push(`/booking/confirmation?${params.toString()}`);
       return;

@@ -81,7 +81,7 @@ export const AppointmentActionCell = ({
     setLoading(true);
     const res = await cancelAppointment({
       appointmentId: appointment.appointmentId,
-      cancelledByUserId: Number(appointment.doctorUserId),
+      cancelledByUserId: Number(appointment.doctorId),
       cancellationReason: reason,
       lang,
     });

@@ -15,6 +15,7 @@ import {
 import { getAppointmentsByDate, cancelAppointment } from "@/actions/doctor/appointment";
 import { useI18n } from "@/locales/client";
 import { Button } from "@/components/ui/button";
+import { useDoctorId } from "@/providers/DoctorIdProvider";
 import { UnavailableDate } from "@/types/doctor.unavailable";
 import { Appointment } from "@/types/appointment.type";
 import { StatusMessage } from "./StatusMessage";
@@ -39,6 +40,8 @@ export default function ScheduleManager({
 }) {
   const t = useI18n();
   const queryClient = useQueryClient();
+  const doctorId = useDoctorId();
+  const fetchId = doctorId ?? doctorUserId;
 
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -47,9 +50,9 @@ export default function ScheduleManager({
   const [isChecking, setIsChecking] = useState(false);
 
   const { data: existingDatesResponse, isLoading: isFetching } = useSafeQuery({
-    queryKey: ["doctor-availability", doctorUserId],
-    queryFn: () => getDoctorUnAvailability({ lang, doctorUserId }),
-    enabled: !!doctorUserId,
+    queryKey: ["doctor-availability", fetchId],
+    queryFn: () => getDoctorUnAvailability({ lang, doctorId: fetchId }),
+    enabled: !!fetchId,
   });
 
   const existingDates: UnavailableDate[] = existingDatesResponse?.payload?.content || [];
@@ -67,7 +70,7 @@ export default function ScheduleManager({
 
   const createMutation = useSafeMutation({
     mutationFn: (date: string) =>
-      createDoctorUnAvailability({ lang, doctorUserId, unavailableDate: date }),
+      createDoctorUnAvailability({ lang, doctorId: fetchId, unavailableDate: date }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["doctor-availability"] }),
   });
 
@@ -87,7 +90,7 @@ export default function ScheduleManager({
       setIsChecking(true);
       try {
         const dateStr = format(selectedDate, "yyyy-MM-dd");
-        const appointments = await getAppointmentsByDate({ doctorUserId, date: dateStr, lang });
+        const appointments = await getAppointmentsByDate({ doctorId: fetchId, date: dateStr, lang });
         setAppointmentsOnDate(appointments);
       } catch {
         setAppointmentsOnDate([]);

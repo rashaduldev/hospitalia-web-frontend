@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm, SubmitHandler, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
@@ -32,6 +32,8 @@ import { ControlledSelect } from "@/components/common/FormUIControllers/Controll
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { useDoctorId } from "@/providers/DoctorIdProvider";
+import { toast } from "sonner";
 
 const COUNTRY_OPTIONS = [
   { label: "Bangladesh", value: "Bangladesh" },
@@ -66,13 +68,13 @@ const CURRENCY_OPTIONS = [
 
 export function DefaultLocationManager({
   lang,
-  doctorUserId,
 }: {
   lang: string;
-  doctorUserId: number;
 }) {
   const t = useI18n();
+  const doctorId = useDoctorId();
   const [editingId, setEditingId] = useState<number | null>(null);
+  const editingIdRef = useRef<number | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const queryClient = useQueryClient();
@@ -98,8 +100,9 @@ export function DefaultLocationManager({
   const selectedTypeIds = watch("supportedAppointmentTypeIds");
 
   const { data: response, isLoading } = useSafeQuery({
-    queryKey: ["doctor-locations", doctorUserId],
-    queryFn: () => getDoctorLocations({ lang, doctorUserId }),
+    queryKey: ["doctor-locations", doctorId],
+    queryFn: () => getDoctorLocations({ lang, doctorId: doctorId! }),
+    enabled: !!doctorId,
   });
 
   const { data: appointmentTypesRes } = useSafeQuery({
@@ -125,6 +128,7 @@ export function DefaultLocationManager({
 
   const mutation = useSafeMutation({
     mutationFn: (data: LocationFormValues) => {
+      const currentEditingId = editingIdRef.current;
       const payload = {
         lang,
         locationName: data.locationName,
@@ -138,35 +142,49 @@ export function DefaultLocationManager({
         oldPatientFee: data.oldPatientFee,
         feeCurrency: data.feeCurrency || undefined,
         supportedAppointmentTypeIds: data.supportedAppointmentTypeIds,
-        doctorUserId,
+        doctorId: doctorId!,
       };
-      if (editingId) {
-        return updateDoctorLocation({ ...payload, locationId: editingId } as UpdateLocationParams);
+      if (currentEditingId) {
+        return updateDoctorLocation({ ...payload, locationId: currentEditingId } as UpdateLocationParams);
       }
       return createDoctorLocation(payload);
     },
     onSuccess: () => {
-      setSuccessMessage(
-        editingId ? "Location updated successfully." : "Location added successfully.",
-      );
-      queryClient.invalidateQueries({ queryKey: ["doctor-locations", doctorUserId] });
+      const isEdit = !!editingIdRef.current;
+      toast.success(isEdit ? "Location updated successfully." : "Location added successfully.");
+      setSuccessMessage(isEdit ? "Location updated." : "Location added.");
+      queryClient.invalidateQueries({ queryKey: ["doctor-locations", doctorId] });
+      editingIdRef.current = null;
       setEditingId(null);
       reset();
     },
+    onError: (error) => {
+      toast.error(error.message || "Failed to save location. Please try again.");
+    },
   });
 
-  const onSubmit: SubmitHandler<LocationFormValues> = (data) => mutation.mutate(data);
+  const onSubmit: SubmitHandler<LocationFormValues> = (data) => {
+    setSuccessMessage(null);
+    editingIdRef.current = editingId;
+    mutation.mutate(data);
+  };
 
   const deleteMutation = useSafeMutation({
     mutationFn: (locationId: number) =>
-      deleteDoctorLocation({ lang, locationId, doctorUserId }),
+      deleteDoctorLocation({ lang, locationId, doctorId: doctorId! }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["doctor-locations", doctorUserId] });
+      toast.success("Location deleted.");
+      queryClient.invalidateQueries({ queryKey: ["doctor-locations", doctorId] });
+      setDeleteId(null);
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to delete location.");
       setDeleteId(null);
     },
   });
 
   const startEditing = (loc: Location) => {
+    editingIdRef.current = loc.locationId;
     setEditingId(loc.locationId);
     setValue("locationName", loc.locationName);
     setValue("addressLine1", loc.addressLine1);
@@ -307,7 +325,7 @@ export function DefaultLocationManager({
               variant="outline"
               type="button"
               className="gap-2"
-              onClick={() => { setEditingId(null); reset(); }}
+              onClick={() => { editingIdRef.current = null; setEditingId(null); reset(); }}
             >
               <X className="w-4 h-4" /> Cancel
             </Button>

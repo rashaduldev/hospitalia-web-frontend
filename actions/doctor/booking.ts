@@ -5,7 +5,7 @@ import { getAccessToken } from "../auth";
 
 // Book Appointment
 export const bookAppointment = async ({
-  doctorUserId,
+  doctorId,
   patientUserId,
   appointmentDate,
   dayOfWeek,
@@ -20,7 +20,7 @@ export const bookAppointment = async ({
   },
   notes,
 }: {
-  doctorUserId: number;
+  doctorId: number;
   patientUserId: number;
   appointmentDate: string;
   dayOfWeek: string;
@@ -41,7 +41,7 @@ export const bookAppointment = async ({
     endpoint: `/api/appointments/book-appointment`,
     method: "POST",
     body: {
-      doctorUserId,
+      doctorId,
       patientUserId,
       appointmentDate,
       dayOfWeek,
