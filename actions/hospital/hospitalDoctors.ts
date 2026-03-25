@@ -32,12 +32,12 @@ export const getDoctorsByHospital = async ({
 export const assignDoctorToHospital = async ({
   lang,
   hospitalId,
-  doctorUserId,
+  doctorId,
   hospitalLocationId,
 }: {
   lang: string;
   hospitalId: number;
-  doctorUserId: number;
+  doctorId: number;
   hospitalLocationId: number;
 }) => {
   const token = await getAccessToken();
@@ -46,7 +46,7 @@ export const assignDoctorToHospital = async ({
     method: "POST",
     params: { lang },
     headers: { Authorization: `Bearer ${token}` },
-    body: { hospitalId, doctorUserId, hospitalLocationId },
+    body: { hospitalId, doctorId, hospitalLocationId },
   });
 };
 

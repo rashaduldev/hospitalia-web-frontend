@@ -80,8 +80,8 @@ export default function ManageDoctors({
 
   // Assign mutation
   const assignMutation = useMutation({
-    mutationFn: ({ doctorUserId, hospitalLocationId }: { doctorUserId: number; hospitalLocationId: number }) =>
-      assignDoctorToHospital({ lang, hospitalId, doctorUserId, hospitalLocationId }),
+    mutationFn: ({ doctorId, hospitalLocationId }: { doctorId: number; hospitalLocationId: number }) =>
+      assignDoctorToHospital({ lang, hospitalId, doctorId, hospitalLocationId }),
     onSuccess: (res) => {
       if (!res.success) { toast.error(res.message); return; }
       toast.success("Doctor assigned successfully");
@@ -130,7 +130,7 @@ export default function ManageDoctors({
   const handleAssignSubmit = () => {
     if (!selectedDoctor) { toast.error("Please select a doctor"); return; }
     if (!selectedLocationId) { toast.error("Please select a location"); return; }
-    assignMutation.mutate({ doctorUserId: selectedDoctor.userId, hospitalLocationId: Number(selectedLocationId) });
+    assignMutation.mutate({ doctorId: selectedDoctor.doctorId!, hospitalLocationId: Number(selectedLocationId) });
   };
 
   return (
