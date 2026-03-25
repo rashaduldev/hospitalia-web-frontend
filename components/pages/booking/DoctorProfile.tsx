@@ -30,11 +30,7 @@ const DoctorProfile = ({
   doctor: SingleDoctorInfo;
   doctorLocations: DoctorLocation[];
 }) => {
-  const profileImage = doctor?.profileImage
-    ? doctor.profileImage
-    : doctor?.gender === "MALE"
-      ? doctorMale
-      : doctorFemale;
+  const profileImage = doctor?.gender === "MALE" ? doctorMale : doctorFemale;
 
   const specialities: Speciality[] =
     doctor.professionalInfoResponse?.specialities ?? [];
