@@ -108,7 +108,7 @@ function OverviewTab({ hospital }: { hospital: HospitalInfo }) {
               <BookOpen className="w-4 h-4 text-muted-foreground" />
               <h3 className="text-sm font-semibold text-foreground">About</h3>
             </div>
-            <p className="px-5 py-4 text-sm text-foreground leading-relaxed">
+            <p className="px-5 py-4 text-sm text-foreground leading-relaxed whitespace-pre-wrap">
               {p.professionalStatement}
             </p>
           </div>
