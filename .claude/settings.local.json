@@ -43,7 +43,8 @@
       "Bash(curl -s \"http://localhost:3000/en/search?searchKeyword=dakar&searchType=DOCTOR\")",
       "Bash(git diff:*)",
       "Bash(find /Volumes/Works/projects/web/hospitalia-web/app/[locale]/\\\\\\(patient\\\\\\) -name \"*.tsx\")",
-      "Bash(sort find:*)"
+      "Bash(sort find:*)",
+      "Bash(pnpm run:*)"
     ]
   }
 }

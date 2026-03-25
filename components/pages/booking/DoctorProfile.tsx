@@ -127,9 +127,9 @@ const DoctorProfile = ({
                   {specialities.map((s) => s.name).join(", ")}
                 </p>
               )}
-              {doctor.professionalInfoResponse?.departments && (
+              {(doctor.professionalInfoResponse?.departments?.length ?? 0) > 0 && (
                 <p className="text-sm text-muted-foreground">
-                  {doctor.professionalInfoResponse.departments}
+                  {doctor.professionalInfoResponse!.departments!.map((d) => d.name).join(", ")}
                 </p>
               )}
             </div>
