@@ -146,7 +146,7 @@ export const appointmentColumns: ColumnDef<Appointment>[] = [
     cell: ({ row }) => (
       <div
         className="flex items-center gap-2 cursor-pointer text-sm font-medium"
-        onClick={() => console.log("Edit", row.original.id)}
+        onClick={() => console.log("Edit", row.original.appointmentId)}
       >
         <Pencil size={14} />
         <Typography as="span" size="sm" color="foreground" weight="medium">
