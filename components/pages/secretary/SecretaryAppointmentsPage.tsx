@@ -11,7 +11,8 @@ import { Appointment } from "@/types/appointment.type";
 
 export default function SecretaryAppointmentsPage() {
   const locale = useCurrentLocale();
-  const { doctorId, doctorUserId, selectedLocationId } = useSecretaryLocation();
+  const ctx = useSecretaryLocation();
+  const { doctorId = 0, doctorUserId = 0, selectedLocationId = null } = ctx ?? {};
   const today = format(new Date(), "yyyy-MM-dd");
 
   const { data: todayData, isLoading: todayLoading } = useQuery({
@@ -50,7 +51,7 @@ export default function SecretaryAppointmentsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4 sm:p-6">
       {/* Today */}
       <div className="border border-border rounded-xl bg-card shadow-sm overflow-hidden">
         <div className="flex items-center gap-3 px-6 py-5 border-b border-border">

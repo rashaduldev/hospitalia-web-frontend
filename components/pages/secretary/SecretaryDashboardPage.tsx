@@ -34,7 +34,8 @@ function formatTime(t: string): string {
 
 export default function SecretaryDashboardPage() {
   const locale = useCurrentLocale();
-  const { doctorId, doctorUserId, selectedLocationId, locations } = useSecretaryLocation();
+  const ctx = useSecretaryLocation();
+  const { doctorId = 0, doctorUserId = 0, selectedLocationId = null, locations = [] } = ctx ?? {};
   const today = format(new Date(), "yyyy-MM-dd");
   const lang = locale;
 
@@ -77,7 +78,7 @@ export default function SecretaryDashboardPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4 sm:p-6">
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="border border-border rounded-xl bg-card shadow-sm p-5 flex items-center gap-4">

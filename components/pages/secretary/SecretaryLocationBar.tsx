@@ -4,7 +4,9 @@ import { MapPin } from "lucide-react";
 import { useSecretaryLocation } from "@/providers/SecretaryLocationProvider";
 
 export function SecretaryLocationBar() {
-  const { locations, selectedLocationId, setSelectedLocationId } = useSecretaryLocation();
+  const ctx = useSecretaryLocation();
+  if (!ctx) return null;
+  const { locations, selectedLocationId, setSelectedLocationId } = ctx;
 
   if (locations.length === 0) return null;
 

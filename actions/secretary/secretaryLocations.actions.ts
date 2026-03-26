@@ -2,16 +2,18 @@
 
 import { apiClient } from '@/lib/api';
 import { getAccessToken } from '@/actions/auth';
-import { SecretaryLocation } from '@/types/secretary.type';
+import { SecretaryLocation, SecretaryPermission } from '@/types/secretary.type';
 
 export const assignLocationToSecretary = async ({
   lang,
-  secretaryId,
+  userId,
   locationId,
+  permissions,
 }: {
   lang: string;
-  secretaryId: number;
+  userId: number;
   locationId: number;
+  permissions: SecretaryPermission[];
 }) => {
   const token = await getAccessToken();
   return apiClient<SecretaryLocation>({
@@ -19,18 +21,20 @@ export const assignLocationToSecretary = async ({
     method: 'POST',
     params: { lang },
     headers: { Authorization: `Bearer ${token}` },
-    body: { secretaryId, locationId },
+    body: { userId, locationId, permissions },
   });
 };
 
 export const removeSecretaryLocation = async ({
   lang,
-  secretaryId,
+  userId,
   locationId,
+  permissions,
 }: {
   lang: string;
-  secretaryId: number;
+  userId: number;
   locationId: number;
+  permissions: SecretaryPermission[];
 }) => {
   const token = await getAccessToken();
   return apiClient({
@@ -38,22 +42,43 @@ export const removeSecretaryLocation = async ({
     method: 'DELETE',
     params: { lang },
     headers: { Authorization: `Bearer ${token}` },
-    body: { secretaryId, locationId },
+    body: { userId, locationId, permissions },
   });
 };
 
 export const getSecretaryLocations = async ({
-  secretaryId,
+  userId,
   lang,
 }: {
-  secretaryId: number;
+  userId: number;
   lang: string;
 }) => {
   const token = await getAccessToken();
   return apiClient<SecretaryLocation[]>({
-    endpoint: `/api/secretary-locations/secretary/${secretaryId}`,
+    endpoint: `/api/secretary-locations/secretary/userId/${userId}`,
     method: 'GET',
     params: { lang },
     headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
+export const updateSecretaryLocationPermissions = async ({
+  lang,
+  userId,
+  locationId,
+  permissions,
+}: {
+  lang: string;
+  userId: number;
+  locationId: number;
+  permissions: SecretaryPermission[];
+}) => {
+  const token = await getAccessToken();
+  return apiClient<SecretaryLocation>({
+    endpoint: '/api/secretary-locations/update',
+    method: 'PUT',
+    params: { lang },
+    headers: { Authorization: `Bearer ${token}` },
+    body: { userId, locationId, permissions },
   });
 };

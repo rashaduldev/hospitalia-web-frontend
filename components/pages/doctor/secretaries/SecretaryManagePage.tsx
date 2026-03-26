@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  Plus, Loader2, Mail, Trash2, UserX, Users2, MapPin, CheckSquare, Square, ShieldCheck,
+  Plus, Loader2, Mail, Trash2, UserX, Users2, MapPin, CheckSquare, Square, ShieldCheck, Lock,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -33,8 +33,15 @@ import {
   getSecretaryLocations,
   assignLocationToSecretary,
   removeSecretaryLocation,
+  updateSecretaryLocationPermissions,
 } from "@/actions/secretary/secretaryLocations.actions";
-import { SecretaryResponse, SecretaryStatus } from "@/types/secretary.type";
+import {
+  SecretaryResponse,
+  SecretaryStatus,
+  SecretaryPermission,
+  ALL_SECRETARY_PERMISSIONS,
+  SECRETARY_PERMISSION_LABELS,
+} from "@/types/secretary.type";
 import { DoctorLocation } from "@/types/doctor.location.type";
 import { getCleanPhoneData } from "@/lib/phone-utils";
 
@@ -141,7 +148,43 @@ function CreateSecretaryDialog({
   );
 }
 
-// ── Manage Locations Dialog ──────────────────────────────────────────────────
+// ── Secretary Location Capsules ──────────────────────────────────────────────
+
+function SecretaryLocationCapsules({ userId, lang }: { userId: number; lang: string }) {
+  const { data, isLoading } = useQuery({
+    queryKey: ["secretary-locations", userId],
+    queryFn: () => getSecretaryLocations({ userId, lang }),
+  });
+
+  if (isLoading) {
+    return <div className="h-4 w-24 bg-muted animate-pulse rounded-full mt-1" />;
+  }
+
+  const locations = data?.payload ?? [];
+
+  if (locations.length === 0) {
+    return (
+      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-muted text-muted-foreground mt-1">
+        All locations
+      </span>
+    );
+  }
+
+  return (
+    <div className="flex flex-wrap gap-1 mt-1">
+      {locations.map((loc) => (
+        <span
+          key={loc.locationId}
+          className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-primary/10 text-primary"
+        >
+          {loc.locationName}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+// ── Manage Locations & Permissions Dialog ────────────────────────────────────
 
 function ManageLocationsDialog({
   open,
@@ -156,91 +199,183 @@ function ManageLocationsDialog({
   doctorLocations: DoctorLocation[];
   lang: string;
 }) {
-  const secretaryId = secretary.id ?? 0;
+  // "loc-{locationId}" while toggling a location, "perm-{locationId}-{permission}" while toggling a permission
+  const [saving, setSaving] = useState<string | null>(null);
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["secretary-locations", secretaryId],
-    queryFn: () => getSecretaryLocations({ secretaryId, lang }),
-    enabled: open && !!secretaryId,
+    queryKey: ["secretary-locations", secretary.userId],
+    queryFn: () => getSecretaryLocations({ userId: secretary.userId, lang }),
+    enabled: open,
   });
 
   const assigned = data?.payload ?? [];
-  const assignedIds = new Set(assigned.map((l) => l.locationId));
+  const assignedMap = new Map(assigned.map((l) => [l.locationId, l]));
 
-  const [toggling, setToggling] = useState<number | null>(null);
-
-  const handleToggle = async (locationId: number) => {
-    if (!secretaryId) return;
-    setToggling(locationId);
+  const handleToggleLocation = async (locationId: number) => {
+    setSaving(`loc-${locationId}`);
     try {
-      if (assignedIds.has(locationId)) {
-        const res = await removeSecretaryLocation({ lang, secretaryId, locationId });
+      const assignment = assignedMap.get(locationId);
+      if (assignment) {
+        const res = await removeSecretaryLocation({
+          lang, userId: secretary.userId, locationId,
+          permissions: assignment.permissions,
+        });
         if (!res.success) { toast.error(res.message); return; }
         toast.success("Location removed");
       } else {
-        const res = await assignLocationToSecretary({ lang, secretaryId, locationId });
+        const res = await assignLocationToSecretary({
+          lang, userId: secretary.userId, locationId,
+          permissions: ALL_SECRETARY_PERMISSIONS,
+        });
         if (!res.success) { toast.error(res.message); return; }
-        toast.success("Location assigned");
+        toast.success("Location assigned with full permissions");
       }
-      refetch();
     } finally {
-      setToggling(null);
+      setSaving(null);
+      refetch();
+    }
+  };
+
+  const handleTogglePermission = async (locationId: number, permission: SecretaryPermission) => {
+    const current = assignedMap.get(locationId);
+    if (!current) return;
+    const newPerms = current.permissions.includes(permission)
+      ? current.permissions.filter((p) => p !== permission)
+      : [...current.permissions, permission];
+    setSaving(`perm-${locationId}-${permission}`);
+    try {
+      if (newPerms.length === 0) {
+        const res = await removeSecretaryLocation({
+          lang, userId: secretary.userId, locationId,
+          permissions: current.permissions,
+        });
+        if (!res.success) { toast.error(res.message); return; }
+        toast.success("Location removed — no permissions remaining");
+      } else {
+        const res = await updateSecretaryLocationPermissions({ lang, userId: secretary.userId, locationId, permissions: newPerms });
+        if (!res.success) { toast.error(res.message); return; }
+        toast.success("Permissions updated");
+      }
+    } finally {
+      setSaving(null);
+      refetch();
     }
   };
 
   const name = [secretary.firstName, secretary.lastName].filter(Boolean).join(" ");
+  const isBusy = saving !== null;
 
   return (
     <AlertDialog open={open} onOpenChange={(v) => { if (!v) onClose(); }}>
-      <AlertDialogContent className="max-w-md">
+      <AlertDialogContent className="max-w-lg">
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-primary" />
-            Locations for {name}
+            <ShieldCheck className="w-5 h-5 text-primary" />
+            Locations &amp; Permissions — {name}
           </AlertDialogTitle>
         </AlertDialogHeader>
-        <div className="py-1 space-y-2">
+
+        <div className="py-1 space-y-3 max-h-[60vh] overflow-y-auto pr-1">
           <p className="text-xs text-muted-foreground">
-            No assigned locations = access to all. Assign specific locations to restrict access.
+            No assigned locations = full access to all. Assign specific locations to restrict access and control permissions per location.
           </p>
+
           {isLoading ? (
-            <div className="flex items-center justify-center py-8">
+            <div className="flex items-center justify-center py-10">
               <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
             </div>
           ) : doctorLocations.length === 0 ? (
             <p className="text-sm text-muted-foreground py-6 text-center">No locations found.</p>
           ) : (
-            <div className="border border-border rounded-xl overflow-hidden">
-              {doctorLocations.map((loc, i) => {
-                const isAssigned = assignedIds.has(loc.locationId);
-                const isToggling = toggling === loc.locationId;
+            <div className="space-y-2">
+              {doctorLocations.map((loc) => {
+                const assignment = assignedMap.get(loc.locationId);
+                const isAssigned = !!assignment;
+                const locSaving = saving === `loc-${loc.locationId}`;
+
                 return (
-                  <button
+                  <div
                     key={loc.locationId}
-                    type="button"
-                    onClick={() => handleToggle(loc.locationId)}
-                    disabled={isToggling}
-                    className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
-                      i !== doctorLocations.length - 1 ? "border-b border-border" : ""
-                    } ${isAssigned ? "bg-primary/5 hover:bg-primary/10" : "hover:bg-muted/40"} disabled:opacity-60`}
+                    className={`border rounded-xl overflow-hidden transition-colors ${
+                      isAssigned
+                        ? "border-primary/25 bg-primary/[0.03]"
+                        : "border-border"
+                    }`}
                   >
-                    {isToggling ? (
-                      <Loader2 className="w-4 h-4 animate-spin text-primary shrink-0" />
-                    ) : isAssigned ? (
-                      <CheckSquare className="w-4 h-4 text-primary shrink-0" />
-                    ) : (
-                      <Square className="w-4 h-4 text-muted-foreground shrink-0" />
+                    {/* Location row */}
+                    <button
+                      type="button"
+                      onClick={() => handleToggleLocation(loc.locationId)}
+                      disabled={isBusy}
+                      className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors disabled:opacity-60 ${
+                        isAssigned ? "hover:bg-primary/5" : "hover:bg-muted/40"
+                      }`}
+                    >
+                      {locSaving ? (
+                        <Loader2 className="w-4 h-4 animate-spin text-primary shrink-0" />
+                      ) : isAssigned ? (
+                        <CheckSquare className="w-4 h-4 text-primary shrink-0" />
+                      ) : (
+                        <Square className="w-4 h-4 text-muted-foreground shrink-0" />
+                      )}
+                      <MapPin className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-foreground truncate">{loc.locationName}</p>
+                        {loc.city && <p className="text-xs text-muted-foreground">{loc.city}</p>}
+                      </div>
+                      {isAssigned && (
+                        <span className="text-[11px] font-medium text-primary shrink-0">
+                          {assignment.permissions.length}/{ALL_SECRETARY_PERMISSIONS.length} permissions
+                        </span>
+                      )}
+                    </button>
+
+                    {/* Permissions grid */}
+                    {isAssigned && (
+                      <div className="px-4 pb-3 border-t border-border/50">
+                        <div className="flex items-center gap-1.5 mt-2.5 mb-2">
+                          <Lock className="w-3 h-3 text-muted-foreground" />
+                          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                            Permissions
+                          </p>
+                        </div>
+                        <div className="grid grid-cols-2 gap-1.5">
+                          {ALL_SECRETARY_PERMISSIONS.map((permission) => {
+                            const isGranted = assignment.permissions.includes(permission);
+                            const permSaving = saving === `perm-${loc.locationId}-${permission}`;
+                            return (
+                              <button
+                                key={permission}
+                                type="button"
+                                onClick={() => handleTogglePermission(loc.locationId, permission)}
+                                disabled={isBusy}
+                                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-left transition-colors disabled:opacity-60 ${
+                                  isGranted
+                                    ? "bg-primary/10 text-primary hover:bg-primary/15"
+                                    : "bg-muted/60 text-muted-foreground hover:bg-muted"
+                                }`}
+                              >
+                                {permSaving ? (
+                                  <Loader2 className="w-3 h-3 animate-spin shrink-0" />
+                                ) : isGranted ? (
+                                  <CheckSquare className="w-3 h-3 shrink-0" />
+                                ) : (
+                                  <Square className="w-3 h-3 shrink-0" />
+                                )}
+                                <span className="truncate">{SECRETARY_PERMISSION_LABELS[permission]}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
                     )}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">{loc.locationName}</p>
-                      {loc.city && <p className="text-xs text-muted-foreground">{loc.city}</p>}
-                    </div>
-                  </button>
+                  </div>
                 );
               })}
             </div>
           )}
         </div>
+
         <AlertDialogFooter>
           <Button onClick={onClose}>Done</Button>
         </AlertDialogFooter>
@@ -348,20 +483,19 @@ export default function SecretaryManagePage({
                   {sec.phoneNumber && (
                     <p className="text-xs text-muted-foreground">{sec.phoneNumber}</p>
                   )}
+                  <SecretaryLocationCapsules userId={sec.userId} lang={lang} />
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
-                  {/* Location management */}
-                  {sec.id && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-muted-foreground hover:text-primary"
-                      title="Manage Locations"
-                      onClick={() => setLocationTarget(sec)}
-                    >
-                      <MapPin className="w-3.5 h-3.5" />
-                    </Button>
-                  )}
+                  {/* Location & permission management */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1.5 text-xs font-semibold text-primary border-primary/40 hover:bg-primary/5"
+                    onClick={() => setLocationTarget(sec)}
+                  >
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    Manage Access
+                  </Button>
                   {/* Invite / Resend */}
                   {(sec.status === "PENDING" || sec.status === "INVITED") && (
                     <Button

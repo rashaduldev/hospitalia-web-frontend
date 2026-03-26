@@ -20,7 +20,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import AppButton from "@/components/common/AppButton";
-import { LogOut, User } from "lucide-react";
+import { LogOut, User, MapPin } from "lucide-react";
+import { useSecretaryLocation } from "@/providers/SecretaryLocationProvider";
 import { handleLogout } from "@/actions/auth.actions";
 import Link from "next/link";
 import { useCurrentLocale } from "@/locales/client";
@@ -46,6 +47,7 @@ export function SiteHeader({ user }: { user: any }) {
   const displayName = [firstName, lastName].filter(Boolean).join(" ") || "User";
   const userType: string = user?.userType ?? "";
   const profileUrl = PROFILE_URL[userType] ?? null;
+  const secretaryCtx = useSecretaryLocation();
 
   const doLogout = async () => {
     setConfirmLogout(false);
@@ -56,6 +58,24 @@ export function SiteHeader({ user }: { user: any }) {
     <header className="flex shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
       <div className="flex w-full items-center justify-between px-4 lg:gap-2 lg:px-6 py-4">
         <SidebarTrigger className="-ml-1" />
+
+        {/* Location picker — visible for secretary users only */}
+        {secretaryCtx && secretaryCtx.locations.length > 0 && (
+          <div className="flex items-center gap-2 flex-1 max-w-xs">
+            <MapPin className="w-4 h-4 text-primary shrink-0" />
+            <select
+              value={secretaryCtx.selectedLocationId ?? ""}
+              onChange={(e) => secretaryCtx.setSelectedLocationId(Number(e.target.value))}
+              className="h-8 w-full rounded-md border border-input bg-background px-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            >
+              {secretaryCtx.locations.map((loc) => (
+                <option key={loc.id} value={loc.id}>
+                  {loc.locationName}{loc.city ? ` — ${loc.city}` : ""}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

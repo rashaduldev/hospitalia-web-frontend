@@ -12,7 +12,8 @@ interface SecretaryLocationContextValue {
   secretaryId: number;
 }
 
-const SecretaryLocationContext = createContext<SecretaryLocationContextValue | null>(null);
+export const SecretaryLocationContext =
+  createContext<SecretaryLocationContextValue | null>(null);
 
 export function SecretaryLocationProvider({
   children,
@@ -40,8 +41,7 @@ export function SecretaryLocationProvider({
   );
 }
 
-export function useSecretaryLocation(): SecretaryLocationContextValue {
-  const ctx = useContext(SecretaryLocationContext);
-  if (!ctx) throw new Error("useSecretaryLocation must be used inside SecretaryLocationProvider");
-  return ctx;
+/** Returns null when used outside the provider (e.g. SiteHeader for non-secretary users). */
+export function useSecretaryLocation(): SecretaryLocationContextValue | null {
+  return useContext(SecretaryLocationContext);
 }
