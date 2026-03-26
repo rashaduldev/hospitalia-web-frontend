@@ -137,9 +137,11 @@ function OverviewTab({ hospital }: { hospital: HospitalInfo }) {
 export default function HospitalDetailPage({
   hospital,
   lang,
+  userId,
 }: {
   hospital: HospitalInfo;
   lang: string;
+  userId: number;
 }) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<Tab>("overview");
@@ -216,7 +218,7 @@ export default function HospitalDetailPage({
               <h3 className="text-sm font-semibold text-foreground">Doctors</h3>
             </div>
             <div className="p-6">
-              <ManageDoctors hospitalId={hospital.id} lang={lang} />
+              <ManageDoctors hospitalId={hospital.id} lang={lang} userId={userId} />
             </div>
           </div>
         )}

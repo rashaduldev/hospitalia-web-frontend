@@ -24,5 +24,5 @@ export default async function HospitalDetailRoute({
 
   if (!res?.success || !res.payload) notFound();
 
-  return <HospitalDetailPage hospital={res.payload} lang={lang} />;
+  return <HospitalDetailPage hospital={res.payload} lang={lang} userId={user.id} />;
 }

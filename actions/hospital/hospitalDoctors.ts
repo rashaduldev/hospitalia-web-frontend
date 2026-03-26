@@ -1,7 +1,7 @@
-"use server";
+'use server';
 
-import { apiClient } from "@/lib/api";
-import { getAccessToken } from "../auth";
+import { apiClient } from '@/lib/api';
+import { getAccessToken } from '../auth';
 
 export type HospitalDoctorResponse = {
   id: number;
@@ -23,7 +23,7 @@ export const getDoctorsByHospital = async ({
   const token = await getAccessToken();
   return apiClient<HospitalDoctorResponse[]>({
     endpoint: `/api/hospital-doctors/hospital/${hospitalId}`,
-    method: "GET",
+    method: 'GET',
     params: { lang },
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -42,8 +42,8 @@ export const assignDoctorToHospital = async ({
 }) => {
   const token = await getAccessToken();
   return apiClient({
-    endpoint: "/api/hospital-doctors/assign",
-    method: "POST",
+    endpoint: '/api/hospital-doctors/assign',
+    method: 'POST',
     params: { lang },
     headers: { Authorization: `Bearer ${token}` },
     body: { hospitalId, doctorId, hospitalLocationId },
@@ -59,7 +59,7 @@ export const getPublicHospitalDoctors = async ({
 }) => {
   return apiClient<HospitalDoctorResponse[]>({
     endpoint: `/api/hospital-doctors/hospital/${hospitalId}`,
-    method: "GET",
+    method: 'GET',
     params: { lang },
   });
 };
@@ -75,12 +75,58 @@ export const importDoctorsFromXlsx = async ({
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/doctors/import/xlsx?lang=${lang}`,
     {
-      method: "POST",
+      method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
       body: formData,
     },
   );
   return res.json();
+};
+
+export const getImportedDoctorsByUser = async ({
+  lang,
+  userId,
+  pageNo = 0,
+  pageSize = 100,
+  sortBy = 'firstName',
+  ascOrDesc = 'asc',
+}: {
+  lang: string;
+  userId: number;
+  pageNo?: number;
+  pageSize?: number;
+  sortBy?: string;
+  ascOrDesc?: string;
+}) => {
+  const token = await getAccessToken();
+  return apiClient<{
+    content: import('@/types/doctor').SingleDoctorInfo[];
+    totalElements: number;
+  }>({
+    endpoint: `/api/doctors/imported-by/${userId}`,
+    method: 'GET',
+    params: { lang, pageNo, pageSize, sortBy, ascOrDesc },
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
+export const downloadDoctorImportSample = async ({
+  lang,
+}: {
+  lang: string;
+}): Promise<{ base64: string; filename: string } | null> => {
+  const token = await getAccessToken();
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/doctors/import/sample?lang=${lang}`,
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+  if (!res.ok) return null;
+  const buffer = await res.arrayBuffer();
+  const base64 = Buffer.from(buffer).toString('base64');
+  const disposition = res.headers.get('content-disposition') ?? '';
+  const match = disposition.match(/filename="?([^"]+)"?/);
+  const filename = match?.[1] ?? 'doctors_import_sample.xlsx';
+  return { base64, filename };
 };
 
 export const unassignDoctorFromHospital = async ({
@@ -93,7 +139,7 @@ export const unassignDoctorFromHospital = async ({
   const token = await getAccessToken();
   return apiClient({
     endpoint: `/api/hospital-doctors/unassign/${id}`,
-    method: "DELETE",
+    method: 'DELETE',
     params: { lang },
     headers: { Authorization: `Bearer ${token}` },
   });

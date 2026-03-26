@@ -62,7 +62,7 @@ export const ROUTES = {
       icon: Building2,
     },
     {
-      name: "Doctors & Consultants",
+      name: "Imported Doctors",
       url: "/hospital/doctors",
       icon: Stethoscope,
     },

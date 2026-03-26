@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { useQuery, useQueries } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   Stethoscope,
-  MapPin,
   Clock,
   BadgeCheck,
   CalendarCheck,
@@ -16,7 +16,6 @@ import {
   Loader2,
   AlertCircle,
   CheckCircle2,
-  ChevronDown,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -30,42 +29,28 @@ import {
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { getDoctorsByHospital } from "@/actions/hospital/hospitalDoctors";
-import { getDoctorInfoByDoctorId } from "@/actions/doctor/doctordata";
-import { importDoctorsFromXlsx } from "@/actions/hospital/hospitalDoctors";
-import { HospitalInfo } from "@/types/hospital.type";
+  getImportedDoctorsByUser,
+  importDoctorsFromXlsx,
+  downloadDoctorImportSample,
+} from "@/actions/hospital/hospitalDoctors";
 import { SingleDoctorInfo } from "@/types/doctor";
 import { useCurrentLocale } from "@/locales/client";
 import { toast } from "sonner";
-
-const SAMPLE_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/doctors/import/sample`;
 
 function getInitials(first: string, last: string) {
   return `${first?.[0] ?? ""}${last?.[0] ?? ""}`.toUpperCase();
 }
 
-type EnrichedDoctor = {
-  doctorId: number;
-  locations: string[];
-  profile: SingleDoctorInfo | null;
-};
-
-function DoctorCard({ doctor, lang }: { doctor: EnrichedDoctor; lang: string }) {
-  const p = doctor.profile;
-  const firstName = p?.firstName ?? "";
-  const lastName = p?.lastName ?? "";
-  const fullName = p ? `${firstName} ${lastName}`.trim() : "Unknown Doctor";
-  const designation = p?.professionalInfoResponse?.designation ?? "";
-  const specialities = p?.professionalInfoResponse?.specialities ?? [];
-  const experience = p?.yearsOfExperience;
-  const qualification = p?.qualification;
-  const isVerified = p?.verified;
-  const profileHref = `/${lang}/doctor/${doctor.doctorId}`;
+function DoctorCard({ doctor, lang }: { doctor: SingleDoctorInfo; lang: string }) {
+  const firstName = doctor.firstName ?? "";
+  const lastName = doctor.lastName ?? "";
+  const fullName = `${firstName} ${lastName}`.trim() || "Unknown Doctor";
+  const designation = doctor.professionalInfoResponse?.designation ?? "";
+  const specialities = doctor.professionalInfoResponse?.specialities ?? [];
+  const experience = doctor.yearsOfExperience;
+  const qualification = doctor.qualification;
+  const isVerified = doctor.verified;
+  const profileHref = `/${lang}/doctor/${doctor.id}`;
 
   return (
     <div className="group border border-border rounded-xl bg-card shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-200 overflow-hidden flex flex-col">
@@ -110,12 +95,6 @@ function DoctorCard({ doctor, lang }: { doctor: EnrichedDoctor; lang: string }) 
         <Separator />
 
         <div className="space-y-1.5 text-sm">
-          {doctor.locations.length > 0 && (
-            <div className="flex items-start gap-2 text-muted-foreground">
-              <MapPin className="w-3.5 h-3.5 shrink-0 mt-0.5 text-secondary" />
-              <span className="leading-snug line-clamp-2">{doctor.locations.join(" · ")}</span>
-            </div>
-          )}
           {experience != null && (
             <div className="flex items-center gap-2 text-muted-foreground">
               <Clock className="w-3.5 h-3.5 shrink-0 text-primary" />
@@ -156,8 +135,27 @@ function ImportDialog({
 }) {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleDownloadSample = async () => {
+    setDownloading(true);
+    try {
+      const result = await downloadDoctorImportSample({ lang });
+      if (!result) { toast.error("Failed to download sample template."); return; }
+      const bytes = Uint8Array.from(atob(result.base64), (c) => c.charCodeAt(0));
+      const blob = new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = result.filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   const handleClose = () => {
     if (loading) return;
@@ -167,8 +165,7 @@ function ImportDialog({
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selected = e.target.files?.[0] ?? null;
-    setFile(selected);
+    setFile(e.target.files?.[0] ?? null);
     setError(null);
   };
 
@@ -204,13 +201,12 @@ function ImportDialog({
           </AlertDialogTitle>
         </AlertDialogHeader>
 
-        <div className="space-y-5 py-1">
+        <div className="space-y-5 py-1 max-h-[70vh] overflow-y-auto pr-1">
           {/* Instructions */}
           <div className="rounded-lg bg-muted/50 border border-border p-4 space-y-2">
             <p className="text-sm font-semibold text-foreground">How to import:</p>
             <ol className="text-sm text-muted-foreground space-y-1.5 list-decimal list-inside">
-              <li>Download the sample spreadsheet below</li>
-              <li>Fill in doctor information following the column headers</li>
+              <li>Download the sample spreadsheet and fill in doctor information</li>
               <li>Save the file as <span className="font-medium text-foreground">.xlsx</span></li>
               <li>Upload the completed file and click <span className="font-medium text-foreground">Import</span></li>
             </ol>
@@ -227,11 +223,19 @@ function ImportDialog({
                 <p className="text-xs text-muted-foreground">doctors_import_sample.xlsx</p>
               </div>
             </div>
-            <Button variant="outline" size="sm" className="gap-1.5" asChild>
-              <a href={SAMPLE_URL} download>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5"
+              onClick={handleDownloadSample}
+              disabled={downloading}
+            >
+              {downloading ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
                 <Download className="w-3.5 h-3.5" />
-                Download
-              </a>
+              )}
+              Download
             </Button>
           </div>
 
@@ -285,9 +289,7 @@ function ImportDialog({
         </div>
 
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={handleClose} disabled={loading}>
-            Cancel
-          </AlertDialogCancel>
+          <AlertDialogCancel onClick={handleClose} disabled={loading}>Cancel</AlertDialogCancel>
           <Button onClick={handleSubmit} disabled={loading || !file} className="min-w-24 gap-2">
             {loading ? (
               <><Loader2 className="w-4 h-4 animate-spin" />Importing...</>
@@ -302,63 +304,22 @@ function ImportDialog({
 }
 
 export default function HospitalDoctorsManagePage({
-  hospitals,
+  userId,
   lang,
 }: {
-  hospitals: HospitalInfo[];
+  userId: number;
   lang: string;
 }) {
   const locale = useCurrentLocale();
-  const [selectedHospitalId, setSelectedHospitalId] = useState<number>(
-    hospitals[0]?.id ?? 0,
-  );
+  const router = useRouter();
   const [importOpen, setImportOpen] = useState(false);
 
-  const selectedHospital = hospitals.find((h) => h.id === selectedHospitalId);
-
-  const { data: doctorsData, isLoading: doctorsLoading, refetch } = useQuery({
-    queryKey: ["hospital-doctors-manage", selectedHospitalId],
-    queryFn: () => getDoctorsByHospital({ lang, hospitalId: selectedHospitalId }),
-    enabled: !!selectedHospitalId,
+  const { data, isLoading } = useQuery({
+    queryKey: ["imported-doctors", userId],
+    queryFn: () => getImportedDoctorsByUser({ lang, userId }),
   });
 
-  const rawDoctors = doctorsData?.payload ?? [];
-
-  // Deduplicate by doctorId and merge locations
-  const doctorMap = new Map<number, Set<string>>();
-  for (const item of rawDoctors) {
-    if (!doctorMap.has(item.doctorId)) doctorMap.set(item.doctorId, new Set());
-    if (item.hospitalLocationName) doctorMap.get(item.doctorId)!.add(item.hospitalLocationName);
-  }
-  const uniqueDoctors = Array.from(doctorMap.entries()).map(([doctorId, locs]) => ({
-    doctorId,
-    locations: Array.from(locs),
-  }));
-
-  // Fetch each doctor's profile in parallel
-  const profileQueries = useQueries({
-    queries: uniqueDoctors.map(({ doctorId }) => ({
-      queryKey: ["doctor-profile", doctorId],
-      queryFn: () => getDoctorInfoByDoctorId({ lang, doctorId }),
-      staleTime: 5 * 60 * 1000,
-    })),
-  });
-
-  const enriched: EnrichedDoctor[] = uniqueDoctors.map(({ doctorId, locations }, i) => ({
-    doctorId,
-    locations,
-    profile: (profileQueries[i]?.data?.payload as SingleDoctorInfo) ?? null,
-  }));
-
-  if (hospitals.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
-        <Users className="w-12 h-12 text-muted-foreground/40" />
-        <p className="text-base font-semibold text-foreground">No hospitals found</p>
-        <p className="text-sm text-muted-foreground">Create a hospital first to manage its doctors.</p>
-      </div>
-    );
-  }
+  const doctors: SingleDoctorInfo[] = data?.payload?.content ?? [];
 
   return (
     <div className="space-y-6 py-6">
@@ -370,63 +331,30 @@ export default function HospitalDoctorsManagePage({
           </div>
           <div>
             <h1 className="text-xl font-bold text-foreground leading-none">
-              Doctors &amp; Consultants
+              Imported Doctors &amp; Consultants
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
-              Manage and import doctors for your hospital
+              Doctors imported and managed under your account
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Hospital selector (only shown if multiple hospitals) */}
-          {hospitals.length > 1 && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2 max-w-[200px]">
-                  <span className="truncate">{selectedHospital?.hospitalName ?? "Select Hospital"}</span>
-                  <ChevronDown className="w-3.5 h-3.5 shrink-0" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                {hospitals.map((h) => (
-                  <DropdownMenuItem
-                    key={h.id}
-                    onClick={() => setSelectedHospitalId(h.id)}
-                    className={selectedHospitalId === h.id ? "bg-primary/10 text-primary" : ""}
-                  >
-                    {h.hospitalName}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
-
-          <Button
-            size="sm"
-            className="gap-2 font-semibold"
-            onClick={() => setImportOpen(true)}
-          >
-            <FileSpreadsheet className="w-4 h-4" />
-            Import From Spreadsheet
-          </Button>
-        </div>
+        <Button
+          size="sm"
+          className="gap-2 font-semibold"
+          onClick={() => setImportOpen(true)}
+        >
+          <FileSpreadsheet className="w-4 h-4" />
+          Import From Spreadsheet
+        </Button>
       </div>
 
-      {/* Hospital name badge (single hospital) */}
-      {hospitals.length === 1 && selectedHospital && (
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <MapPin className="w-3.5 h-3.5 shrink-0" />
-          <span>{selectedHospital.hospitalName}</span>
-        </div>
-      )}
-
       {/* Doctor grid */}
-      {doctorsLoading ? (
+      {isLoading ? (
         <div className="flex items-center justify-center py-24">
           <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
         </div>
-      ) : enriched.length === 0 ? (
+      ) : doctors.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 gap-4 text-center border border-dashed border-border rounded-xl">
           <Users className="w-12 h-12 text-muted-foreground/40" />
           <div>
@@ -443,11 +371,11 @@ export default function HospitalDoctorsManagePage({
       ) : (
         <>
           <p className="text-sm text-muted-foreground">
-            {enriched.length} doctor{enriched.length !== 1 ? "s" : ""} in {selectedHospital?.hospitalName}
+            {doctors.length} doctor{doctors.length !== 1 ? "s" : ""} imported
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {enriched.map((doctor) => (
-              <DoctorCard key={doctor.doctorId} doctor={doctor} lang={locale} />
+            {doctors.map((doctor) => (
+              <DoctorCard key={doctor.id ?? doctor.userId} doctor={doctor} lang={locale} />
             ))}
           </div>
         </>
@@ -457,7 +385,7 @@ export default function HospitalDoctorsManagePage({
         open={importOpen}
         onClose={() => setImportOpen(false)}
         lang={lang}
-        onSuccess={() => refetch()}
+        onSuccess={() => router.refresh()}
       />
     </div>
   );
