@@ -12,6 +12,7 @@ import {
   CalendarDays,
   CalendarCheck,
   Users,
+  Users2,
   Building2,
 } from "lucide-react";
 
@@ -48,6 +49,11 @@ export const ROUTES = {
       name: "My Profile",
       url: "/doctor/profile",
       icon: UserRound,
+    },
+    {
+      name: "Secretaries",
+      url: "/doctor/secretaries",
+      icon: Users2,
     },
   ],
   HOSPITAL: [
@@ -104,6 +110,18 @@ export const ROUTES = {
       name: "Messages",
       url: "/patient/messages",
       icon: MessageSquare,
+    },
+  ],
+  SECRETARY: [
+    {
+      name: "Dashboard",
+      url: "/secretary/dashboard",
+      icon: LayoutDashboardIcon,
+    },
+    {
+      name: "Appointments",
+      url: "/secretary/appointments",
+      icon: CalendarDays,
     },
   ],
   COMMON: [

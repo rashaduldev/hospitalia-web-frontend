@@ -14,6 +14,7 @@ const PUBLIC_ROUTES = [
   "/doctor/login",
   "/doctor/register",
   "/doctor/onboard",
+  "/secretary/onboard",
   "/patient/login",
   "/patient/register",
   "/hospital/login",

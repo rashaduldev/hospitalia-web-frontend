@@ -43,6 +43,7 @@ const ROLE_LABELS: Record<Role, string> = {
   HOSPITAL: "Hospital",
   PATIENT: "Patient",
   ADMIN: "Admin",
+  SECRETARY: "Secretary",
   COMMON: "",
 };
 
@@ -51,6 +52,7 @@ const DASHBOARD_URL: Partial<Record<Role, string>> = {
   DOCTOR: "/doctor/dashboard",
   HOSPITAL: "/hospital/dashboard",
   ADMIN: "/admin/dashboard",
+  SECRETARY: "/secretary/dashboard",
 };
 
 const PROFILE_URL: Partial<Record<Role, string>> = {

@@ -7,6 +7,7 @@ const ROLE_REDIRECT: Record<string, string> = {
   HOSPITAL: '/hospital/dashboard',
   ADMIN: '/admin/dashboard',
   PATIENT: '/patient/dashboard',
+  SECRETARY: '/secretary/dashboard',
 };
 
 export default async function DashboardRedirectPage() {

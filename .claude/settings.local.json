@@ -44,7 +44,8 @@
       "Bash(git diff:*)",
       "Bash(find /Volumes/Works/projects/web/hospitalia-web/app/[locale]/\\\\\\(patient\\\\\\) -name \"*.tsx\")",
       "Bash(sort find:*)",
-      "Bash(pnpm run:*)"
+      "Bash(pnpm run:*)",
+      "Bash(find /Volumes/Works/projects/web/hospitalia-web/app/[locale]/\\\\\\(dashboard\\\\\\) -type d)"
     ]
   }
 }
