@@ -128,8 +128,8 @@ export const getDoctorSecretaries = async ({
   lang,
   pageNo = 0,
   pageSize = 50,
-  sortBy = 'createdAt',
-  ascOrDesc = 'DESC',
+  sortBy = 'firstName',
+  ascOrDesc = 'asc',
 }: {
   doctorUserId: number;
   lang: string;

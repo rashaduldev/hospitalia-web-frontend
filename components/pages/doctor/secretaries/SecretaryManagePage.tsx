@@ -365,14 +365,16 @@ export default function SecretaryManagePage({
                   {/* Invite / Resend */}
                   {(sec.status === "PENDING" || sec.status === "INVITED") && (
                     <Button
-                      variant="ghost"
-                      size="icon"
-                      className={`h-8 w-8 ${sec.status === "INVITED" ? "text-amber-500 hover:text-amber-600" : "text-muted-foreground hover:text-primary"}`}
-                      title={sec.status === "PENDING" ? "Send Invitation" : "Resend Invitation"}
+                      variant="outline"
+                      size="sm"
+                      className={`gap-1.5 text-xs font-semibold ${sec.status === "INVITED" ? "text-amber-600 border-amber-400/40 hover:bg-amber-50 dark:hover:bg-amber-950/20" : "text-primary border-primary/40 hover:bg-primary/5"}`}
                       disabled={inviteMutation.isPending}
                       onClick={() => inviteMutation.mutate({ userId: sec.userId, status: sec.status })}
                     >
-                      <Mail className="w-3.5 h-3.5" />
+                      {inviteMutation.isPending
+                        ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        : <Mail className="w-3.5 h-3.5" />}
+                      {sec.status === "PENDING" ? "Send Invitation" : "Resend Invitation"}
                     </Button>
                   )}
                   {/* Delete */}

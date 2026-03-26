@@ -60,6 +60,7 @@ const LoginForm = ({
       DOCTOR: "/doctor/dashboard",
       HOSPITAL: "/hospital/dashboard",
       ADMIN: "/admin/dashboard",
+      SECRETARY: "/secretary/dashboard",
     };
     router.replace(REDIRECT[userType as string] ?? "/doctor/dashboard");
     reset();
