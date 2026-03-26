@@ -1,6 +1,6 @@
 import { Speciality } from "./speciality.type";
 
-export type DoctorStatus = "IMPORTED" | "ACTIVE" | "INACTIVE" | "SUSPENDED";
+export type DoctorStatus = "IMPORTED" | "INVITED" | "ACTIVE" | "INACTIVE" | "SUSPENDED";
 
 export type Department = {
   id: number;
