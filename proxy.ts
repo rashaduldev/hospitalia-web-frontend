@@ -13,6 +13,7 @@ const PUBLIC_ROUTES = [
   "/search",
   "/doctor/login",
   "/doctor/register",
+  "/doctor/onboard",
   "/patient/login",
   "/patient/register",
   "/hospital/login",

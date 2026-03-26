@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -16,6 +16,7 @@ import {
   Loader2,
   AlertCircle,
   CheckCircle2,
+  Mail,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,7 @@ import {
   getImportedDoctorsByUser,
   importDoctorsFromXlsx,
   downloadDoctorImportSample,
+  inviteDoctorToHospitalia,
 } from "@/actions/hospital/hospitalDoctors";
 import { SingleDoctorInfo } from "@/types/doctor";
 import { useCurrentLocale } from "@/locales/client";
@@ -41,7 +43,15 @@ function getInitials(first: string, last: string) {
   return `${first?.[0] ?? ""}${last?.[0] ?? ""}`.toUpperCase();
 }
 
-function DoctorCard({ doctor, lang }: { doctor: SingleDoctorInfo; lang: string }) {
+function DoctorCard({
+  doctor,
+  lang,
+  onInvite,
+}: {
+  doctor: SingleDoctorInfo;
+  lang: string;
+  onInvite: (doctorId: number) => void;
+}) {
   const firstName = doctor.firstName ?? "";
   const lastName = doctor.lastName ?? "";
   const fullName = `${firstName} ${lastName}`.trim() || "Unknown Doctor";
@@ -50,6 +60,8 @@ function DoctorCard({ doctor, lang }: { doctor: SingleDoctorInfo; lang: string }
   const experience = doctor.yearsOfExperience;
   const qualification = doctor.qualification;
   const isVerified = doctor.verified;
+  const isImported = doctor.status === "IMPORTED";
+  const isInvited = doctor.status === "INVITED";
   const profileHref = `/${lang}/doctor/${doctor.id}`;
 
   return (
@@ -110,7 +122,29 @@ function DoctorCard({ doctor, lang }: { doctor: SingleDoctorInfo; lang: string }
         </div>
       </div>
 
-      <div className="px-5 pb-5">
+      <div className="px-5 pb-5 flex flex-col gap-2">
+        {isImported && (
+          <Button
+            size="sm"
+            variant="outline"
+            className="w-full gap-2 font-semibold text-primary border-primary/40 hover:bg-primary/5"
+            onClick={() => onInvite(doctor.id!)}
+          >
+            <Mail className="w-4 h-4" />
+            Invite to Hospitalia
+          </Button>
+        )}
+        {isInvited && (
+          <Button
+            size="sm"
+            variant="outline"
+            className="w-full gap-2 font-semibold text-amber-600 border-amber-400/40 hover:bg-amber-50 dark:hover:bg-amber-950/20"
+            onClick={() => onInvite(doctor.id!)}
+          >
+            <Mail className="w-4 h-4" />
+            Resend Invitation Email
+          </Button>
+        )}
         <Button asChild size="sm" className="w-full gap-2 font-semibold">
           <Link href={profileHref}>
             <CalendarCheck className="w-4 h-4" />
@@ -314,6 +348,15 @@ export default function HospitalDoctorsManagePage({
   const router = useRouter();
   const [importOpen, setImportOpen] = useState(false);
 
+  const inviteMutation = useMutation({
+    mutationFn: (doctorId: number) => inviteDoctorToHospitalia({ lang, doctorId }),
+    onSuccess: (res) => {
+      if (!res.success) { toast.error(res.message); return; }
+      toast.success("Invitation sent successfully");
+    },
+    onError: () => toast.error("Failed to send invitation"),
+  });
+
   const { data, isLoading } = useQuery({
     queryKey: ["imported-doctors", userId],
     queryFn: () => getImportedDoctorsByUser({ lang, userId }),
@@ -375,7 +418,12 @@ export default function HospitalDoctorsManagePage({
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {doctors.map((doctor) => (
-              <DoctorCard key={doctor.id ?? doctor.userId} doctor={doctor} lang={locale} />
+              <DoctorCard
+                key={doctor.id ?? doctor.userId}
+                doctor={doctor}
+                lang={locale}
+                onInvite={(doctorId) => inviteMutation.mutate(doctorId)}
+              />
             ))}
           </div>
         </>

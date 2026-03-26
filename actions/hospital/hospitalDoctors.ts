@@ -129,6 +129,61 @@ export const downloadDoctorImportSample = async ({
   return { base64, filename };
 };
 
+export const getDoctorInvitationInfo = async ({
+  invitationToken,
+  lang,
+}: {
+  invitationToken: string;
+  lang: string;
+}) => {
+  return apiClient<{ firstName: string; lastName: string; email: string }>({
+    endpoint: '/api/doctors/invitation/info',
+    params: { invitationToken, lang },
+    method: 'GET',
+  });
+};
+
+export const onboardInvitedDoctor = async ({
+  lang,
+  invitationToken,
+  body,
+}: {
+  lang: string;
+  invitationToken: string;
+  body: {
+    firstName: string;
+    lastName: string;
+    gender: string;
+    email: string;
+    countryCode: string;
+    mobileNumber: string;
+    password: string;
+  };
+}) => {
+  return apiClient({
+    endpoint: '/api/doctors/onboard',
+    method: 'POST',
+    params: { lang, invitationToken },
+    body,
+  });
+};
+
+export const inviteDoctorToHospitalia = async ({
+  lang,
+  doctorId,
+}: {
+  lang: string;
+  doctorId: number;
+}) => {
+  const token = await getAccessToken();
+  return apiClient({
+    endpoint: `/api/doctors/invite/${doctorId}`,
+    method: 'POST',
+    params: { lang },
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
 export const unassignDoctorFromHospital = async ({
   lang,
   id,
