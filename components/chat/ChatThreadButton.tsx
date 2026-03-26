@@ -13,7 +13,7 @@ export function ChatThreadButton({
 }: {
   doctorUserId: number;
   patientUserId: number;
-  navigateTo: "/patient/messages" | "/doctor/messages";
+  navigateTo: "/patient/messages" | "/doctor/messages" | "/secretary/messages";
 }) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();

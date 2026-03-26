@@ -42,6 +42,7 @@ export interface SecretaryResponse {
   email: string;
   phoneNumber?: string;
   doctorUserId?: number;
+  doctorId?: number;
 }
 
 export interface SecretaryLocation {
@@ -51,10 +52,15 @@ export interface SecretaryLocation {
   locationName: string;
   city?: string;
   permissions: SecretaryPermission[];
+  doctorId?: number;
+  doctorName?: string;
 }
 
 export interface LocationPickerItem {
   id: number;
   locationName: string;
   city?: string;
+  permissions: SecretaryPermission[];
+  doctorId?: number;
+  doctorName?: string;
 }

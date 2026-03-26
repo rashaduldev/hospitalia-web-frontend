@@ -1,15 +1,17 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
-import { LocationPickerItem } from "@/types/secretary.type";
+import { createContext, useContext, useMemo, useState } from "react";
+import { LocationPickerItem, SecretaryPermission, ALL_SECRETARY_PERMISSIONS } from "@/types/secretary.type";
 
 interface SecretaryLocationContextValue {
   locations: LocationPickerItem[];
   selectedLocationId: number | null;
   setSelectedLocationId: (id: number) => void;
+  activePermissions: SecretaryPermission[];
   doctorId: number;
   doctorUserId: number;
   secretaryId: number;
+  doctorName: string;
 }
 
 export const SecretaryLocationContext =
@@ -21,20 +23,35 @@ export function SecretaryLocationProvider({
   doctorId,
   doctorUserId,
   secretaryId,
+  doctorName,
 }: {
   children: React.ReactNode;
   locations: LocationPickerItem[];
   doctorId: number;
   doctorUserId: number;
   secretaryId: number;
+  doctorName: string;
 }) {
   const [selectedLocationId, setSelectedLocationId] = useState<number | null>(
     locations[0]?.id ?? null,
   );
 
+  const activeLocation = useMemo(
+    () => locations.find((l) => l.id === selectedLocationId) ?? null,
+    [selectedLocationId, locations],
+  );
+
+  const activePermissions = useMemo<SecretaryPermission[]>(() => {
+    if (!selectedLocationId) return ALL_SECRETARY_PERMISSIONS;
+    return activeLocation?.permissions ?? ALL_SECRETARY_PERMISSIONS;
+  }, [selectedLocationId, activeLocation]);
+
+  const activeDoctorName = activeLocation?.doctorName ?? doctorName;
+  const activeDoctorId = activeLocation?.doctorId ?? doctorId;
+
   return (
     <SecretaryLocationContext.Provider
-      value={{ locations, selectedLocationId, setSelectedLocationId, doctorId, doctorUserId, secretaryId }}
+      value={{ locations, selectedLocationId, setSelectedLocationId, activePermissions, doctorId: activeDoctorId, doctorUserId, secretaryId, doctorName: activeDoctorName }}
     >
       {children}
     </SecretaryLocationContext.Provider>

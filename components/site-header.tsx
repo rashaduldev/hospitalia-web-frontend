@@ -20,12 +20,18 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import AppButton from "@/components/common/AppButton";
-import { LogOut, User, MapPin } from "lucide-react";
+import { LogOut, User, MapPin, ShieldCheck } from "lucide-react";
 import { useSecretaryLocation } from "@/providers/SecretaryLocationProvider";
+import { SECRETARY_PERMISSION_LABELS } from "@/types/secretary.type";
 import { handleLogout } from "@/actions/auth.actions";
 import Link from "next/link";
 import { useCurrentLocale } from "@/locales/client";
 import { useState } from "react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 function getInitials(firstName?: string, lastName?: string) {
   return (
@@ -74,6 +80,21 @@ export function SiteHeader({ user }: { user: any }) {
                 </option>
               ))}
             </select>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-primary">
+                  <ShieldCheck className="w-4 h-4" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" align="start" className="max-w-56">
+                <p className="text-xs font-semibold mb-1.5">Active Permissions</p>
+                <ul className="space-y-0.5">
+                  {secretaryCtx.activePermissions.map((p) => (
+                    <li key={p} className="text-xs">• {SECRETARY_PERMISSION_LABELS[p]}</li>
+                  ))}
+                </ul>
+              </TooltipContent>
+            </Tooltip>
           </div>
         )}
 

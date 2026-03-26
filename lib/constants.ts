@@ -14,11 +14,20 @@ import {
   Users,
   Users2,
   Building2,
+  type LucideIcon,
 } from "lucide-react";
 
 export const REQUEST_TIMEOUT_MS = 10_000;
 
-export const ROUTES = {
+export type RouteItem = {
+  name: string;
+  url: string;
+  icon: LucideIcon;
+  /** Permission required to show this item (secretary only). Absent = always shown. */
+  permission?: string;
+};
+
+export const ROUTES: Record<string, RouteItem[]> = {
   DOCTOR: [
     {
       name: "Dashboard",
@@ -117,11 +126,31 @@ export const ROUTES = {
       name: "Dashboard",
       url: "/secretary/dashboard",
       icon: LayoutDashboardIcon,
+      permission: "SECRETARY_DASHBOARD_READ",
     },
     {
       name: "Appointments",
       url: "/secretary/appointments",
       icon: CalendarDays,
+      permission: "SECRETARY_APPOINTMENT_READ",
+    },
+    {
+      name: "Schedule",
+      url: "/secretary/schedule",
+      icon: Clock,
+      permission: "SECRETARY_SCHEDULE_MANAGE",
+    },
+    {
+      name: "Patients",
+      url: "/secretary/patients",
+      icon: Users,
+      permission: "SECRETARY_PATIENT_READ",
+    },
+    {
+      name: "Messages",
+      url: "/secretary/messages",
+      icon: MessageSquare,
+      permission: "SECRETARY_MESSAGES_MANAGE",
     },
   ],
   COMMON: [
@@ -133,4 +162,4 @@ export const ROUTES = {
   ],
 };
 
-export type Role = keyof typeof ROUTES;
+export type Role = "DOCTOR" | "HOSPITAL" | "ADMIN" | "PATIENT" | "SECRETARY" | "COMMON";

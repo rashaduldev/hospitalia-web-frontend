@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import DashboardLogo from "@/public/icons/dashLogo";
-import { LogOut } from "lucide-react";
+import { LogOut, Stethoscope } from "lucide-react";
 import { NavDocuments } from "./nav-documents";
 import { ROUTES, Role } from "@/lib/constants";
+import { SecretaryPermission } from "@/types/secretary.type";
+import { useSecretaryLocation } from "@/providers/SecretaryLocationProvider";
 import {
   Sidebar,
   SidebarContent,
@@ -84,14 +86,18 @@ export function AppSidebar({ lang, userRole, user, ...props }: AppSidebarProps) 
   const dashboardUrl = DASHBOARD_URL[userRole] ?? "/dashboard";
   const profileUrl = PROFILE_URL[userRole] ?? null;
   const [confirmLogout, setConfirmLogout] = useState(false);
+  const secretaryCtx = useSecretaryLocation();
 
   const formattedRoleLinks = useMemo(() => {
     const links = ROUTES[userRole] || [];
-    return links.map((item) => ({
+    const filtered = userRole === "SECRETARY" && secretaryCtx
+      ? links.filter((item) => !item.permission || secretaryCtx.activePermissions.includes(item.permission as SecretaryPermission))
+      : links;
+    return filtered.map((item) => ({
       ...item,
       icon: <item.icon className="size-4" />,
     }));
-  }, [userRole]);
+  }, [userRole, secretaryCtx?.activePermissions]);
 
   const formattedCommonLinks = useMemo(() => {
     return ROUTES.COMMON.map((item) => ({
@@ -137,6 +143,16 @@ export function AppSidebar({ lang, userRole, user, ...props }: AppSidebarProps) 
         ) : (
           <div className="flex items-center gap-3 px-2 pb-5">
             <UserCard initials={initials} displayName={displayName} roleLabel={ROLE_LABELS[userRole]} />
+          </div>
+        )}
+
+        {/* ── Doctor badge (secretary accounts) ── */}
+        {userRole === "SECRETARY" && secretaryCtx?.doctorName && (
+          <div className="flex items-center gap-2 px-2 pb-3 -mt-2">
+            <Stethoscope className="w-3.5 h-3.5 text-primary shrink-0" />
+            <span className="text-xs text-muted-foreground truncate">
+              Secretary for <span className="font-medium text-foreground">{secretaryCtx.doctorName.startsWith("Dr.") ? secretaryCtx.doctorName : `Dr. ${secretaryCtx.doctorName}`}</span>
+            </span>
           </div>
         )}
 

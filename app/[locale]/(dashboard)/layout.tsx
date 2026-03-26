@@ -8,9 +8,8 @@ import { ErrorHandle } from "@/components/common/ErrorHandle";
 import { SecretaryLocationProvider } from "@/providers/SecretaryLocationProvider";
 import { getSecretaryByUserId } from "@/actions/secretary/secretary.actions";
 import { getSecretaryLocations } from "@/actions/secretary/secretaryLocations.actions";
-import { getDoctorInfobyUserid } from "@/actions/doctor/doctordata";
 import { getDoctorLocations } from "@/actions/doctor/location";
-import { LocationPickerItem } from "@/types/secretary.type";
+import { LocationPickerItem, ALL_SECRETARY_PERMISSIONS } from "@/types/secretary.type";
 import { DoctorLocation } from "@/types/doctor.location.type";
 
 export default async function UserLayout({
@@ -35,33 +34,42 @@ export default async function UserLayout({
     doctorId: number;
     doctorUserId: number;
     secretaryId: number;
+    doctorName: string;
   } | null = null;
 
   if (res?.userType === "SECRETARY") {
     const secretaryRes = await getSecretaryByUserId({ userId: res.id as number, lang });
     const secretary = secretaryRes?.payload;
     const doctorUserId = secretary?.doctorUserId ?? 0;
-
-    const doctorInfoRes = doctorUserId
-      ? await getDoctorInfobyUserid({ lang, SignleDoctorUserId: doctorUserId })
-      : null;
-    const doctorId: number =
-      (doctorInfoRes?.payload as { id?: number; doctorId?: number } | null)?.id ??
-      (doctorInfoRes?.payload as { id?: number; doctorId?: number } | null)?.doctorId ??
-      0;
+    const doctorId: number = secretary?.doctorId ?? 0;
 
     let locations: LocationPickerItem[] = [];
     const locRes = await getSecretaryLocations({ userId: res.id as number, lang });
     const assigned = locRes?.payload ?? [];
     if (assigned.length > 0) {
-      locations = assigned.map((l) => ({ id: l.locationId, locationName: l.locationName, city: l.city }));
+      locations = assigned.map((l) => ({
+        id: l.locationId,
+        locationName: l.locationName,
+        city: l.city,
+        permissions: l.permissions,
+        doctorId: l.doctorId,
+        doctorName: l.doctorName,
+      }));
     } else if (doctorId) {
       const allRes = await getDoctorLocations({ lang, doctorId });
       const allLocs: DoctorLocation[] = allRes?.payload ?? [];
-      locations = allLocs.map((l) => ({ id: l.locationId, locationName: l.locationName, city: l.city }));
+      locations = allLocs.map((l) => ({
+        id: l.locationId,
+        locationName: l.locationName,
+        city: l.city,
+        permissions: ALL_SECRETARY_PERMISSIONS,
+      }));
     }
 
-    secretaryProviderProps = { locations, doctorId, doctorUserId, secretaryId: res.id as number };
+    // doctorName is derived per-location in the provider from location.doctorName
+    const doctorName = locations[0]?.doctorName ?? "";
+
+    secretaryProviderProps = { locations, doctorId, doctorUserId, secretaryId: res.id as number, doctorName };
   }
   // ────────────────────────────────────────────────────────────────────────
 
