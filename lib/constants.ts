@@ -135,7 +135,7 @@ export const ROUTES: Record<string, RouteItem[]> = {
       permission: "SECRETARY_APPOINTMENT_READ",
     },
     {
-      name: "Schedule",
+      name: "Availability",
       url: "/secretary/schedule",
       icon: Clock,
       permission: "SECRETARY_SCHEDULE_MANAGE",
