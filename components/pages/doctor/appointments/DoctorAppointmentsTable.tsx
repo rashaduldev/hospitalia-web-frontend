@@ -3,6 +3,7 @@
 import { format, parseISO } from "date-fns";
 import { Appointment } from "@/types/appointment.type";
 import { ChatThreadButton } from "@/components/chat/ChatThreadButton";
+import { AppointmentActionCell } from "@/components/cells/AppointmentActionCell";
 
 const formatApptDate = (d: string | number[]) => {
   try {
@@ -60,6 +61,7 @@ export function DoctorAppointmentsTable({
             <th className="py-3 px-4 text-left font-semibold text-foreground text-xs uppercase tracking-wide">Location</th>
             <th className="py-3 px-4 text-left font-semibold text-foreground text-xs uppercase tracking-wide">Time</th>
             <th className="py-3 px-4 text-left font-semibold text-foreground text-xs uppercase tracking-wide">Status</th>
+            <th className="py-3 px-4 text-left font-semibold text-foreground text-xs uppercase tracking-wide">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -101,6 +103,9 @@ export function DoctorAppointmentsTable({
                 >
                   {appt.appointmentStatus?.charAt(0) + appt.appointmentStatus?.slice(1).toLowerCase()}
                 </span>
+              </td>
+              <td className="py-3.5 px-4">
+                <AppointmentActionCell appointment={appt} />
               </td>
             </tr>
           ))}
