@@ -14,6 +14,10 @@ import {
   Banknote,
   AlertCircle,
   Loader2,
+  Hash,
+  FileText,
+  XCircle,
+  Timer,
 } from "lucide-react";
 
 import {
@@ -41,6 +45,21 @@ import { cancelAppointment } from "@/actions/doctor/appointment";
 import { cancelAppointmentSchema } from "@/schema/doctor.booking.schema";
 import { Appointment } from "@/types/appointment.type";
 import { useRouter } from "next/navigation";
+
+const STATUS_STYLES: Record<string, string> = {
+  CONFIRMED: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+  CANCELLED: "bg-destructive/10 text-destructive",
+  PENDING: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
+  COMPLETED: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+};
+
+function StatusBadge({ status }: { status: string }) {
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${STATUS_STYLES[status] ?? "bg-muted text-muted-foreground"}`}>
+      {status.charAt(0) + status.slice(1).toLowerCase()}
+    </span>
+  );
+}
 
 export const AppointmentActionCell = ({
   appointment,
@@ -125,70 +144,81 @@ export const AppointmentActionCell = ({
 
       {/* View Details Modal */}
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
-        <DialogContent className="sm:max-w-125 p-0 overflow-hidden border-none shadow-2xl">
-          <div className="bg-primary/5 p-6 border-b">
-            <DialogTitle className="text-2xl font-bold text-foreground">
-              {t("table.appointment_details")}
-            </DialogTitle>
+        <DialogContent className="sm:max-w-lg p-0 overflow-hidden border-none shadow-2xl">
+          {/* Header */}
+          <div className="bg-primary/5 px-6 py-5 border-b flex items-start justify-between gap-4">
+            <div>
+              <DialogTitle className="text-xl font-bold text-foreground leading-none">
+                {t("table.appointment_details")}
+              </DialogTitle>
+              <div className="flex items-center gap-2 mt-2">
+                <span className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Hash className="w-3 h-3" />{appointment.appointmentId}
+                </span>
+                <span className="text-muted-foreground/40">·</span>
+                <StatusBadge status={appointment.appointmentStatus} />
+              </div>
+            </div>
           </div>
 
-          <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
-            <div className="grid grid-cols-2 gap-6">
+          <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
+            {/* People */}
+            <div className="grid grid-cols-2 gap-4">
               <DetailItem
                 icon={<User className="w-4 h-4 text-primary" />}
-                label="Patient Name"
+                label="Patient"
                 value={appointment.patientName}
               />
               <DetailItem
                 icon={<Stethoscope className="w-4 h-4 text-primary" />}
                 label="Doctor"
-                value={`${appointment.doctorName} (${appointment.designation})`}
+                value={`${appointment.doctorName}${appointment.designation ? ` · ${appointment.designation}` : ""}`}
               />
             </div>
 
             <hr className="border-border" />
 
+            {/* Date & Time */}
             <div className="grid grid-cols-2 gap-4 bg-muted/30 p-4 rounded-lg">
               <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-2 text-muted-foreground text-sm font-medium">
-                  <Calendar className="w-4 h-4" /> Date
+                <div className="flex items-center gap-1.5 text-muted-foreground text-xs font-medium uppercase tracking-wider">
+                  <Calendar className="w-3.5 h-3.5" /> Date
                 </div>
-                <Typography
-                  size="xs"
-                  color="foreground"
-                  className="font-semibold"
-                >
-                  {appointment?.appointmentDate
+                <p className="text-sm font-semibold text-foreground">
+                  {appointment.appointmentDate
                     ? format(
                         Array.isArray(appointment.appointmentDate)
-                          ? new Date(
-                              appointment.appointmentDate[0],
-                              appointment.appointmentDate[1] - 1,
-                              appointment.appointmentDate[2],
-                            )
+                          ? new Date(appointment.appointmentDate[0], appointment.appointmentDate[1] - 1, appointment.appointmentDate[2])
                           : new Date(appointment.appointmentDate),
                         "EEEE, dd MMM yyyy",
                       )
                     : "N/A"}
-                </Typography>
+                </p>
+                {appointment.dayOfWeek && (
+                  <p className="text-xs text-muted-foreground capitalize">
+                    {appointment.dayOfWeek.charAt(0) + appointment.dayOfWeek.slice(1).toLowerCase()}
+                  </p>
+                )}
               </div>
               <div className="flex flex-col gap-1 border-l pl-4">
-                <div className="flex items-center gap-2 text-muted-foreground text-sm font-medium">
-                  <Clock className="w-4 h-4" /> Time Slot
+                <div className="flex items-center gap-1.5 text-muted-foreground text-xs font-medium uppercase tracking-wider">
+                  <Clock className="w-3.5 h-3.5" /> Time
                 </div>
-                <Typography
-                  size="xs"
-                  color="foreground"
-                  className="font-semibold"
-                >
+                <p className="text-sm font-semibold text-foreground">
                   {appointment.startTime && appointment.endTime
-                    ? `${format(parseISO(`1970-01-01T${appointment.startTime}`), "hh:mm a")} - ${format(parseISO(`1970-01-01T${appointment.endTime}`), "hh:mm a")}`
+                    ? `${format(parseISO(`1970-01-01T${appointment.startTime}`), "h:mm a")} – ${format(parseISO(`1970-01-01T${appointment.endTime}`), "h:mm a")}`
                     : "N/A"}
-                </Typography>
+                </p>
+                {appointment.slotDuration && (
+                  <p className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Timer className="w-3 h-3" />{appointment.slotDuration} min slot
+                  </p>
+                )}
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-6">
+            {/* Location & Fee */}
+            <div className="grid grid-cols-2 gap-4">
               <DetailItem
                 icon={<MapPin className="w-4 h-4 text-primary" />}
                 label="Location"
@@ -200,6 +230,33 @@ export const AppointmentActionCell = ({
                 value={`${appointment.fees} CFA`}
               />
             </div>
+
+            {/* Notes */}
+            {appointment.notes && (
+              <>
+                <hr className="border-border" />
+                <div className="flex items-start gap-2">
+                  <FileText className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                  <div className="flex flex-col gap-1 min-w-0">
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Notes</p>
+                    <p className="text-sm text-foreground leading-relaxed">{appointment.notes}</p>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Cancellation info */}
+            {appointment.appointmentStatus === "CANCELLED" && appointment.cancellationReason && (
+              <>
+                <hr className="border-border" />
+                <div className="rounded-lg bg-destructive/5 border border-destructive/20 p-4 space-y-2">
+                  <div className="flex items-center gap-1.5 text-destructive text-xs font-semibold uppercase tracking-wider">
+                    <XCircle className="w-3.5 h-3.5" /> Cancellation Reason
+                  </div>
+                  <p className="text-sm text-foreground leading-relaxed">{appointment.cancellationReason}</p>
+                </div>
+              </>
+            )}
           </div>
         </DialogContent>
       </Dialog>
