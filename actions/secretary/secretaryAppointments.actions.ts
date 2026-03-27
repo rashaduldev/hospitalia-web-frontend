@@ -27,6 +27,28 @@ export const getSecretaryAppointments = async ({
   });
 };
 
+export const getSecretaryPastAppointments = async ({
+  doctorId,
+  locationId,
+  lang,
+  pageNo = 0,
+  pageSize = 100,
+}: {
+  doctorId: number;
+  locationId: number;
+  lang: string;
+  pageNo?: number;
+  pageSize?: number;
+}) => {
+  const token = await getAccessToken();
+  return apiClient<Paginated<Appointment>>({
+    endpoint: `/api/appointments/all/past/doctorId/${doctorId}/doctorLocationId/${locationId}`,
+    method: 'GET',
+    params: { lang, pageNo, pageSize },
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
 export const getSecretaryAppointmentsByDate = async ({
   doctorId,
   locationId,

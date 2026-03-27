@@ -1,11 +1,11 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { CalendarDays, CalendarClock, MapPin } from "lucide-react";
+import { CalendarDays, CalendarClock, MapPin, History } from "lucide-react";
 import { format } from "date-fns";
 import { useCurrentLocale } from "@/locales/client";
 import { useSecretaryLocation } from "@/providers/SecretaryLocationProvider";
-import { getSecretaryAppointments, getSecretaryAppointmentsByDate } from "@/actions/secretary/secretaryAppointments.actions";
+import { getSecretaryAppointments, getSecretaryAppointmentsByDate, getSecretaryPastAppointments } from "@/actions/secretary/secretaryAppointments.actions";
 import { DoctorAppointmentsTable } from "@/components/pages/doctor/appointments/DoctorAppointmentsTable";
 import { Appointment } from "@/types/appointment.type";
 
@@ -29,8 +29,16 @@ export default function SecretaryAppointmentsPage() {
     enabled: !!doctorId && !!selectedLocationId,
   });
 
+  const { data: pastData, isLoading: pastLoading } = useQuery({
+    queryKey: ["secretary-appointments-past", doctorId, selectedLocationId],
+    queryFn: () =>
+      getSecretaryPastAppointments({ doctorId, locationId: selectedLocationId!, lang: locale }),
+    enabled: !!doctorId && !!selectedLocationId,
+  });
+
   const todayList: Appointment[] = todayData?.payload?.content ?? [];
   const allList: Appointment[] = allData?.payload?.content ?? [];
+  const pastList: Appointment[] = pastData?.payload?.content ?? [];
 
   const upcomingList = allList.filter((a) => {
     const d = a.appointmentDate;
@@ -92,6 +100,28 @@ export default function SecretaryAppointmentsPage() {
             appointments={upcomingList}
             doctorUserId={doctorUserId}
             emptyMessage="No upcoming appointments at this location."
+          />
+        )}
+      </div>
+
+      {/* Past */}
+      <div className="border border-border rounded-xl bg-card shadow-sm overflow-hidden">
+        <div className="flex items-center gap-3 px-6 py-5 border-b border-border">
+          <div className="p-2 bg-muted/50 rounded-lg shrink-0">
+            <History className="w-4 h-4 text-muted-foreground" />
+          </div>
+          <div>
+            <h2 className="text-base font-bold text-foreground leading-none">Past Appointments</h2>
+            <p className="text-xs text-muted-foreground mt-1">Previously completed or cancelled appointments</p>
+          </div>
+        </div>
+        {pastLoading ? (
+          <p className="py-12 text-center text-sm text-muted-foreground">Loading...</p>
+        ) : (
+          <DoctorAppointmentsTable
+            appointments={pastList}
+            doctorUserId={doctorUserId}
+            emptyMessage="No past appointments at this location."
           />
         )}
       </div>

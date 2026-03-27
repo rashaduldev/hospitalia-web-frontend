@@ -104,6 +104,40 @@ export const getAppointmentsByDate = async ({
   });
 };
 
+// Doctor past appointments by doctorId
+export const getPastAppointments = async ({
+  doctorId,
+  pageNo = 0,
+  pageSize = 100,
+  sortBy = "appointmentDate",
+  ascOrDesc = "desc",
+  lang,
+}: {
+  doctorId: number;
+  pageNo?: number;
+  pageSize?: number;
+  sortBy?: string;
+  ascOrDesc?: string;
+  lang: string;
+}) => {
+  const token = await getAccessToken();
+  const res = await apiClient<Paginated<Appointment>>({
+    endpoint: `/api/appointments/all/past/doctorId/${doctorId}`,
+    method: "GET",
+    params: {
+      pageNo,
+      pageSize,
+      sortBy,
+      ascOrDesc,
+      lang,
+    },
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res;
+};
+
 // Cancel appointment
 export const cancelAppointment = async ({
   appointmentId,
