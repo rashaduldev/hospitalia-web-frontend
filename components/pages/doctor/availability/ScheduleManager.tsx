@@ -19,7 +19,7 @@ import { useDoctorId } from "@/providers/DoctorIdProvider";
 import { UnavailableDate } from "@/types/doctor.unavailable";
 import { Appointment } from "@/types/appointment.type";
 import { StatusMessage } from "./StatusMessage";
-import { AlertTriangle, CalendarX } from "lucide-react";
+import { AlertTriangle, CalendarX, AlertCircle } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -49,7 +49,7 @@ export default function ScheduleManager({
   const [appointmentsOnDate, setAppointmentsOnDate] = useState<Appointment[]>([]);
   const [isChecking, setIsChecking] = useState(false);
 
-  const { data: existingDatesResponse, isLoading: isFetching } = useSafeQuery({
+  const { data: existingDatesResponse, isLoading: isFetching, isError: isFetchError } = useSafeQuery({
     queryKey: ["doctor-availability", fetchId],
     queryFn: () => getDoctorUnAvailability({ lang, doctorId: fetchId }),
     enabled: !!fetchId,
@@ -147,6 +147,13 @@ export default function ScheduleManager({
       </div>
 
       <div className="p-6 space-y-5">
+        {isFetchError && (
+          <div className="flex items-center gap-2 text-destructive text-sm">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>Failed to load unavailability data. Please refresh and try again.</span>
+          </div>
+        )}
+
         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
           {t("unavailability.date")} *
         </p>

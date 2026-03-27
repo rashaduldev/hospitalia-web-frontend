@@ -35,10 +35,12 @@ export default function AvailabilityScheduleForm({
   doctorUserId,
   lang,
   timeSlots,
+  preselectedLocationId,
 }: {
   doctorUserId: number;
   lang: string;
   timeSlots: string[];
+  preselectedLocationId?: number;
 }) {
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [formStatus, setFormStatus] = useState<{
@@ -117,10 +119,14 @@ export default function AvailabilityScheduleForm({
     reset();
   };
 
-  const locationOptions = locations?.map((loc: Location) => ({
+  const allLocationOptions = locations?.map((loc: Location) => ({
     label: loc.locationName,
     value: String(loc.locationId),
   })) || [];
+
+  const locationOptions = preselectedLocationId
+    ? allLocationOptions.filter((opt: { label: string; value: string }) => opt.value === String(preselectedLocationId))
+    : allLocationOptions;
 
   const slotOptions = timeSlots.map((slot) => ({
     label: slot.replace("_", " "),

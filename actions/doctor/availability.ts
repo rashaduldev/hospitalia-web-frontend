@@ -27,15 +27,25 @@ export const getDoctorAvailabilityWithLocation = async ({
   doctorId,
   doctorLocationId,
   lang,
+  pageNo = 0,
+  pageSize = 100,
+  sortBy = "creationDate",
+  ascOrDesc = "asc",
 }: {
   doctorId: number;
   doctorLocationId: number;
   lang: string;
+  pageNo?: number;
+  pageSize?: number;
+  sortBy?: string;
+  ascOrDesc?: string;
 }) => {
+  const token = await getAccessToken();
   const res = await apiClient({
     endpoint: `/api/doctors/availability/all/doctorId/${doctorId}/location/${doctorLocationId}`,
     method: "GET",
-    params: { lang },
+    params: { lang, pageNo, pageSize, sortBy, ascOrDesc },
+    headers: { Authorization: `Bearer ${token}` },
   });
   return res;
 };

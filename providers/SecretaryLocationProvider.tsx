@@ -20,14 +20,12 @@ export const SecretaryLocationContext =
 export function SecretaryLocationProvider({
   children,
   locations,
-  doctorId,
   doctorUserId,
   secretaryId,
   doctorName,
 }: {
   children: React.ReactNode;
   locations: LocationPickerItem[];
-  doctorId: number;
   doctorUserId: number;
   secretaryId: number;
   doctorName: string;
@@ -47,11 +45,12 @@ export function SecretaryLocationProvider({
   }, [selectedLocationId, activeLocation]);
 
   const activeDoctorName = activeLocation?.doctorName ?? doctorName;
-  const activeDoctorId = activeLocation?.doctorId ?? doctorId;
+  const activeDoctorId = activeLocation?.doctorId ?? 0;
 
   return (
     <SecretaryLocationContext.Provider
       value={{ locations, selectedLocationId, setSelectedLocationId, activePermissions, doctorId: activeDoctorId, doctorUserId, secretaryId, doctorName: activeDoctorName }}
+
     >
       {children}
     </SecretaryLocationContext.Provider>

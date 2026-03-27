@@ -31,7 +31,6 @@ export default async function UserLayout({
   // ── Secretary: fetch location context data ──────────────────────────────
   let secretaryProviderProps: {
     locations: LocationPickerItem[];
-    doctorId: number;
     doctorUserId: number;
     secretaryId: number;
     doctorName: string;
@@ -69,7 +68,7 @@ export default async function UserLayout({
     // doctorName is derived per-location in the provider from location.doctorName
     const doctorName = locations[0]?.doctorName ?? "";
 
-    secretaryProviderProps = { locations, doctorId, doctorUserId, secretaryId: res.id as number, doctorName };
+    secretaryProviderProps = { locations, doctorUserId, secretaryId: res.id as number, doctorName };
   }
   // ────────────────────────────────────────────────────────────────────────
 

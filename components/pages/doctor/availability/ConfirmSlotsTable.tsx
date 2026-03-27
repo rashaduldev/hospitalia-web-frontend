@@ -4,11 +4,10 @@ import { useSafeQuery } from "@/lib/safeQuery";
 import ConfirmSlotsColumns from "@/components/common/ConfirmSlotsColumns";
 import { DataTableWithExport } from "@/components/data-table";
 import { TableSkeleton } from "@/components/common/TableSkeleton";
-import { getDoctorAvailability } from "@/actions/doctor/availability";
+import { getDoctorAvailability, getDoctorAvailabilityWithLocation } from "@/actions/doctor/availability";
 import { getDoctorLocations } from "@/actions/doctor/location";
 import { useDoctorId } from "@/providers/DoctorIdProvider";
 import {
-  parse,
   format,
   startOfMonth,
   endOfMonth,
@@ -17,23 +16,27 @@ import {
 } from "date-fns";
 import { Location } from "@/types/doctor.location.type";
 import { DoctorAvailabilitySlot } from "@/types/doctor.slot";
-import { ClipboardList } from "lucide-react";
+import { ClipboardList, AlertCircle } from "lucide-react";
 
 type ConfirmSlotsTableProps = {
   doctorUserId: number;
   lang: string;
+  filterLocationId?: number;
 };
 
-const ConfirmSlotsTable: React.FC<ConfirmSlotsTableProps> = ({ doctorUserId, lang }) => {
+const ConfirmSlotsTable: React.FC<ConfirmSlotsTableProps> = ({ doctorUserId, lang, filterLocationId }) => {
   const doctorId = useDoctorId();
   const fetchId = doctorId ?? doctorUserId;
 
-  const { data: slotsData, isLoading: slotsLoading } = useSafeQuery({
-    queryKey: ["doctorAvailability", fetchId, lang],
-    queryFn: () => getDoctorAvailability({ doctorId: fetchId, lang }),
+  const { data: slotsData, isLoading: slotsLoading, isError: slotsError } = useSafeQuery({
+    queryKey: ["doctorAvailability", fetchId, filterLocationId ?? "all", lang],
+    queryFn: () =>
+      filterLocationId
+        ? getDoctorAvailabilityWithLocation({ doctorId: fetchId, doctorLocationId: filterLocationId, lang })
+        : getDoctorAvailability({ doctorId: fetchId, lang }),
   });
 
-  const { data: locationsData, isLoading: locationsLoading } = useSafeQuery({
+  const { data: locationsData, isLoading: locationsLoading, isError: locationsError } = useSafeQuery({
     queryKey: ["doctorLocations", fetchId, lang],
     queryFn: () => getDoctorLocations({ doctorId: fetchId, lang }),
   });
@@ -56,9 +59,9 @@ const ConfirmSlotsTable: React.FC<ConfirmSlotsTableProps> = ({ doctorUserId, lan
     );
   };
 
+  const today = new Date();
   const expandedSlots = slots.flatMap((slot: DoctorAvailabilitySlot) => {
-    const referenceDate = parse(slot.lastModifiedDate, "dd-MM-yyyy HH:mm:ss", new Date());
-    return getFutureWeekdaysOfMonth(slot.dayOfWeek, referenceDate).map((date) => ({
+    return getFutureWeekdaysOfMonth(slot.dayOfWeek, today).map((date) => ({
       ...slot,
       displayDate: date,
       appointmentDate: [date.getFullYear(), date.getMonth() + 1, date.getDate()],
@@ -80,6 +83,11 @@ const ConfirmSlotsTable: React.FC<ConfirmSlotsTableProps> = ({ doctorUserId, lan
       <div className="p-6">
         {slotsLoading || locationsLoading ? (
           <TableSkeleton columnCount={6} />
+        ) : slotsError || locationsError ? (
+          <div className="flex items-center gap-2 text-destructive text-sm py-4">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>Failed to load schedule data. Please refresh and try again.</span>
+          </div>
         ) : (
           <DataTableWithExport columns={ConfirmSlotsColumns(locationMap)} data={expandedSlots} />
         )}
