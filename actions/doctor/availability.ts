@@ -134,7 +134,7 @@ export const updateDoctorAvailability = async ({
 
   const payload = {
     doctorId,
-    availabilityIds: [availabilityIds],
+    availabilityIds,
     weeklySchedule: [
       {
         dayOfWeek,
@@ -157,12 +157,13 @@ export const updateDoctorAvailability = async ({
 };
 
 // Delete an availability slot
-export const deleteAvailabilitySlot = async ({ id }: { id: number }) => {
+export const deleteAvailabilitySlot = async ({ id, lang }: { id: number; lang?: string }) => {
   const token = await getAccessToken();
 
   const res = await apiClient({
     endpoint: `/api/doctors/availability/${id}`,
     method: "DELETE",
+    params: lang ? { lang } : {},
     headers: { Authorization: `Bearer ${token}` },
   });
   revalidatePath("/doctor/availability");
