@@ -246,14 +246,53 @@ export const AppointmentActionCell = ({
             )}
 
             {/* Cancellation info */}
-            {appointment.appointmentStatus === "CANCELLED" && appointment.cancellationReason && (
+            {appointment.appointmentStatus === "CANCELLED" && (
               <>
                 <hr className="border-border" />
-                <div className="rounded-lg bg-destructive/5 border border-destructive/20 p-4 space-y-2">
+                <div className="rounded-lg bg-destructive/5 border border-destructive/20 p-4 space-y-3">
                   <div className="flex items-center gap-1.5 text-destructive text-xs font-semibold uppercase tracking-wider">
-                    <XCircle className="w-3.5 h-3.5" /> Cancellation Reason
+                    <XCircle className="w-3.5 h-3.5" /> Cancellation Details
                   </div>
-                  <p className="text-sm text-foreground leading-relaxed">{appointment.cancellationReason}</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-0.5">Cancelled by</p>
+                      <p className="text-sm font-medium text-foreground">
+                        {appointment.cancelledByUserId == null
+                          ? "System"
+                          : appointment.cancelledByUserId === appointment.patientUserId
+                          ? `Patient · ${appointment.patientName}`
+                          : appointment.cancelledByUserId === appointment.doctorUserId
+                          ? `Doctor · ${appointment.doctorName}`
+                          : "System"}
+                      </p>
+                    </div>
+                    {appointment.cancelledAt && (
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-0.5">Cancelled on</p>
+                        <p className="text-sm font-medium text-foreground">
+                          {(() => {
+                            try {
+                              const d = appointment.cancelledAt;
+                              const date = Array.isArray(d)
+                                ? new Date((d as number[])[0], (d as number[])[1] - 1, (d as number[])[2])
+                                : typeof d === "number"
+                                ? new Date(d)
+                                : new Date(d as string);
+                              return format(date, "dd MMM yyyy");
+                            } catch {
+                              return String(appointment.cancelledAt);
+                            }
+                          })()}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                  {appointment.cancellationReason && (
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-0.5">Reason</p>
+                      <p className="text-sm text-foreground leading-relaxed">{appointment.cancellationReason}</p>
+                    </div>
+                  )}
                 </div>
               </>
             )}

@@ -803,11 +803,27 @@ export default function PatientAppointmentsPage({
                       <p className="text-foreground">{detailAppointment.notes}</p>
                     </div>
                   )}
-                  {detailAppointment.appointmentStatus === "CANCELLED" && detailAppointment.cancellationReason && (
-                    <div className="col-span-2">
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-0.5">Cancellation Reason</p>
-                      <p className="text-destructive">{detailAppointment.cancellationReason}</p>
-                    </div>
+                  {detailAppointment.appointmentStatus === "CANCELLED" && (
+                    <>
+                      <div>
+                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-0.5">Cancelled by</p>
+                        <p className="font-medium text-foreground">
+                          {detailAppointment.cancelledByUserId == null
+                            ? "System"
+                            : detailAppointment.cancelledByUserId === detailAppointment.patientUserId
+                            ? `Patient · ${detailAppointment.patientName}`
+                            : detailAppointment.cancelledByUserId === detailAppointment.doctorUserId
+                            ? `Doctor · ${detailAppointment.doctorName}`
+                            : "System"}
+                        </p>
+                      </div>
+                      {detailAppointment.cancellationReason && (
+                        <div className="col-span-2">
+                          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-0.5">Cancellation Reason</p>
+                          <p className="text-destructive">{detailAppointment.cancellationReason}</p>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               </AlertDialogDescription>
