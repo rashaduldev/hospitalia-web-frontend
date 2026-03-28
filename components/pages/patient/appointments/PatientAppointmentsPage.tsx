@@ -808,13 +808,11 @@ export default function PatientAppointmentsPage({
                       <div>
                         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-0.5">Cancelled by</p>
                         <p className="font-medium text-foreground">
-                          {detailAppointment.cancelledByUserId == null
-                            ? "System"
-                            : detailAppointment.cancelledByUserId === detailAppointment.patientUserId
+                          {detailAppointment.cancelledByUserId === detailAppointment.patientUserId
                             ? `Patient · ${detailAppointment.patientName}`
                             : detailAppointment.cancelledByUserId === detailAppointment.doctorUserId
                             ? `Doctor · ${detailAppointment.doctorName}`
-                            : "System"}
+                            : "Doctor's Representative"}
                         </p>
                       </div>
                       {detailAppointment.cancellationReason && (

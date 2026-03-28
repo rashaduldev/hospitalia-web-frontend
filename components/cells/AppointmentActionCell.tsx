@@ -257,13 +257,11 @@ export const AppointmentActionCell = ({
                     <div>
                       <p className="text-xs text-muted-foreground mb-0.5">Cancelled by</p>
                       <p className="text-sm font-medium text-foreground">
-                        {appointment.cancelledByUserId == null
-                          ? "System"
-                          : appointment.cancelledByUserId === appointment.patientUserId
+                        {appointment.cancelledByUserId === appointment.patientUserId
                           ? `Patient · ${appointment.patientName}`
                           : appointment.cancelledByUserId === appointment.doctorUserId
                           ? `Doctor · ${appointment.doctorName}`
-                          : "System"}
+                          : "Doctor's Representative"}
                       </p>
                     </div>
                     {appointment.cancelledAt && (
