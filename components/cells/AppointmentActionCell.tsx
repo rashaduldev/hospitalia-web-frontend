@@ -259,7 +259,7 @@ export const AppointmentActionCell = ({
                       <p className="text-sm font-medium text-foreground">
                         {appointment.cancelledByUserId === appointment.patientUserId
                           ? `Patient · ${appointment.patientName}`
-                          : appointment.cancelledByUserId === appointment.doctorUserId
+                          : appointment.cancelledByUserId === appointment.doctorId
                           ? `Doctor · ${appointment.doctorName}`
                           : "Doctor's Representative"}
                       </p>

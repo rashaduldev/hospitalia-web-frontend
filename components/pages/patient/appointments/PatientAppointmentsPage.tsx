@@ -810,7 +810,7 @@ export default function PatientAppointmentsPage({
                         <p className="font-medium text-foreground">
                           {detailAppointment.cancelledByUserId === detailAppointment.patientUserId
                             ? `Patient · ${detailAppointment.patientName}`
-                            : detailAppointment.cancelledByUserId === detailAppointment.doctorUserId
+                            : detailAppointment.cancelledByUserId === detailAppointment.doctorId
                             ? `Doctor · ${detailAppointment.doctorName}`
                             : "Doctor's Representative"}
                         </p>
