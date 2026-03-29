@@ -47,7 +47,8 @@
       "Bash(pnpm run:*)",
       "Bash(find /Volumes/Works/projects/web/hospitalia-web/app/[locale]/\\\\\\(dashboard\\\\\\) -type d)",
       "Bash(find \"/Volumes/Works/projects/web/hospitalia-web/app/[locale]/\\(dashboard\\)\" -type d)",
-      "Bash(find \"/Volumes/Works/projects/web/hospitalia-web/app/[locale]/\\(hospital\\)\" -type f -name \"*.tsx\")"
+      "Bash(find \"/Volumes/Works/projects/web/hospitalia-web/app/[locale]/\\(hospital\\)\" -type f -name \"*.tsx\")",
+      "Bash(find \"/Volumes/Works/projects/web/hospitalia-web/app/[locale]/\\(auth\\)\" -name \"*.tsx\")"
     ]
   }
 }

@@ -3,6 +3,72 @@
 import { apiClient } from "@/lib/api";
 import { getAccessToken } from "../auth";
 
+export const bookStaffAppointment = async ({
+  lang,
+  doctorId,
+  appointmentDate,
+  dayOfWeek,
+  fees,
+  appointmentTypeId,
+  appointmentSlotDto,
+  notes,
+  patientName,
+  patientGender,
+  patientAge,
+  patientPhone,
+  patientEmail,
+  patientUserId,
+  bookedByUserId,
+  bookingSource,
+}: {
+  lang: string;
+  doctorId: number;
+  appointmentDate: string;
+  dayOfWeek: string;
+  fees: number;
+  appointmentTypeId: number;
+  appointmentSlotDto: {
+    locationId: number;
+    startTime: string;
+    endTime: string;
+    slotDuration: number;
+  };
+  notes?: string;
+  patientName: string;
+  patientGender: string;
+  patientAge?: number | null;
+  patientPhone: string;
+  patientEmail?: string | null;
+  patientUserId?: number | null;
+  bookedByUserId: number;
+  bookingSource: "DOCTOR" | "SECRETARY";
+}) => {
+  const token = await getAccessToken();
+  return await apiClient<any>({
+    endpoint: "/api/appointments/staff/book-appointment",
+    method: "POST",
+    params: { lang },
+    headers: { Authorization: `Bearer ${token}` },
+    body: {
+      doctorId,
+      appointmentDate,
+      dayOfWeek,
+      fees,
+      appointmentTypeId,
+      appointmentSlotDto,
+      ...(notes ? { notes } : {}),
+      patientName,
+      patientGender,
+      ...(patientAge != null ? { patientAge } : {}),
+      patientPhone,
+      ...(patientEmail ? { patientEmail } : {}),
+      patientUserId: patientUserId ?? null,
+      bookedByUserId,
+      bookingSource,
+    },
+  });
+};
+
 // Book Appointment
 export const bookAppointment = async ({
   doctorId,

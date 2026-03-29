@@ -40,6 +40,11 @@ export const ROUTES: Record<string, RouteItem[]> = {
       icon: CalendarDays,
     },
     {
+      name: "Book Offline",
+      url: "/doctor/book-offline",
+      icon: CalendarPlus,
+    },
+    {
       name: "Availability",
       url: "/doctor/availability",
       icon: Clock,
@@ -133,6 +138,12 @@ export const ROUTES: Record<string, RouteItem[]> = {
       url: "/secretary/appointments",
       icon: CalendarDays,
       permission: "SECRETARY_APPOINTMENT_READ",
+    },
+    {
+      name: "Book Offline",
+      url: "/secretary/book-offline",
+      icon: CalendarPlus,
+      permission: "SECRETARY_APPOINTMENT_UPDATE",
     },
     {
       name: "Availability",

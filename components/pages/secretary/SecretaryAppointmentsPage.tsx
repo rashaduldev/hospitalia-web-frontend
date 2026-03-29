@@ -1,18 +1,19 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { CalendarDays, CalendarClock, MapPin, History } from "lucide-react";
+import { CalendarDays, CalendarClock, MapPin, History, CalendarPlus } from "lucide-react";
 import { format } from "date-fns";
 import { useCurrentLocale } from "@/locales/client";
 import { useSecretaryLocation } from "@/providers/SecretaryLocationProvider";
 import { getSecretaryAppointments, getSecretaryAppointmentsByDate, getSecretaryPastAppointments } from "@/actions/secretary/secretaryAppointments.actions";
 import { DoctorAppointmentsTable } from "@/components/pages/doctor/appointments/DoctorAppointmentsTable";
 import { Appointment } from "@/types/appointment.type";
+import Link from "next/link";
 
 export default function SecretaryAppointmentsPage() {
   const locale = useCurrentLocale();
   const ctx = useSecretaryLocation();
-  const { doctorId = 0, doctorUserId = 0, selectedLocationId = null } = ctx ?? {};
+  const { doctorId = 0, doctorUserId: _doctorUserId = 0, selectedLocationId = null } = ctx ?? {};
   const today = format(new Date(), "yyyy-MM-dd");
 
   const { data: todayData, isLoading: todayLoading } = useQuery({
@@ -60,6 +61,24 @@ export default function SecretaryAppointmentsPage() {
 
   return (
     <div className="space-y-6 p-4 sm:p-6">
+      {/* Page header */}
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <h1 className="text-lg font-bold text-foreground">Appointments</h1>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Manage today&apos;s, upcoming, and past appointments
+          </p>
+        </div>
+        {!!doctorId && (
+          <Link href={`/${locale}/secretary/book-offline`}>
+            <button className="flex items-center gap-2 h-9 px-4 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors shrink-0">
+              <CalendarPlus className="w-4 h-4" />
+              Book Offline Appointment
+            </button>
+          </Link>
+        )}
+      </div>
+
       {/* Today */}
       <div className="border border-border rounded-xl bg-card shadow-sm overflow-hidden">
         <div className="flex items-center gap-3 px-6 py-5 border-b border-border">
@@ -76,7 +95,7 @@ export default function SecretaryAppointmentsPage() {
         ) : (
           <DoctorAppointmentsTable
             appointments={todayList}
-            doctorUserId={doctorUserId}
+            doctorUserId={_doctorUserId}
             emptyMessage="No appointments today at this location."
           />
         )}
@@ -98,7 +117,7 @@ export default function SecretaryAppointmentsPage() {
         ) : (
           <DoctorAppointmentsTable
             appointments={upcomingList}
-            doctorUserId={doctorUserId}
+            doctorUserId={_doctorUserId}
             emptyMessage="No upcoming appointments at this location."
           />
         )}
@@ -120,7 +139,7 @@ export default function SecretaryAppointmentsPage() {
         ) : (
           <DoctorAppointmentsTable
             appointments={pastList}
-            doctorUserId={doctorUserId}
+            doctorUserId={_doctorUserId}
             emptyMessage="No past appointments at this location."
           />
         )}

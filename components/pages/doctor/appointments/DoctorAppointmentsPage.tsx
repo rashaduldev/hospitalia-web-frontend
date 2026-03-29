@@ -5,8 +5,9 @@ import {
 } from "@/actions/doctor/appointment";
 import { getDoctorInfobyUserid } from "@/actions/doctor/doctordata";
 import { getI18n } from "@/locales/server";
-import { CalendarDays, CalendarClock, History } from "lucide-react";
+import { CalendarDays, CalendarClock, History, CalendarPlus } from "lucide-react";
 import { DoctorAppointmentsTable } from "./DoctorAppointmentsTable";
+import Link from "next/link";
 
 export default async function DoctorAppointmentsPage({
   doctorUserId,
@@ -51,6 +52,22 @@ export default async function DoctorAppointmentsPage({
 
   return (
     <div className="space-y-6 p-4 sm:p-6">
+      {/* Page header */}
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <h1 className="text-lg font-bold text-foreground">Appointments</h1>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Manage today&apos;s, upcoming, and past appointments
+          </p>
+        </div>
+        <Link href={`/${lang}/doctor/book-offline`}>
+          <button className="flex items-center gap-2 h-9 px-4 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors shrink-0">
+            <CalendarPlus className="w-4 h-4" />
+            Book Offline Appointment
+          </button>
+        </Link>
+      </div>
+
       {/* Today's appointments */}
       <div className="border border-border rounded-xl bg-card shadow-sm overflow-hidden">
         <div className="flex items-center gap-3 px-6 py-5 border-b border-border">
