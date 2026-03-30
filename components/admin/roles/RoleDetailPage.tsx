@@ -56,8 +56,8 @@ export default function RoleDetailPage({ lang, roleId }: Props) {
     queryFn: () => getAllPrivileges({ lang }),
   });
 
-  const role = (roleData as any)?.data as Role | null;
-  const allPrivileges: Privilege[] = ((privilegesData as any)?.data as Privilege[]) ?? [];
+  const role = roleData?.payload as Role | null;
+  const allPrivileges: Privilege[] = (privilegesData?.payload as Privilege[]) ?? [];
 
   // Seed privilege selection from fetched role
   useEffect(() => {

@@ -42,7 +42,7 @@ export default function RolesPage({ lang }: { lang: string }) {
     queryFn: () => getPaginatedRoles({ lang, pageNo: page, pageSize: PAGE_SIZE }),
   });
 
-  const paginatedData = (data as any)?.data as PaginatedRoles | undefined;
+  const paginatedData = data?.payload as PaginatedRoles | undefined;
   const roles: Role[] = paginatedData?.content ?? [];
   const totalPages: number = paginatedData?.totalPages ?? 1;
   const totalElements: number = paginatedData?.totalElements ?? 0;

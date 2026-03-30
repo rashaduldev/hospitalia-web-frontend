@@ -77,12 +77,12 @@ export default function RoleFormPage({ lang, roleId }: Props) {
     queryFn: () => getAllPrivileges({ lang }),
   });
 
-  const roleTypes: string[] = ((roleTypesData as any)?.data as string[]) ?? [];
-  const allPrivileges: Privilege[] = ((privilegesData as any)?.data as Privilege[]) ?? [];
+  const roleTypes: string[] = (roleTypesData?.payload as string[]) ?? [];
+  const allPrivileges: Privilege[] = (privilegesData?.payload as Privilege[]) ?? [];
 
   // Pre-fill form when editing
   useEffect(() => {
-    const role = (roleData as any)?.data as any;
+    const role = roleData?.payload as any;
     if (!role) return;
     setValue("roleName", role.roleName ?? "");
     setValue("roleType", role.roleType ?? "");
