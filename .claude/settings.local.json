@@ -48,7 +48,8 @@
       "Bash(find /Volumes/Works/projects/web/hospitalia-web/app/[locale]/\\\\\\(dashboard\\\\\\) -type d)",
       "Bash(find \"/Volumes/Works/projects/web/hospitalia-web/app/[locale]/\\(dashboard\\)\" -type d)",
       "Bash(find \"/Volumes/Works/projects/web/hospitalia-web/app/[locale]/\\(hospital\\)\" -type f -name \"*.tsx\")",
-      "Bash(find \"/Volumes/Works/projects/web/hospitalia-web/app/[locale]/\\(auth\\)\" -name \"*.tsx\")"
+      "Bash(find \"/Volumes/Works/projects/web/hospitalia-web/app/[locale]/\\(auth\\)\" -name \"*.tsx\")",
+      "Bash(find /Volumes/Works/projects/web/hospitalia-web/app -type f -name \"*auth*\" -o -type f -path \"*/\\\\[locale\\\\]/\\(auth\\)/*\")"
     ]
   }
 }

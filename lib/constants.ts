@@ -103,6 +103,31 @@ export const ROUTES: Record<string, RouteItem[]> = {
       url: "/admin/roles",
       icon: ShieldCheck,
     },
+    {
+      name: "Admins",
+      url: "/admin/admins",
+      icon: ShieldCheck,
+    },
+    {
+      name: "Doctors",
+      url: "/admin/doctors",
+      icon: Stethoscope,
+    },
+    {
+      name: "Patients",
+      url: "/admin/patients",
+      icon: UserRound,
+    },
+    {
+      name: "Secretaries",
+      url: "/admin/secretaries",
+      icon: Users2,
+    },
+    {
+      name: "Hospitals",
+      url: "/admin/hospitals",
+      icon: Building2,
+    },
   ],
   PATIENT: [
     {
