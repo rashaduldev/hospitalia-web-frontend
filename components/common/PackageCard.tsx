@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link";
 import { Check, CalendarCheck } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
@@ -17,6 +18,10 @@ const PackageCard = ({ pkg }: { pkg: PackageItem }) => {
   const t = useI18n();
 
   const formattedPrice = Number(pkg.price).toLocaleString("fr-SN");
+  const packageTitle = t(pkg.titleKey as any, {});
+  const detailsHref = `/search?searchType=DOCTOR&searchKeyword=${encodeURIComponent(
+    packageTitle,
+  )}`;
 
   return (
     <div
@@ -40,7 +45,7 @@ const PackageCard = ({ pkg }: { pkg: PackageItem }) => {
         <Image
           fill
           src={pkg.image}
-          alt={t(pkg.titleKey as any, {})}
+          alt={packageTitle}
           className="object-cover"
           sizes="(max-width: 768px) 100vw, 33vw"
         />
@@ -52,7 +57,7 @@ const PackageCard = ({ pkg }: { pkg: PackageItem }) => {
       <div className="flex flex-col flex-1 p-5 bg-card">
         {/* Title */}
         <h3 className="text-base font-bold text-foreground mb-3 leading-snug">
-          {t(pkg.titleKey as any, {})}
+          {packageTitle}
         </h3>
 
         {/* Features */}
@@ -88,14 +93,17 @@ const PackageCard = ({ pkg }: { pkg: PackageItem }) => {
 
         {/* CTA */}
         <Button
+          asChild
           className={`w-full font-semibold gap-2 ${
             pkg.featured
               ? "bg-primary hover:bg-primary/90 text-white"
               : "bg-secondary hover:bg-secondary/90 text-white"
           }`}
         >
-          <CalendarCheck className="w-4 h-4" />
-          {t("ourPackages.checkBtn")}
+          <Link href={detailsHref}>
+            <CalendarCheck className="w-4 h-4" />
+            {t("ourPackages.checkBtn")}
+          </Link>
         </Button>
       </div>
     </div>

@@ -116,22 +116,22 @@ export default function Header() {
   };
 
   return (
-    <header className="relative bg-back px-4 md:px-10 py-4 z-50 border-b">
-      <div className="mx-auto flex items-center justify-between">
+    <header className="sticky top-0 z-50 border-b bg-background/92 px-4 py-3 shadow-sm backdrop-blur md:px-10">
+      <div className="mx-auto flex max-w-7xl items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center">
           <DashboardLogo className="text-primary dark:text-card-foreground transition-colors duration-300" />
         </Link>
 
         {/* Desktop Menu */}
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
+        <nav className="hidden items-center gap-2 text-sm font-medium md:flex">
           {NAV_LINKS.map(
             (link) =>
               !link.hidden && (
                 <Link
                   key={link.label}
                   href={link.href}
-                  className="hover:text-primary text-ghost-foreground transition"
+                  className="rounded-md px-3 py-2 text-ghost-foreground transition hover:bg-primary/10 hover:text-primary"
                 >
                   {link.label}
                 </Link>
@@ -218,7 +218,7 @@ export default function Header() {
       {/* Mobile Menu Dropdown */}
       <div
         className={cn(
-          "md:hidden absolute left-0 top-full w-full bg-background transition-all duration-300 ease-in-out",
+          "md:hidden absolute left-0 top-full w-full bg-background shadow-xl transition-all duration-300 ease-in-out",
           {
             "opacity-100 translate-y-0 visible": isOpen,
             "opacity-0 -translate-y-5 invisible": !isOpen,

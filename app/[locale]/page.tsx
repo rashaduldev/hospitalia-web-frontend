@@ -1,11 +1,8 @@
 import Banner from "@/components/pages/home/Banner";
-import DoctorCTA from "@/components/pages/home/DoctorCTA";
 import Header from "@/components/pages/home/Header";
-import OurPackages from "@/components/pages/home/OurPackages";
-import Stats from "@/components/pages/home/Stats";
-import WhyChooseUs from "@/components/pages/home/WhyChooseUs";
 import FooterSection from "@/components/common/Footer";
 import { Metadata } from "next";
+import HomeExperience from "@/components/pages/home/HomeExperience";
 
 export const metadata: Metadata = {
   title: "Hospitalia - Comprehensive Healthcare",
@@ -42,10 +39,7 @@ export default async function HomePage() {
     <>
       <Header />
       <Banner />
-      <Stats />
-      <WhyChooseUs />
-      <OurPackages />
-      <DoctorCTA />
+      <HomeExperience />
       <FooterSection />
     </>
   );
