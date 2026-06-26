@@ -1,5 +1,4 @@
-import { FC } from "react";
-import { Controller, Control } from "react-hook-form";
+import { Controller, Control, FieldValues, Path } from "react-hook-form";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -16,11 +15,11 @@ type OptionType = {
   value: string | number;
   [key: string]: any;
 };
-type ControlledSelectProps = {
+type ControlledSelectProps<T extends FieldValues = FieldValues> = {
   name: string;
   required?: string;
   label?: string;
-  control: Control<any>;
+  control: Control<T>;
   onChange?: (value: string) => void;
   placeholder?: string;
   options: OptionType[];
@@ -29,7 +28,7 @@ type ControlledSelectProps = {
   renderOption?: (opt: OptionType) => React.ReactNode;
 };
 
-export const ControlledSelect: FC<ControlledSelectProps> = ({
+export const ControlledSelect = <T extends FieldValues = FieldValues>({
   name,
   label,
   required,
@@ -40,10 +39,10 @@ export const ControlledSelect: FC<ControlledSelectProps> = ({
   onChange,
   className,
   disabled,
-}) => {
+}: ControlledSelectProps<T>) => {
   return (
     <Controller
-      name={name}
+      name={name as Path<T>}
       control={control}
       render={({ field, fieldState }) => (
         <div className="space-y-0">

@@ -1,4 +1,4 @@
-import { Controller, Control } from "react-hook-form";
+import { Controller, Control, FieldValues, Path } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import {
@@ -128,17 +128,22 @@ function TimePicker({
 
 // ── Controlled wrapper ────────────────────────────────────────────────────────
 
-type Props = {
+type Props<T extends FieldValues = FieldValues> = {
   name: string;
-  control: Control<any>;
+  control: Control<T>;
   label?: string;
   disabled?: boolean;
 };
 
-export function ControlledTimePicker({ name, control, label, disabled }: Props) {
+export function ControlledTimePicker<T extends FieldValues = FieldValues>({
+  name,
+  control,
+  label,
+  disabled,
+}: Props<T>) {
   return (
     <Controller
-      name={name}
+      name={name as Path<T>}
       control={control}
       render={({ field, fieldState }) => (
         <div className="space-y-1">

@@ -1,21 +1,20 @@
 "use client";
-import { FC } from "react";
-import { Controller, Control } from "react-hook-form";
+import { Controller, Control, FieldValues, Path } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Typography } from "@/components/ui/Typography";
 
-type ControlledInputProps = {
+type ControlledInputProps<T extends FieldValues = FieldValues> = {
   name: string;
   requiredMark?: string;
   label?: string;
-  control: Control<any>;
+  control: Control<T>;
   type?: string;
   placeholder?: string;
   className?: string;
 };
 
-export const ControlledInput: FC<ControlledInputProps> = ({
+export const ControlledInput = <T extends FieldValues = FieldValues>({
   name,
   label,
   control,
@@ -23,10 +22,10 @@ export const ControlledInput: FC<ControlledInputProps> = ({
   type = "text",
   placeholder,
   className,
-}) => {
+}: ControlledInputProps<T>) => {
   return (
     <Controller
-      name={name}
+      name={name as Path<T>}
       control={control}
       render={({ field, fieldState }) => (
         <div className="space-y-1 relative w-full">

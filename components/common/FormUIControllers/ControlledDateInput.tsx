@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Control, Controller } from "react-hook-form";
+import { Control, Controller, FieldValues, Path } from "react-hook-form";
 import { Field, FieldLabel } from "@/components/ui/field";
 import {
   Popover,
@@ -11,29 +11,29 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 
-type ControlledDateInputProps = {
+type ControlledDateInputProps<T extends FieldValues = FieldValues> = {
   name: string;
   label: string;
-  control: Control<any>;
+  control: Control<T>;
   placeholder?: string;
   className?: string;
   error?: string;
   disableFuture?: boolean;
 };
 
-export const ControlledDateInput: React.FC<ControlledDateInputProps> = ({
+export const ControlledDateInput = <T extends FieldValues = FieldValues>({
   name,
   label,
   control,
   disableFuture = false,
   placeholder = "Select date",
   className = "",
-}) => {
+}: ControlledDateInputProps<T>) => {
   const [open, setOpen] = useState(false);
 
   return (
     <Controller
-      name={name}
+      name={name as Path<T>}
       control={control}
       render={({ field }) => (
         <Field className={className}>

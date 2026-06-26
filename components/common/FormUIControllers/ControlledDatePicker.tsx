@@ -1,5 +1,5 @@
-import { FC, useState } from "react";
-import { Controller, Control } from "react-hook-form";
+import { useState } from "react";
+import { Controller, Control, FieldValues, Path } from "react-hook-form";
 import { FieldLabel, Field } from "@/components/ui/field";
 import {
   Popover,
@@ -9,15 +9,19 @@ import {
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 
-export const ControlledDatePicker: FC<{
+export const ControlledDatePicker = <T extends FieldValues = FieldValues>({
+  name,
+  label,
+  control,
+}: {
   name: string;
   label: string;
-  control: Control<any>;
-}> = ({ name, label, control }) => {
+  control: Control<T>;
+}) => {
   const [open, setOpen] = useState(false);
   return (
     <Controller
-      name={name}
+      name={name as Path<T>}
       control={control}
       render={({ field, fieldState }) => (
         <Field className="w-full">

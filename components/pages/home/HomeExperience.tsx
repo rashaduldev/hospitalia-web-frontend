@@ -36,6 +36,9 @@ const toolIcons = [Clock3, MapPin, Users, BadgeCheck, MonitorSmartphone, LockKey
 
 export default function HomeExperience() {
   const t = useI18n();
+  // Loosely-typed alias for dynamically-built keys (e.g. `home.trust.item${i}`),
+  // which the typed `t` overloads otherwise reject. Same function at runtime.
+  const tx = t as unknown as (key: string) => string;
 
   const quickActions = [
     { icon: Stethoscope, title: t("home.quick.item0.title"), text: t("home.quick.item0.text"), href: "/search" },
@@ -49,7 +52,7 @@ export default function HomeExperience() {
         <div className="section-container flex flex-wrap items-center justify-center gap-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground md:justify-between">
           {[0, 1, 2, 3, 4].map((item) => (
             <span key={item} className="rounded-md border bg-background px-4 py-2">
-              {t(`home.trust.item${item}` as any)}
+              {tx(`home.trust.item${item}`)}
             </span>
           ))}
         </div>
@@ -85,10 +88,10 @@ export default function HomeExperience() {
             {statKeys.map((key) => (
               <div key={key} className="rounded-lg border bg-background p-5">
                 <span className="block text-3xl font-extrabold text-primary md:text-4xl">
-                  {t(`whyChooseUs.stats.${key}.count` as any)}
+                  {tx(`whyChooseUs.stats.${key}.count`)}
                 </span>
                 <span className="mt-2 block text-sm font-medium text-muted-foreground">
-                  {t(`whyChooseUs.stats.${key}.des` as any)}
+                  {tx(`whyChooseUs.stats.${key}.des`)}
                 </span>
               </div>
             ))}
@@ -104,8 +107,8 @@ export default function HomeExperience() {
             return (
               <div key={item} className="rounded-lg border bg-card p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
                 <Icon className="mb-5 h-8 w-8 text-secondary" />
-                <h3 className="mb-2 text-lg font-bold text-foreground">{t(`home.specialties.item${item}.title` as any)}</h3>
-                <p className="leading-6">{t(`home.specialties.item${item}.text` as any)}</p>
+                <h3 className="mb-2 text-lg font-bold text-foreground">{tx(`home.specialties.item${item}.title`)}</h3>
+                <p className="leading-6">{tx(`home.specialties.item${item}.text`)}</p>
               </div>
             );
           })}
@@ -125,8 +128,8 @@ export default function HomeExperience() {
               return (
                 <div key={item} className="rounded-lg border border-white/10 bg-white/5 p-5 backdrop-blur">
                   <Icon className="mb-4 h-7 w-7 text-secondary" />
-                  <h3 className="mb-2 text-lg font-bold text-white">{t(`home.workflow.step${item}.title` as any)}</h3>
-                  <p className="text-sm leading-6 text-white/65">{t(`home.workflow.step${item}.text` as any)}</p>
+                  <h3 className="mb-2 text-lg font-bold text-white">{tx(`home.workflow.step${item}.title`)}</h3>
+                  <p className="text-sm leading-6 text-white/65">{tx(`home.workflow.step${item}.text`)}</p>
                 </div>
               );
             })}
@@ -158,8 +161,8 @@ export default function HomeExperience() {
             return (
               <div key={item} className="rounded-lg border bg-card p-5">
                 <Icon className="mb-4 h-6 w-6 text-primary" />
-                <h3 className="mb-2 text-base font-bold text-foreground">{t(`home.platform.item${item}.title` as any)}</h3>
-                <p className="text-sm leading-6">{t(`home.platform.item${item}.text` as any)}</p>
+                <h3 className="mb-2 text-base font-bold text-foreground">{tx(`home.platform.item${item}.title`)}</h3>
+                <p className="text-sm leading-6">{tx(`home.platform.item${item}.text`)}</p>
               </div>
             );
           })}
@@ -183,8 +186,8 @@ export default function HomeExperience() {
           {[0, 1, 2, 3].map((item) => (
             <div key={item} className="rounded-lg border bg-card p-5">
               <Languages className="mb-4 h-6 w-6 text-secondary" />
-              <h3 className="mb-2 text-base font-bold text-foreground">{t(`home.access.item${item}.title` as any)}</h3>
-              <p className="text-sm leading-6">{t(`home.access.item${item}.text` as any)}</p>
+              <h3 className="mb-2 text-base font-bold text-foreground">{tx(`home.access.item${item}.title`)}</h3>
+              <p className="text-sm leading-6">{tx(`home.access.item${item}.text`)}</p>
             </div>
           ))}
         </div>
@@ -201,8 +204,8 @@ export default function HomeExperience() {
             {[0, 1, 2].map((item) => (
               <div key={item} className="rounded-lg border border-white/15 bg-white/10 p-5 backdrop-blur">
                 <ShieldCheck className="mb-4 h-7 w-7 text-secondary" />
-                <h3 className="mb-2 text-base font-bold text-white">{t(`home.security.item${item}.title` as any)}</h3>
-                <p className="text-sm leading-6 text-white/70">{t(`home.security.item${item}.text` as any)}</p>
+                <h3 className="mb-2 text-base font-bold text-white">{tx(`home.security.item${item}.title`)}</h3>
+                <p className="text-sm leading-6 text-white/70">{tx(`home.security.item${item}.text`)}</p>
               </div>
             ))}
           </div>
@@ -215,9 +218,9 @@ export default function HomeExperience() {
           {[0, 1, 2].map((item) => (
             <article key={item} className="rounded-lg border bg-card p-6 shadow-sm">
               <Sparkles className="mb-5 h-6 w-6 text-secondary" />
-              <p className="mb-6 leading-7 text-foreground">{t(`home.testimonials.item${item}.quote` as any)}</p>
-              <h3 className="text-base font-bold text-foreground">{t(`home.testimonials.item${item}.name` as any)}</h3>
-              <p className="text-sm">{t(`home.testimonials.item${item}.role` as any)}</p>
+              <p className="mb-6 leading-7 text-foreground">{tx(`home.testimonials.item${item}.quote`)}</p>
+              <h3 className="text-base font-bold text-foreground">{tx(`home.testimonials.item${item}.name`)}</h3>
+              <p className="text-sm">{tx(`home.testimonials.item${item}.role`)}</p>
             </article>
           ))}
         </div>
@@ -229,8 +232,8 @@ export default function HomeExperience() {
           <div className="grid gap-4">
             {[0, 1, 2, 3].map((item) => (
               <div key={item} className="rounded-lg border bg-background p-5">
-                <h3 className="mb-2 text-base font-bold text-foreground">{t(`home.faq.item${item}.question` as any)}</h3>
-                <p className="leading-6">{t(`home.faq.item${item}.answer` as any)}</p>
+                <h3 className="mb-2 text-base font-bold text-foreground">{tx(`home.faq.item${item}.question`)}</h3>
+                <p className="leading-6">{tx(`home.faq.item${item}.answer`)}</p>
               </div>
             ))}
           </div>
@@ -290,6 +293,7 @@ function FeatureList({
   icon?: typeof CheckCircle2;
 }) {
   const t = useI18n();
+  const tx = t as unknown as (key: string) => string;
 
   return (
     <div>
@@ -301,7 +305,7 @@ function FeatureList({
           <div key={item} className="flex gap-3 rounded-lg border bg-card p-4">
             <Icon className="mt-0.5 h-5 w-5 shrink-0 text-secondary" />
             <span className="text-sm font-semibold leading-6 text-foreground">
-              {t(`${baseKey}.point${item}` as any)}
+              {tx(`${baseKey}.point${item}`)}
             </span>
           </div>
         ))}

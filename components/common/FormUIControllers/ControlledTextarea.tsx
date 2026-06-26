@@ -1,26 +1,25 @@
 "use client";
-import { FC } from "react";
-import { Controller, Control } from "react-hook-form";
+import { Controller, Control, FieldValues, Path } from "react-hook-form";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Typography } from "@/components/ui/Typography";
 
-type ControlledTextareaProps ={
+type ControlledTextareaProps<T extends FieldValues = FieldValues> = {
   name: string;
   label: string;
-  control: Control<any>;
+  control: Control<T>;
   placeholder?: string;
 }
 
-export const ControlledTextarea: FC<ControlledTextareaProps> = ({
+export const ControlledTextarea = <T extends FieldValues = FieldValues>({
   name,
   label,
   control,
   placeholder,
-}) => {
+}: ControlledTextareaProps<T>) => {
   return (
     <Controller
-      name={name}
+      name={name as Path<T>}
       control={control}
       render={({ field, fieldState }) => (
         <div className="space-y-1">

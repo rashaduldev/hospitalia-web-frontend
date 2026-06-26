@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useController, Control } from "react-hook-form";
+import { useController, Control, FieldValues, Path } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useCurrentLocale } from "@/locales/client";
 import { Loader2, MapPin, Stethoscope, Building2 } from "lucide-react";
@@ -15,24 +15,24 @@ import { globalSearch } from "@/actions/global.search";
 import { SearchResultIteam } from "@/types/search.type";
 import { cn } from "@/lib/utils";
 
-interface SearchAutocompleteProps {
-  control: Control<any>;
+interface SearchAutocompleteProps<T extends FieldValues = FieldValues> {
+  control: Control<T>;
   name: string;
   searchType: "DOCTOR" | "HOSPITAL";
   city?: string;
   placeholder?: string;
 }
 
-export function SearchAutocomplete({
+export function SearchAutocomplete<T extends FieldValues = FieldValues>({
   control,
   name,
   searchType,
   city,
   placeholder,
-}: SearchAutocompleteProps) {
+}: SearchAutocompleteProps<T>) {
   const router = useRouter();
   const lang = useCurrentLocale();
-  const { field, fieldState } = useController({ control, name });
+  const { field, fieldState } = useController({ control, name: name as Path<T> });
 
   const [suggestions, setSuggestions] = useState<SearchResultIteam[]>([]);
   const [isLoading, setIsLoading] = useState(false);
