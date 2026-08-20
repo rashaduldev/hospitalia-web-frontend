@@ -131,7 +131,7 @@ export function AppSidebar({ lang, userRole, user, ...props }: AppSidebarProps) 
         </Link>
       </SidebarHeader>
 
-      <SidebarContent className="flex flex-col h-full pt-5">
+      <SidebarContent className="flex flex-col pt-5">
         {/* ── User card ── */}
         {profileUrl ? (
           <Link

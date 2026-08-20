@@ -166,6 +166,16 @@
 }
 
 @layer utilities {
+  /* Keep overflow usable without showing a browser scrollbar in app panels. */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
   .animate-fade-up {
     animation: fade-up 0.8s ease both;
   }

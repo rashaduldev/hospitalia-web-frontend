@@ -75,7 +75,7 @@ export function AdminAppSidebar({ user, ...props }: AdminAppSidebarProps) {
         </Link>
       </SidebarHeader>
 
-      <SidebarContent className="flex flex-col h-full pt-5">
+      <SidebarContent className="flex flex-col pt-5">
         {/* ── User card ── */}
         <div className="flex items-center gap-3 px-2 pb-5">
           <Avatar size="lg" className="shrink-0 ring-2 ring-primary/20">
