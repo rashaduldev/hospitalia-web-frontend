@@ -20,16 +20,16 @@ const nextConfig: NextConfig = {
     },
   },
   allowedDevOrigins: [
-    "localhost:3000",
+    "localhost:5001",
     "localhost:8081",
-    "hospitalia-api.dhrubok.xyz",
+    "https://hospitalia-web-backend.vercel.app",
   ],
   experimental: {
     serverActions: {
       allowedOrigins: [
-        "localhost:3000",
+        "localhost:5001",
         "localhost:8081",
-        "hospitalia-api.dhrubok.xyz",
+        "https://hospitalia-web-backend.vercel.app",
       ],
     },
     serverComponentsHmrCache: true,

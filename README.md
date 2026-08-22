@@ -1,36 +1,129 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Hospitalia Web
 
-## Getting Started
+Hospitalia Web is the patient- and provider-facing application for Hospitalia, a healthcare platform that brings appointment discovery, clinical scheduling, and care-team operations into one experience.
 
-First, run the development server:
+## Mission and vision
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+**Mission:** make healthcare access simpler by helping patients find the right provider and complete an appointment journey with confidence.
+
+**Vision:** create a connected, dependable digital care ecosystem where patients, doctors, hospitals, secretaries, and platform administrators work from the same trusted source of information.
+
+## What the application does
+
+- Public doctor and hospital search, profiles, and appointment booking
+- Secure sign-up, sign-in, password recovery, and OTP verification flows
+- Role-aware workspaces for patients, doctors, hospitals, secretaries, and administrators
+- Doctor availability, locations, appointment management, offline booking, and patient records
+- Hospital onboarding, profile setup, doctor imports, and location management
+- Secretary scheduling and location-aware workflows
+- Admin user, role, privilege, and speciality management
+- In-app conversation UI and responsive, accessible dashboard navigation
+- English and French locale support
+
+## Core concepts
+
+| Concept | Purpose |
+| --- | --- |
+| **Patient** | Searches providers, manages beneficiaries, and books or tracks appointments. |
+| **Doctor** | Publishes professional details, locations, availability, and manages appointments. |
+| **Hospital** | Manages its profile, locations, and associated doctors. |
+| **Secretary** | Supports a doctor’s day-to-day schedule and patient workflows according to granted permissions. |
+| **Administrator** | Manages users, roles, privileges, and the speciality catalogue. |
+| **Speciality** | A reusable clinical classification used during doctor registration and discovery. |
+
+## How it is built
+
+The app uses Next.js App Router and React Server Components for routing and rendering. Mutations and backend reads are isolated in server actions; the shared `lib/api.ts` client provides timeout, retry, request, and error-handling behavior. TanStack Query manages client-side query state, while React Hook Form and Zod validate forms before submission.
+
+```text
+Browser
+  -> Next.js 16 application (routes, server actions, middleware)
+  -> Hospitalia REST API
+  -> MongoDB
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Key directories:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```text
+app/           Route groups, pages, layouts, and locale-aware routes
+actions/       Server actions grouped by domain
+components/    Reusable UI, dashboard shells, and feature components
+schema/        Zod validation schemas
+types/         Shared TypeScript contracts
+lib/           API client, utilities, constants, and error helpers
+locales/       English and French translation resources
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Technology
 
-## Learn More
+- Next.js 16, React 19, TypeScript
+- Tailwind CSS 4 and shadcn-style UI primitives
+- TanStack Query, React Hook Form, and Zod
+- next-international for localization
+- Lucide icons, Recharts, XLSX, and supporting UI utilities
 
-To learn more about Next.js, take a look at the following resources:
+## Local development
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Prerequisites
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Node.js 20 or newer
+- The Hospitalia backend running locally (default: `http://localhost:5001`)
 
-## Deploy on Vercel
+### Configure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Create `.env` in this directory:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5001
+BASE_URL=http://localhost:3000
+NODE_ENV=development
+```
+
+Install and run:
+
+```bash
+npm install
+npm run dev
+```
+
+Open `http://localhost:3000`.
+
+> Restart the Next.js server after changing `.env`, because environment variables are read when the server starts.
+
+## Scripts
+
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start the development server. |
+| `npm run build` | Create an optimized production build. |
+| `npm run start` | Serve the production build. |
+| `npm run lint` | Run ESLint checks. |
+
+## Backend integration
+
+The frontend expects the API base URL in `NEXT_PUBLIC_API_URL`. Its counterpart is in [`../Hospitalia-web-Backend`](../Hospitalia-web-Backend), which exposes health, REST API, and Swagger documentation endpoints.
+
+For local usage, ensure CORS on the backend allows the port used by this app. The default backend configuration permits `http://localhost:3000` and `http://localhost:3001`.
+
+## Deployment notes
+
+- Use HTTPS and an HTTPS API URL in production.
+- Set `NEXT_PUBLIC_API_URL` to the deployed API origin at build time.
+- Keep secrets only in the backend environment; do not expose them through `NEXT_PUBLIC_*` variables.
+- Run `npm run build` before release and resolve any blocking lint or build errors.
+
+## Contributing
+
+1. Create a focused branch.
+2. Keep types, schemas, server actions, and API responses aligned.
+3. Run linting and a production build before opening a pull request.
+4. Include a concise description and verification steps with each change.
+
+## Author
+
+Built and maintained by **Rashadul Dev**.
+
+---
+
+Hospitalia Web is part of the Hospitalia healthcare platform.
+
